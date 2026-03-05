@@ -21,5 +21,4 @@ public class ShieldCard {
     public String getName() {
         return name;
     }
-    
 }

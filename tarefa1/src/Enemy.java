@@ -41,13 +41,18 @@ public class Enemy {
     }
 
     public void increaseShield(ShieldCard shieldCard) {
-        currentShield = currentShield + shieldCard.getShield();
+        if (energy >= shieldCard.getEnergyCost()) {
+            energy = energy - shieldCard.getEnergyCost();
+            currentShield = currentShield + shieldCard.getShield();
+            System.out.println(name + " usou " + shieldCard.getName() + " e aumentou seu escudo em " + shieldCard.getShield() + "!");
+        }
     }
 
     public void attack(Hero hero, DamageCard damageCard) {
         if (energy >= damageCard.getEnergyCost()) {
             energy = energy - damageCard.getEnergyCost();
             hero.receiveDamage(damageCard.getDamage());
+            System.out.println(name + " usou " + damageCard.getName() + " e causou " + damageCard.getDamage() + " de dano!");
         }
     }
 

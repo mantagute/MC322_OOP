@@ -70,7 +70,7 @@ public class App {
         app.start();
 
         while (app.hero.isAlive() && app.enemy.isAlive()) {
-            app.heroLoop();
+            app.HeroLoop();
             app.enemyLoop();
         }
 

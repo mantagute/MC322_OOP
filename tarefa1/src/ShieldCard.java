@@ -17,5 +17,9 @@ public class ShieldCard {
     public int getShield() {
         return shield;
     }
+
+    public String getName() {
+        return name;
+    }
     
 }

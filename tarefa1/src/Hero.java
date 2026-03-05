@@ -43,4 +43,26 @@ public class Hero {
         return health > 0;
     }
 
+    public String getPossibleActions(int choice, DamageCard heroDamageCard1, DamageCard heroDamageCard2, ShieldCard heroShieldCard1, ShieldCard heroShieldCard2, Enemy enemy) {
+        switch (choice) {
+            case 1:
+                attack(enemy, heroDamageCard1);
+                return heroDamageCard1.getName();
+            case 2:
+                attack(enemy, heroDamageCard2);
+                return heroDamageCard2.getName();
+            case 3:
+                increaseShield(heroShieldCard1);
+                return heroShieldCard1.getName();
+            case 4:
+                increaseShield(heroShieldCard2);
+                return heroShieldCard2.getName();
+            case 5:
+                System.out.println("Passou a vez");
+            default:
+                System.out.println("Escolha inválida");
+                return "";
+        }
+    }
+
 }

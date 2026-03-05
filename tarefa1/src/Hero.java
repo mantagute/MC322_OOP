@@ -4,35 +4,41 @@ public class Hero {
     private int health;
     private int currentShield;
     private int energy;
-    private ShieldCard shieldCard;
-    private DamageCard damageCard;
 
-    public Hero(String name, int health, int shield, int shieldGive, int ShieldCost, int damage, int DamangeCost, String damageName, String shieldName) {
+    public Hero(String name, int health, int shield, int energy) {
         this.name = name;
         this.health = health;
         this.currentShield = shield;
-        this.shieldCard = new ShieldCard(shieldName, ShieldCost, shieldGive);
-        this.damageCard = new DamageCard(damageName, DamangeCost, damage);
+        this.energy = energy;
     }
 
-    public void receiveDamage(Enemy enemy) {
-        health = health - enemy.getDamage();
+    public void receiveDamage(int damage) {
+        if (currentShield > damage) {
+            currentShield = currentShield - damage;
+        } else {
+            health = health - (damage - currentShield);
+            currentShield = 0;
+        }
     }
 
-    public void increaseShield() {
+    public void increaseShield(ShieldCard shieldCard) {
         if (energy >= shieldCard.getEnergyCost()) {
             energy = energy - shieldCard.getEnergyCost();
             currentShield = currentShield + shieldCard.getShield();
         }
     }
 
-    public void attack(Enemy enemy) {
+    public void attack(Enemy enemy, DamageCard damageCard) {
         if (energy >= damageCard.getEnergyCost()) {
             energy = energy - damageCard.getEnergyCost();
             enemy.receiveDamage(damageCard.getDamage());
         }
-
     }
+
+    public String getName() {
+        return name;
+    }
+
     public boolean isAlive() {
         return health > 0;
     }

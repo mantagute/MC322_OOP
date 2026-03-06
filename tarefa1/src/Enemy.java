@@ -4,31 +4,38 @@ public class Enemy {
     private int health;
     private int currentShield;
     private int damage;
-    private int energy;
+    private int maxEnergy;
+    private int currentEnergy;
 
-    public Enemy(String name, int health, int shield, int energy) {
+    public Enemy(String name, int health, int energy) {
         this.name = name;
         this.health = health;
-        this.currentShield = shield;
-        this.energy = energy;
+        this.currentShield = 0;
+        this.maxEnergy = energy;
+        this.currentEnergy = energy;
     }
 
-    public String useMove() {
+    public String useMove(DamageCard damageCard1, DamageCard damageCard2, ShieldCard shieldCard1, ShieldCard shieldCard2) {
         double random = Math.random();
-        while (energy >= 3) {
-            if (random < 0.25 && energy >= 3) {
+        while (currentEnergy >= damageCard1.getEnergyCost()) {
+            if (random < 0.25 && currentEnergy >= damageCard1.getEnergyCost()) {
                 return "attack_1";
-            } else if (random < 0.5 && energy >= 5) {
+            } else if (random < 0.5 && currentEnergy >= damageCard2.getEnergyCost()) {
                 return "attack_2";
-            } else if (random < 0.75 && energy >= 3) {
+            } else if (random < 0.75 && currentEnergy >= shieldCard1.getEnergyCost()) {
                 return "shield_1";
-            } else if (energy >= 5){
+            } else if (currentEnergy >= shieldCard2.getEnergyCost()) {
                 return "shield_2";
             } else {
                 random = Math.random();
             }
         }
         return "no_energy";
+    }
+
+    public void newTurn() {
+        currentEnergy = maxEnergy;
+        currentShield = 0;
     }
 
     public void receiveDamage(int damage) {
@@ -41,18 +48,18 @@ public class Enemy {
     }
 
     public void increaseShield(ShieldCard shieldCard) {
-        if (energy >= shieldCard.getEnergyCost()) {
-            energy = energy - shieldCard.getEnergyCost();
+        if (currentEnergy >= shieldCard.getEnergyCost()) {
+            currentEnergy = currentEnergy- shieldCard.getEnergyCost();
             currentShield = currentShield + shieldCard.getShield();
-            System.out.println(name + " usou " + shieldCard.getName() + " e aumentou seu escudo em " + shieldCard.getShield() + "!");
+            System.out.println(name + " usou " + shieldCard.getName() + " e aumentou seu escudo em " + shieldCard.getShield() + "!\n");
         }
     }
 
     public void attack(Hero hero, DamageCard damageCard) {
-        if (energy >= damageCard.getEnergyCost()) {
-            energy = energy - damageCard.getEnergyCost();
+        if (currentEnergy >= damageCard.getEnergyCost()) {
+            currentEnergy = currentEnergy - damageCard.getEnergyCost();
             hero.receiveDamage(damageCard.getDamage());
-            System.out.println(name + " usou " + damageCard.getName() + " e causou " + damageCard.getDamage() + " de dano!");
+            System.out.println(name + " usou " + damageCard.getName() + " e causou " + damageCard.getDamage() + " de dano!\n");
         }
     }
 
@@ -64,7 +71,16 @@ public class Enemy {
         return name;
     }
 
+    public int getHealth() {
+        return health;
+    }
+
+    public int getShield() {
+        return currentShield;
+    }
+
     public boolean isAlive() {
         return health > 0;
     }
+    
 }

@@ -2,7 +2,6 @@ import java.util.Scanner;
 
 public class App {
 
-    private int choice;
     private Hero hero;
     private Enemy enemy;
     private DamageCard heroDamageCard1;
@@ -15,8 +14,8 @@ public class App {
     private ShieldCard enemyShieldCard2;
 
     public void start() {
-        hero = new Hero("Didi Marco", 100, 100, 10);
-        enemy = new Enemy("Sr. Dr. Cabo Arruda", 100, 100, 10);
+        hero = new Hero("Didi Marco", 100, 10);
+        enemy = new Enemy("Sr. Dr. Cabo Arruda", 100, 10);
         heroDamageCard1 = new DamageCard("Festa", 3, 15);
         heroDamageCard2 = new DamageCard("Rolê de Abarth", 5, 25);
         heroShieldCard1 = new ShieldCard("Drip", 3, 15);
@@ -25,32 +24,66 @@ public class App {
         enemyDamageCard2 = new DamageCard("Porrada", 5, 25);
         enemyShieldCard1 = new ShieldCard("Açaí com Leite", 3, 15);
         enemyShieldCard2 = new ShieldCard("Berimbau", 5, 25);
+        
     }
 
-    public void HeroLoop() {
-        while(hero.isAlive()) {
-            while(choice != 5 ) {
-                System.out.println("Choose an action:");
-                System.out.println("1 - Atacck with " + heroDamageCard1.getName() + " (Cost: " + heroDamageCard1.getEnergyCost() + ", Damage: " + heroDamageCard1.getDamage() + ")");
+    public void heroTurn(Scanner scanner) {
+            hero.newTurn();
+            boolean isTurnOver = false;
+
+            while(!isTurnOver && hero.isAlive() && enemy.isAlive()) {
+                if (!hero.hasEnoughEnergyForAnyCard(heroDamageCard1, heroDamageCard2, heroShieldCard1, heroShieldCard2)) {
+                    System.out.println("\n" + hero.getName() + " sem energia, passando a vez para " + enemy.getName() + "...\n");
+                    isTurnOver = true;
+                    continue;
+                }
+
+                System.out.println("\n --- TURNO DE " + hero.getName().toUpperCase() + " -> " + hero.getHealth() + " de vida e "+ hero.getShield() + " de escudo ---\n");
+                System.out.println(hero.getName() + " tem " + hero.getEnergy() + " de energia restante\n");
+                System.out.println("1 - Atacar com " + heroDamageCard1.getName() + " (Custo: " + heroDamageCard1.getEnergyCost() + ", Dano: " + heroDamageCard1.getDamage() + ")");
                 System.out.println("2 - Atacar com " + heroDamageCard2.getName() + " (Custo: " + heroDamageCard2.getEnergyCost() + ", Dano: " + heroDamageCard2.getDamage() + ")");
                 System.out.println("3 - Defender com " + heroShieldCard1.getName() + " (Custo: " + heroShieldCard1.getEnergyCost() + ", Escudo: " + heroShieldCard1.getShield() + ")");
                 System.out.println("4 - Defender com " + heroShieldCard2.getName() + " (Custo: " + heroShieldCard2.getEnergyCost() + ", Escudo: " + heroShieldCard2.getShield() + ")");
-                System.out.println("5 - Passar a vez");
-                Scanner scanner = new Scanner(System.in);
-                choice = scanner.nextInt();
-                if (hero.getPossibleActions(choice, heroDamageCard1, heroDamageCard2, heroShieldCard1, heroShieldCard2, enemy) != "") {
-                    break;
-                } ;
-                scanner.close();
+                System.out.println("5 - Passar a vez\n");
+                System.out.println("Escolha uma ação:");
+                int choice = scanner.nextInt();
+                switch (choice) {
+                    case 1:
+                        hero.attack(enemy, heroDamageCard1);
+                        break;
+                    case 2:
+                        hero.attack(enemy, heroDamageCard2);
+                        break;
+                    case 3: 
+                        hero.increaseShield(heroShieldCard1);
+                        break;
+                    case 4:
+                        hero.increaseShield(heroShieldCard2);
+                        break;
+                    case 5:
+                        isTurnOver = true;
+                        break;
+                    default:
+                        System.out.println("Escolha inválida, tente novamente.\n");
+                        break;
+                }
+                if (!enemy.isAlive()) {
+                    isTurnOver = true;
+                }
             }
+    } 
+
+    public void enemyTurn() {
+        if (!enemy.isAlive()) {
+            return;
         }
 
-        
-    }
-    public void enemyLoop() {
-        String move = enemy.useMove();
+        enemy.newTurn();
 
-        while (!move.equals("no_energy")) {
+        System.out.println("\n --- TURNO DE " + enemy.getName().toUpperCase() + " -> " + enemy.getHealth() + " de vida e "+ enemy.getShield() + " de escudo ---\n");
+        String move = enemy.useMove(enemyDamageCard1, enemyDamageCard2, enemyShieldCard1, enemyShieldCard2);
+
+        while (!move.equals("no_energy") && hero.isAlive() && enemy.isAlive()) {
             if (move.equals("attack_1")) {
                 enemy.attack(hero, enemyDamageCard1);
             } else if (move.equals("attack_2")) {
@@ -60,27 +93,34 @@ public class App {
             } else if (move.equals("shield_2")) {
                 enemy.increaseShield(enemyShieldCard2);
             }
-        };
 
-        System.out.println(enemy.getName() + " terminou seu turno!");
+            if (!hero.isAlive()) {
+                break;
+            }
+
+            move = enemy.useMove(enemyDamageCard1, enemyDamageCard2, enemyShieldCard1, enemyShieldCard2);
+        };
+        System.out.println(enemy.getName() + " terminou seu turno!\n");
     }
 
     public static void main(String[] args) throws Exception {
+        Scanner scanner = new Scanner(System.in);
         App app = new App();
         app.start();
 
         while (app.hero.isAlive() && app.enemy.isAlive()) {
-            app.HeroLoop();
-            app.enemyLoop();
+            app.heroTurn(scanner);
+            app.enemyTurn();
         }
 
         if (app.hero.isAlive()) {
-            System.out.println(app.hero.getName() + " venceu!");
-            System.out.println(app.hero.getName() + " ainda não acabou o experimento. F carona...");
+            System.out.println(app.hero.getName() + " venceu!\n");
+            System.out.println(app.hero.getName() + " vai para Festa da TJP dando um rolê de Abarth com muito Drip!");
 
         } else {
-            System.out.println(app.enemy.getName() + " venceu!");
+            System.out.println(app.enemy.getName() + " venceu!\n");
             System.out.println("Não sobrou nada...");
         }
+        scanner.close();
     }
 }

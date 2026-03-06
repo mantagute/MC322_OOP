@@ -32,6 +32,8 @@ public class Hero {
         if (currentEnergy >= shieldCard.getEnergyCost()) {
             currentEnergy = currentEnergy - shieldCard.getEnergyCost();
             currentShield = currentShield + shieldCard.getShield();
+
+            System.out.println("\n" + name + " usou " + shieldCard.getName() + " e aumentou seu escudo em " + shieldCard.getShield() + "!\n");
         }
     }
 
@@ -39,6 +41,8 @@ public class Hero {
         if (currentEnergy >= damageCard.getEnergyCost()) {
             currentEnergy = currentEnergy - damageCard.getEnergyCost();
             enemy.receiveDamage(damageCard.getDamage());
+
+            System.out.println("\n" + name + " usou " + damageCard.getName() + " e causou " + damageCard.getDamage() + " de dano em " + enemy.getName() + "!");
         }
     }
 

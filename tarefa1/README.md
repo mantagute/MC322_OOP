@@ -1,18 +1,18 @@
-## Getting Started
+# Tarefa 1 - Didi Marcos vs Sr. Dr. Cabo Arruda
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+## 📖 Descrição do Jogo
+Este projeto é um jogo de batalha em turnos inspirado no roguelike deckbuilder *Slay the Spire*. O jogador controla **Didi Marco**, que deve usar cartas de ataque e defesa para derrotar o temível **Sr. Dr. Cabo Arruda**. O jogo gere automaticamente a energia, os escudos e os turnos, com o inimigo a tomar decisões automatizadas de ataque e defesa.
 
-## Folder Structure
+## 🛠️ Como Compilar
+O projeto foi desenvolvido para a versão Java 25. Para compilar o código fonte, abre o terminal na raiz do teu repositório (a pasta principal do projeto) e executa o seguinte comando:
 
-The workspace contains two folders by default, where:
+`javac -d bin $(find src -name "*.java")`
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+*(Isto irá compilar todos os ficheiros `.java` que estão na pasta `src` e colocar os ficheiros compilados na pasta `bin`)*.
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+## ▶️ Como Executar
+Após a compilação bem-sucedida, podes iniciar a batalha com o seguinte comando no terminal:
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+`java -cp bin App`
 
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+Bom jogo e que a sorte esteja contigo! Te vejo na TJP!

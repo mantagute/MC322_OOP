@@ -10,6 +10,14 @@ public class ShieldCard {
         this.shield = shield;
     }
 
+    public void use(Hero hero) {
+        hero.addShield(this);
+    }
+
+    public void use(Enemy enemy) {
+        enemy.addShield(this);
+    }
+
     public int getEnergyCost() {
         return energyCost;
     }

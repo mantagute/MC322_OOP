@@ -10,6 +10,14 @@ public class DamageCard {
         this.damage = damage;
     }
 
+    public void use(Enemy enemy) {
+        enemy.receiveDamage(this.damage);
+    }
+
+    public void use(Hero hero) {
+        hero.receiveDamage(this.damage);
+    }
+
     public int getEnergyCost() {
         return cost;
     }

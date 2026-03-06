@@ -50,15 +50,19 @@ public class Enemy {
     public void increaseShield(ShieldCard shieldCard) {
         if (currentEnergy >= shieldCard.getEnergyCost()) {
             currentEnergy = currentEnergy- shieldCard.getEnergyCost();
-            currentShield = currentShield + shieldCard.getShield();
+            shieldCard.use(this);
             System.out.println(name + " usou " + shieldCard.getName() + " e aumentou seu escudo em " + shieldCard.getShield() + "!\n");
         }
+    }
+
+    public void addShield(ShieldCard shieldCard) {
+        currentShield = currentShield + shieldCard.getShield();
     }
 
     public void attack(Hero hero, DamageCard damageCard) {
         if (currentEnergy >= damageCard.getEnergyCost()) {
             currentEnergy = currentEnergy - damageCard.getEnergyCost();
-            hero.receiveDamage(damageCard.getDamage());
+            damageCard.use(hero);
             System.out.println(name + " usou " + damageCard.getName() + " e causou " + damageCard.getDamage() + " de dano!\n");
         }
     }

@@ -31,16 +31,20 @@ public class Hero {
     public void increaseShield(ShieldCard shieldCard) {
         if (currentEnergy >= shieldCard.getEnergyCost()) {
             currentEnergy = currentEnergy - shieldCard.getEnergyCost();
-            currentShield = currentShield + shieldCard.getShield();
+            shieldCard.use(this);
 
             System.out.println("\n" + name + " usou " + shieldCard.getName() + " e aumentou seu escudo em " + shieldCard.getShield() + "!\n");
         }
     }
 
+    public void addShield(ShieldCard shieldCard) {
+        currentShield = currentShield + shieldCard.getShield();
+    }
+
     public void attack(Enemy enemy, DamageCard damageCard) {
         if (currentEnergy >= damageCard.getEnergyCost()) {
             currentEnergy = currentEnergy - damageCard.getEnergyCost();
-            enemy.receiveDamage(damageCard.getDamage());
+            damageCard.use(enemy);
 
             System.out.println("\n" + name + " usou " + damageCard.getName() + " e causou " + damageCard.getDamage() + " de dano em " + enemy.getName() + "!");
         }

@@ -38,8 +38,12 @@ public class App {
                     continue;
                 }
 
-                System.out.println("\n --- TURNO DE " + hero.getName().toUpperCase() + " -> " + hero.getHealth() + " de vida e "+ hero.getShield() + " de escudo ---\n");
-                System.out.println(hero.getName() + " tem " + hero.getEnergy() + " de energia restante\n");
+                System.out.println("\n=== TURNO DE " + hero.getName().toUpperCase() + " ===\n");
+                System.out.println(hero.getName() + " | Vida: " + hero.getHealth() + 
+                    " | Escudo: " + hero.getShield() + 
+                    " | Energia: " + hero.getEnergy() + "\nvs") ;
+                System.out.println(enemy.getName() + " | Vida: " + enemy.getHealth() + 
+                    " | Escudo: " + enemy.getShield() + "\n");
                 System.out.println("1 - Atacar com " + heroDamageCard1.getName() + " (Custo: " + heroDamageCard1.getEnergyCost() + ", Dano: " + heroDamageCard1.getDamage() + ")");
                 System.out.println("2 - Atacar com " + heroDamageCard2.getName() + " (Custo: " + heroDamageCard2.getEnergyCost() + ", Dano: " + heroDamageCard2.getDamage() + ")");
                 System.out.println("3 - Defender com " + heroShieldCard1.getName() + " (Custo: " + heroShieldCard1.getEnergyCost() + ", Escudo: " + heroShieldCard1.getShield() + ")");
@@ -80,7 +84,12 @@ public class App {
 
         enemy.newTurn();
 
-        System.out.println("\n --- TURNO DE " + enemy.getName().toUpperCase() + " -> " + enemy.getHealth() + " de vida e "+ enemy.getShield() + " de escudo ---\n");
+        System.out.println("\n=== TURNO DE " + enemy.getName().toUpperCase() + " ===\n");
+        System.out.println(hero.getName() + " | Vida: " + hero.getHealth() + 
+            " | Escudo: " + hero.getShield() + 
+            " | Energia: " + hero.getEnergy() + "\nvs") ;
+        System.out.println(enemy.getName() + " | Vida: " + enemy.getHealth() + 
+            " | Escudo: " + enemy.getShield() + "\n");
         String move = enemy.useMove(enemyDamageCard1, enemyDamageCard2, enemyShieldCard1, enemyShieldCard2);
 
         while (!move.equals("no_energy") && hero.isAlive() && enemy.isAlive()) {

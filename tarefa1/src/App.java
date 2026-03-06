@@ -13,6 +13,30 @@ public class App {
     private ShieldCard enemyShieldCard1;
     private ShieldCard enemyShieldCard2;
 
+    public static void gameIntro() {
+        System.out.println("  _____  _____ _____ _____   __  __          _____   _____ ____  ");
+        System.out.println(" |  __ \\|_   _|  __ \\_   _| |  \\/  |   /\\   |  __ \\ / ____/ __ \\ ");
+        System.out.println(" | |  | | | | | |  | || |   | \\  / |  /  \\  | |__) | |   | |  | |");
+        System.out.println(" | |  | | | | | |  | || |   | |\\/| | / /\\ \\ |  _  /| |   | |  | |");
+        System.out.println(" | |__| |_| |_| |__| || |_  | |  | |/ ____ \\| | \\ \\| |___| |__| |");
+        System.out.println(" |_____/|_____|_____/_____| |_|  |_/_/    \\_\\_|  \\_\\\\_____\\____/ ");
+
+        System.out.println("\n                            V S                                  \n");
+
+        System.out.println("  _____ _____     _____  _____      _____          ____   ____  ");
+        System.out.println(" / ____|  __ \\   |  __ \\|  __ \\    / ____|   /\\   |  _ \\ / __ \\ ");
+        System.out.println("| (___ | |__) |  | |  | | |__) |  | |       /  \\  | |_) | |  | |");
+        System.out.println(" \\___ \\|  _  /   | |  | |  _  /   | |      / /\\ \\ |  _ <| |  | |");
+        System.out.println(" ____) | | \\ \\   | |__| | | \\ \\   | |____ / ____ \\| |_) | |__| |");
+        System.out.println("|_____/|_|  \\_\\  |_____/|_|  \\_\\   \\_____/_/    \\_\\____/ \\____/ ");
+
+        System.out.println("          /\\    |  __ \\|  __ \\| |  | |  __ \\   /\\     ");
+        System.out.println("         /  \\   | |__) | |__) | |  | | |  | | /  \\    ");
+        System.out.println("        / /\\ \\  |  _  /|  _  /| |  | | |  | |/ /\\ \\   ");
+        System.out.println("       / ____ \\ | | \\ \\| | \\ \\| |__| | |__| / ____ \\  ");
+        System.out.println("      /_/    \\_\\_|  \\_\\_|  \\_\\\\____/|_____/_/    \\_\\ ");
+    }
+
     public static void clearScreen() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
@@ -138,9 +162,11 @@ public class App {
     }
 
     public static void main(String[] args) throws Exception {
+        App.clearScreen();
+        App.gameIntro();
+        App.Wait(5000);
         Scanner scanner = new Scanner(System.in);
         App app = new App();
-        App.clearScreen();
         app.start();
 
         while (app.hero.isAlive() && app.enemy.isAlive()) {
@@ -151,7 +177,7 @@ public class App {
 
         if (app.hero.isAlive()) {
             System.out.println(app.hero.getName() + " venceu!\n");
-            System.out.println(app.enemy.getName() + "," + app.hero.getName() + " ainda não terminou o experimento. F carona...");
+            System.out.println(app.enemy.getName() + ", " + app.hero.getName() + " ainda não terminou o experimento. F carona...");
             App.Wait(10000);
         } else {
             System.out.println(app.enemy.getName() + " venceu!\n");

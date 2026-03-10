@@ -5,13 +5,15 @@ Este projeto é um jogo de batalha em turnos inspirado no roguelike deckbuilder 
 ## 🛠️ Como Compilar
 O projeto foi desenvolvido para a versão Java 25. Para compilar o código-fonte, abra o terminal na raiz do repositório (a pasta principal do projeto -> tarefa1) e execute o seguinte comando:
 
-`javac -d bin $(find src -name "*.java")`
+`cd src`
 
-*(Isto irá compilar todos os arquivos `.java` que estão na pasta `src` e colocá-los na pasta `bin`)*.
+`javac App.java`
+
+*(Isto irá compilar todos os arquivos `.java` que estão na pasta `src`)*.
 
 ## ▶️ Como Executar
 Após a compilação bem-sucedida, voce pode iniciar a batalha com o seguinte comando no terminal:
 
-`java -cp bin App`
+`java App`
 
 Bom jogo e que a sorte esteja contigo! Didi Marco não vê a hora de dar um rolê de Abarth com a TJP!

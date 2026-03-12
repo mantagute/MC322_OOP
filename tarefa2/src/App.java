@@ -4,14 +4,6 @@ public class App {
 
     private Hero hero;
     private Enemy enemy;
-    private DamageCard heroDamageCard1;
-    private DamageCard heroDamageCard2;
-    private ShieldCard heroShieldCard1;
-    private ShieldCard heroShieldCard2;
-    private DamageCard enemyDamageCard1;
-    private DamageCard enemyDamageCard2;
-    private ShieldCard enemyShieldCard1;
-    private ShieldCard enemyShieldCard2;
 
     public static void gameIntro() {
         System.out.println("  _____  _____ _____ _____   __  __          _____   _____ ____  ");
@@ -53,28 +45,25 @@ public class App {
     public void start() {
         hero = new Hero("Didi Marco", 100, 10);
         enemy = new Enemy("Sr. Dr. Cabo Arruda", 100, 10);
-        heroDamageCard1 = new DamageCard("Festa", 3, 15);
-        heroDamageCard2 = new DamageCard("Rolê de Abarth", 5, 25);
-        heroShieldCard1 = new ShieldCard("Drip", 3, 15);
-        heroShieldCard2 = new ShieldCard("TJP", 5, 25);
-        enemyDamageCard1 = new DamageCard("Cachoeira", 3, 15);
-        enemyDamageCard2 = new DamageCard("Porrada", 5, 25);
-        enemyShieldCard1 = new ShieldCard("Açaí com Leite", 3, 15);
-        enemyShieldCard2 = new ShieldCard("Berimbau", 5, 25);
 
+        BuyPile heroBuyPile = new BuyPile(new Card[0]);
+        DiscardPile heroDiscardPile = new DiscardPile();
+
+        BuyPile enemyBuyPile = new BuyPile(new Card[0]);
+        DiscardPile enemyDiscardPile = new DiscardPile();
     }
 
-    public void heroTurn(Scanner scanner) {
-        hero.newTurn();
+    public void heroTurn(Scanner scanner, BuyPile heroBuyPile, BuyPile enemyBuyPile, DiscardPile heroDiscardPile, DiscardPile enemyDiscardPile) {
+        hero.newTurn(heroBuyPile);
         boolean isTurnOver = false;
 
         while (!isTurnOver && hero.isAlive() && enemy.isAlive()) {
-            if (!hero.hasEnoughEnergyForAnyCard(heroDamageCard1, heroDamageCard2, heroShieldCard1, heroShieldCard2)) {
+            if (!hero.hasEnoughEnergyForAnyCard()) {
                 System.out.println(
                         "\n" + hero.getName() + " sem energia, passando a vez para " + enemy.getName() + "...\n");
                 App.Wait(2000);
                 isTurnOver = true;
-                continue;
+                break;
             }
 
             System.out.println("\n=== TURNO DE " + hero.getName().toUpperCase() + " ===\n");
@@ -136,24 +125,11 @@ public class App {
                 " | Energia: " + hero.getEnergy() + "\nvs");
         System.out.println(enemy.getName() + " | Vida: " + enemy.getHealth() +
                 " | Escudo: " + enemy.getShield() + "\n");
-        String move = enemy.useMove(enemyDamageCard1, enemyDamageCard2, enemyShieldCard1, enemyShieldCard2);
+        Card card = enemy.useMove();
+        // refatorar para usar useMove retornando Card.
+        while (card != null) {
 
-        while (!move.equals("no_energy") && hero.isAlive() && enemy.isAlive()) {
-            if (move.equals("attack_1")) {
-                enemy.attack(hero, enemyDamageCard1);
-            } else if (move.equals("attack_2")) {
-                enemy.attack(hero, enemyDamageCard2);
-            } else if (move.equals("shield_1")) {
-                enemy.increaseShield(enemyShieldCard1);
-            } else if (move.equals("shield_2")) {
-                enemy.increaseShield(enemyShieldCard2);
-            }
-
-            if (!hero.isAlive()) {
-                break;
-            }
-
-            move = enemy.useMove(enemyDamageCard1, enemyDamageCard2, enemyShieldCard1, enemyShieldCard2);
+            card = enemy.useMove();
             App.Wait(2000);
         }
         ;

@@ -1,4 +1,4 @@
-public class Card {
+abstract class Card {
 
     private String name;
     private int energyCost;

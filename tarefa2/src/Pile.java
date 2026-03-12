@@ -7,24 +7,41 @@ public class Pile {
         this.size = cards.length;
     }
 
-    public int getMinimumEnergyCost() {
-        int minEnergyCost = 999999999;
-        for (Card card : cards) {
-            if (card.getEnergyCost() < minEnergyCost) {
-                minEnergyCost = card.getEnergyCost();
-            }
+    public void push(Card card) {
+        if (size < cards.length) {
+            cards[size] = card;
+            size++;
         }
-        return minEnergyCost;
+    }
+
+    public void pop(Card[] cards) {
+        if (size > 0) {
+            cards[size - 1] = null;
+            size--;
+        }
     }
 
     public int getSize() {
         return size;
     }
 
+    public Card extractCard(int index) {
+        if (index >= 0 && index < size) {
+            Card card = cards[index];
+            pop(cards);
+            return card;
+        }
+        return null;
+    }
+    
     public Card getCard(int index) {
         if (index >= 0 && index < size) {
             return cards[index];
         }
         return null;
+    }
+
+    public Card[] getCards() {
+        return cards;
     }
 }

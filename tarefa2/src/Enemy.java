@@ -1,18 +1,22 @@
-public class Enemy extends Entity {
+import java.util.Random;
 
-    private Pile hand;
+public class Enemy extends Entity {
 
     public Enemy(String name, int health, int energy) {
         super(name, health, energy);
     }
 
     public Card useMove() {
-        int random = (int) (Math.random() * hand.getSize());
-        if (super.getEnergy() >= hand.getMinimumEnergyCost()) {
+        Hand hand = super.getHand();
+        Random rand = new Random();
+
+        int random = rand.nextInt(); 
+
+        if (super.hasEnoughEnergyForAnyCard()) {
             while (hand.getCard(random).getEnergyCost() > super.getEnergy()) {
-                random = (int) (Math.random() * hand.getSize());
+                random = rand.nextInt(); 
             }
-            return hand.getCard(random);
+            return hand.extractCard(random);
         }
         return null;
     }

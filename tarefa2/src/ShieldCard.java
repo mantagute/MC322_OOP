@@ -2,13 +2,13 @@ public class ShieldCard extends Card {
     
     private int shield;
 
-    public ShieldCard(String name, int energyCost, int shield) {
-        super(name, energyCost);
+    public ShieldCard(String name, int energyCost, int shield, String description) {
+        super(name, energyCost, description);
         this.shield = shield;
     }
 
-    public void use(Entity character) {
-        character.receiveShield(this);
+    public void useCard(Entity user, Entity target) {
+        user.receiveShield(this.shield);
     }
 
     public int getShield() {

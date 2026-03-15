@@ -2,9 +2,9 @@ public class Pile {
     private Card[] cards;
     private int size;
 
-    public Pile(Card[] cards) {
-        this.cards = cards;
-        this.size = cards.length;
+    public Pile(int deckSize) {
+        this.cards = new Card[deckSize];
+        this.size = 0;
     }
 
     public void push(Card card) {
@@ -14,7 +14,7 @@ public class Pile {
         }
     }
 
-    public void pop(Card[] cards) {
+    public void pop() {
         if (size > 0) {
             cards[size - 1] = null;
             size--;
@@ -27,9 +27,13 @@ public class Pile {
 
     public Card extractCard(int index) {
         if (index >= 0 && index < size) {
-            Card card = cards[index];
-            pop(cards);
-            return card;
+            Card cardToBeExtracted = cards[index];
+            for (int i = index; i < size - 1; i++) {
+                cards[i] = cards[i + 1];
+            }
+            cards[size - 1] = null;
+            size--;
+            return cardToBeExtracted;
         }
         return null;
     }
@@ -42,6 +46,10 @@ public class Pile {
     }
 
     public Card[] getCards() {
-        return cards;
+        Card[] pileCards = new Card[size];
+        for (int i = 0; i < size; i++) {
+            pileCards[i] = cards[i];
+        }
+        return pileCards;
     }
 }

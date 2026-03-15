@@ -1,7 +1,9 @@
 public class Hand extends Pile {
 
+    public static final int MAX_HAND_SIZE = 5;
+
     public Hand() {
-        super(new Card[] {});
+        super(MAX_HAND_SIZE);
     }
 
     public int getMinimumEnergyCost() {
@@ -15,17 +17,10 @@ public class Hand extends Pile {
         return minEnergyCost;
     }
 
-    public Card playCard(int index, Entity doer, Entity target) {
-        Card card = extractCard(index);
-
-        if (card instanceof DamageCard) {
-            DamageCard attackCard = (DamageCard) card;
-            doer.attack(target, attackCard);
-        } else if (card instanceof ShieldCard) {
-            ShieldCard shieldCard = (ShieldCard) card;
-            doer.increaseShield(shieldCard);
+    public void discardAll(DiscardPile discardPile) {
+        while (getSize() > 0) {
+            discardPile.push(extractCard(0));
         }
-
-        return card;
     }
+
 }

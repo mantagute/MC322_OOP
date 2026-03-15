@@ -1,3 +1,7 @@
+package cards;
+
+import entities.Entity;
+
 public class ShieldCard extends Card {
     
     private int shield;
@@ -11,7 +15,7 @@ public class ShieldCard extends Card {
         user.receiveShield(this.shield);
     }
 
-    public int getShield() {
+    public int getEffectValue() {
         return shield;
     }
 

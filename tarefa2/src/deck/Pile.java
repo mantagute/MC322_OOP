@@ -1,4 +1,7 @@
-public class Pile {
+package deck;
+import cards.Card;
+
+public abstract class Pile {
     private Card[] cards;
     private int size;
     protected static final int MAX_DECK_SIZE = 20;

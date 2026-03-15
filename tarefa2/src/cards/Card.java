@@ -1,4 +1,7 @@
-abstract class Card {
+package cards;
+import entities.Entity;
+
+public abstract class Card {
 
     private String name;
     private int energyCost;
@@ -21,6 +24,8 @@ abstract class Card {
     public String getDescription() {
         return description;
     }
+    
+    public abstract void useCard(Entity user, Entity target);
 
-    abstract void useCard(Entity user, Entity target);
+    public abstract int getEffectValue();
 }

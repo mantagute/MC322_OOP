@@ -1,3 +1,7 @@
+package deck;
+
+import cards.Card;
+
 public class Hand extends Pile {
 
     public static final int MAX_HAND_SIZE = 5;
@@ -7,8 +11,11 @@ public class Hand extends Pile {
     }
 
     public int getMinimumEnergyCost() {
+        if (getSize() == 0) {
+            return Integer.MAX_VALUE;
+        }
         Card[] cardsInHand = getCards();
-        int minEnergyCost = 999999999;
+        int minEnergyCost = Integer.MAX_VALUE;
         for (Card card : cardsInHand) {
             if (card.getEnergyCost() < minEnergyCost) {
                 minEnergyCost = card.getEnergyCost();

@@ -1,3 +1,5 @@
+package deck;
+
 import java.util.Random;
 
 public class DiscardPile extends Pile {

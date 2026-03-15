@@ -1,5 +1,11 @@
 import java.util.Scanner;
 
+import cards.Card;
+import deck.BuyPile;
+import deck.DiscardPile;
+import entities.Enemy;
+import entities.Hero;
+
 public class App {
 
     private Hero hero;

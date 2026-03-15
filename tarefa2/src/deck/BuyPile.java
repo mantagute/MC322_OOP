@@ -1,3 +1,7 @@
+package deck;
+
+import cards.Card;
+
 public class BuyPile extends Pile {
 
     public BuyPile() {

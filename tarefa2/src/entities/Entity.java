@@ -1,4 +1,11 @@
-abstract class Entity {
+package entities;
+
+import cards.Card;
+import deck.BuyPile;
+import deck.DiscardPile;
+import deck.Hand;
+
+public abstract class Entity {
     private String name;
     private int health;
     private int currentShield;
@@ -39,22 +46,22 @@ abstract class Entity {
         currentShield = currentShield + shield;
     }
 
+    public boolean hasEnoughEnergyForAnyCard(int energy) {
+        return energy >= hand.getMinimumEnergyCost();
+    }
+    
     public boolean hasEnoughEnergyForAnyCard() {
-        return getEnergy() >= hand.getMinimumEnergyCost();
+        return hasEnoughEnergyForAnyCard(getEnergy());
     }
 
     public void newTurn(BuyPile buyPile, DiscardPile discardPile) {
         currentEnergy = maxEnergy;
         currentShield = 0;
-
-        hand.dis
-
-        while (hand.getSize() < MAX_HAND_SIZE) {
-            Card drawnCard = buyPile.drawCard();
+        hand.moveAllCardsTo(discardPile);
+        while (getHandSize() < Hand.MAX_HAND_SIZE){
+            Card drawnCard = buyPile.drawCard(discardPile);
             if (drawnCard != null) {
                 hand.push(drawnCard);
-            } else {
-                break;
             }
         }
     }
@@ -63,11 +70,7 @@ abstract class Entity {
         return health > 0;
     }
 
-    private Hand getHand() {
-        return hand;
-    }
-
-    public int getHandsize() {
+    public int getHandSize() {
         return hand.getSize();
     }
 
@@ -77,6 +80,15 @@ abstract class Entity {
 
     public int getHealth() {
         return health;
+    }
+
+    protected int getCardIndex(Card carta) {
+        for (int i = 0; i < getHandSize(); i++) {
+            if (getCardFromHand(i) == carta) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public int getShield() {

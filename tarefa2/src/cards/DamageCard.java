@@ -1,3 +1,7 @@
+package cards;
+
+import entities.Entity;
+
 public class DamageCard extends Card {
     
     private int damage;
@@ -11,7 +15,7 @@ public class DamageCard extends Card {
         target.receiveDamage(this.damage);
     }
 
-    public int getDamage() {
+    public int getEffectValue() {
         return damage;
     }
 }

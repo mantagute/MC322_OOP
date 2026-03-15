@@ -1,9 +1,10 @@
 public class Pile {
     private Card[] cards;
     private int size;
+    protected static final int MAX_DECK_SIZE = 20;
 
-    public Pile(int deckSize) {
-        this.cards = new Card[deckSize];
+    public Pile(int pileSize) {
+        this.cards = new Card[pileSize];
         this.size = 0;
     }
 
@@ -14,15 +15,12 @@ public class Pile {
         }
     }
 
-    public void pop() {
-        if (size > 0) {
-            cards[size - 1] = null;
-            size--;
-        }
-    }
-
-    public int getSize() {
-        return size;
+    protected void swapCards(int index1, int index2) {
+        if (index1 >=0 && index1 < size && index2 >= 0 && index2 < size) {
+            Card auxCard = cards[index1];
+            cards[index1] = cards[index2];
+            cards[index2] = auxCard;
+        } 
     }
 
     public Card extractCard(int index) {
@@ -36,6 +34,17 @@ public class Pile {
             return cardToBeExtracted;
         }
         return null;
+    }
+
+    public void moveAllCardsTo(Pile targetPile) {
+        while (size > 0) {
+            Card cardtomove = extractCard(getSize() - 1);
+            targetPile.push(cardtomove);
+        }
+    }
+
+    public int getSize() {
+        return size;
     }
     
     public Card getCard(int index) {

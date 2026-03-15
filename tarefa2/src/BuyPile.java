@@ -1,21 +1,23 @@
 public class BuyPile extends Pile {
 
-    public BuyPile(Card[] cards) {
-        super(cards);
+    public BuyPile() {
+        super(MAX_DECK_SIZE);
     }
 
-    public Card drawCard() {
+    public Card drawCard(DiscardPile discardPile) {
+        if (getSize() == 0 && discardPile.getSize() > 0) {
+            renewBuyPile(discardPile);
+        }
         if (getSize() > 0) {
-            Card card = extractCard(getSize() - 1);
-            return card;
+            Card drawnCard = extractCard(getSize() - 1);
+            return drawnCard;
         }
         return null;
     }
 
-    public void renew(Pile discardPile) {
-        for (Card card : discardPile.getCards()) {
-            push(card);
-        }
+    private void renewBuyPile(DiscardPile discardPile) {
+        discardPile.shuffle();
+        discardPile.moveAllCardsTo(this);
     }
 }
 

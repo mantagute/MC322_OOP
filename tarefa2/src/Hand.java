@@ -16,11 +16,4 @@ public class Hand extends Pile {
         }
         return minEnergyCost;
     }
-
-    public void discardAll(DiscardPile discardPile) {
-        while (getSize() > 0) {
-            discardPile.push(extractCard(0));
-        }
-    }
-
 }

@@ -21,7 +21,7 @@ abstract class Entity {
             currentEnergy = currentEnergy - cardToUse.getEnergyCost();
             cardToUse.useCard(this, target);
             hand.extractCard(index);
-            discardPile.addCard(cardToUse);
+            discardPile.push(cardToUse);
 
         }
     }

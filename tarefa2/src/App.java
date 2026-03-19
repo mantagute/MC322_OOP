@@ -1,15 +1,22 @@
 import java.util.Scanner;
 
 import cards.Card;
+import cards.DamageCard;
 import deck.BuyPile;
 import deck.DiscardPile;
 import entities.Enemy;
 import entities.Hero;
+import entities.enemies.Azoide;
 
 public class App {
 
     private Hero hero;
     private Enemy enemy;
+
+    private BuyPile heroBuyPile;
+    private DiscardPile heroDiscardPile;
+    private BuyPile enemyBuyPile;
+    private DiscardPile enemyDiscardPile;
 
     public static void gameIntro() {
         System.out.println("  _____  _____ _____ _____   __  __          _____   _____ ____  ");
@@ -50,17 +57,16 @@ public class App {
 
     public void start() {
         hero = new Hero("Didi Marco", 100, 10);
-        enemy = new Enemy("Sr. Dr. Cabo Arruda", 100, 10);
+        enemy = new Azoide("Sr. Dr. Cabo Arruda", 100, 10);
 
-        BuyPile heroBuyPile = new BuyPile(new Card[0]);
-        DiscardPile heroDiscardPile = new DiscardPile();
+        heroBuyPile = new BuyPile();
+        heroDiscardPile = new DiscardPile();
 
-        BuyPile enemyBuyPile = new BuyPile(new Card[0]);
-        DiscardPile enemyDiscardPile = new DiscardPile();
+        enemyBuyPile = new BuyPile();
+        enemyDiscardPile = new DiscardPile();
     }
 
-    public void heroTurn(Scanner scanner, BuyPile heroBuyPile, BuyPile enemyBuyPile, DiscardPile heroDiscardPile, DiscardPile enemyDiscardPile) {
-        hero.newTurn(heroBuyPile);
+    public void heroTurn(Scanner scanner) {
         boolean isTurnOver = false;
 
         while (!isTurnOver && hero.isAlive() && enemy.isAlive()) {
@@ -78,69 +84,40 @@ public class App {
                     " | Energia: " + hero.getEnergy() + "\nvs");
             System.out.println(enemy.getName() + " | Vida: " + enemy.getHealth() +
                     " | Escudo: " + enemy.getShield() + "\n");
-            System.out.println("1 - Atacar com " + heroDamageCard1.getName() + " (Custo: "
-                    + heroDamageCard1.getEnergyCost() + ", Dano: " + heroDamageCard1.getDamage() + ")");
-            System.out.println("2 - Atacar com " + heroDamageCard2.getName() + " (Custo: "
-                    + heroDamageCard2.getEnergyCost() + ", Dano: " + heroDamageCard2.getDamage() + ")");
-            System.out.println("3 - Defender com " + heroShieldCard1.getName() + " (Custo: "
-                    + heroShieldCard1.getEnergyCost() + ", Escudo: " + heroShieldCard1.getShield() + ")");
-            System.out.println("4 - Defender com " + heroShieldCard2.getName() + " (Custo: "
-                    + heroShieldCard2.getEnergyCost() + ", Escudo: " + heroShieldCard2.getShield() + ")");
+
+            for (int i = 0; i < hero.getHandSize(); i++) {
+                Card card = hero.getCardFromHand(i);
+                boolean isDamageCard = card instanceof DamageCard;
+                System.out.println((i + 1) + " - " + card.getName() + (isDamageCard ? " (Dano: " + card.getEffectValue() + ")" : " (Escudo: " + card.getEffectValue() + ")") + " (Custo: " + card.getEnergyCost() + ")");
+            }
+            
             System.out.println("5 - Passar a vez\n");
             System.out.println("Escolha uma ação:");
             int choice = scanner.nextInt();
-            switch (choice) {
-                case 1:
-                    hero.attack(enemy, heroDamageCard1);
-                    break;
-                case 2:
-                    hero.attack(enemy, heroDamageCard2);
-                    break;
-                case 3:
-                    hero.increaseShield(heroShieldCard1);
-                    break;
-                case 4:
-                    hero.increaseShield(heroShieldCard2);
-                    break;
-                case 5:
-                    isTurnOver = true;
-                    break;
-                default:
-                    System.out.println("Escolha inválida, tente novamente.\n");
-                    break;
+            
+            if (choice == 5) {
+                System.out.println("\n" + hero.getName() + " passa a vez para " + enemy.getName() + "...\n");
+                App.Wait(2000);
+                isTurnOver = true;
+                continue;
+            } else if (choice < 1 || choice > hero.getHandSize()) {
+                System.out.println("\nOpção inválida. Tente novamente.");
+                continue;
+            } else {
+                Card chosenCard = hero.getCardFromHand(choice - 1);
+                if (chosenCard.getEnergyCost() > hero.getEnergy()) {
+                    System.out.println("\nEnergia insuficiente para usar esta carta. Tente novamente.");
+                    continue;
+                }
+                hero.useCard(choice - 1, enemy, heroDiscardPile);
             }
 
-            App.Wait(2000);
+            App.Wait(5000);
 
             if (!enemy.isAlive()) {
                 isTurnOver = true;
             }
         }
-    }
-
-    public void enemyTurn() {
-        if (!enemy.isAlive()) {
-            return;
-        }
-
-        enemy.newTurn();
-
-        System.out.println("\n=== TURNO DE " + enemy.getName().toUpperCase() + " ===\n");
-        System.out.println(hero.getName() + " | Vida: " + hero.getHealth() +
-                " | Escudo: " + hero.getShield() +
-                " | Energia: " + hero.getEnergy() + "\nvs");
-        System.out.println(enemy.getName() + " | Vida: " + enemy.getHealth() +
-                " | Escudo: " + enemy.getShield() + "\n");
-        Card card = enemy.useMove();
-        // refatorar para usar useMove retornando Card.
-        while (card != null) {
-
-            card = enemy.useMove();
-            App.Wait(2000);
-        }
-        ;
-        System.out.println(enemy.getName() + " terminou seu turno!\n");
-        App.Wait(2000);
     }
 
     public static void main(String[] args) throws Exception {
@@ -152,9 +129,18 @@ public class App {
         app.start();
 
         while (app.hero.isAlive() && app.enemy.isAlive()) {
-            app.heroTurn(scanner);
-            app.enemyTurn();
+            app.enemy.newTurn(app.enemyBuyPile, app.enemyDiscardPile);
+            app.hero.newTurn(app.heroBuyPile, app.heroDiscardPile);
+
+            app.enemy.prepareForBattle();
+            App.Wait(5000);
             App.clearScreen();
+
+            app.heroTurn(scanner);
+            App.clearScreen();
+
+            app.enemy.executeEnemyStrategy(app.hero, app.enemyDiscardPile);
+            App.Wait(5000);
         }
 
         if (app.hero.isAlive()) {

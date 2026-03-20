@@ -48,7 +48,7 @@ public class Data {
         new DamageCard("Rolê de Bike",           5, 25, "Rumo ao Iron Man."),
         new DamageCard("Robozinhos da Phoenix",  5, 35, "Bzoide na veia.")
     );
- 
+
     public static final List<ShieldCard> bzoideShieldCards = List.of(
         new ShieldCard("Erudição",              2, 10, "Saber é poder."),
         new ShieldCard("Celular na Boca",      10, 50, "Maxilar quadrado ativado."),
@@ -61,7 +61,7 @@ public class Data {
         new ShieldCard("Fúria Independente",    8, 40, "Esperando a volta do Paraná Clube."),
         new ShieldCard("99Food",               10, 50, "Delivery no precinho.")
     );
- 
+
     public static final List<DamageCard> heroDamageCards = List.of(
         new DamageCard("Erudição",           10, 50, "O conhecimento é a maior arma."),
         new DamageCard("Lock In",             5, 25, "Foco total, sem distrações."),
@@ -74,7 +74,7 @@ public class Data {
         new DamageCard("Aura",               10, 50, "Presença que paralisa."),
         new DamageCard("Festa do Didi",       5, 35, "Todo mundo quer estar, poucos são chamados.")
     );
- 
+
     public static final List<ShieldCard> heroShieldCards = List.of(
         new ShieldCard("Brinquinho de Diamante", 2, 10, "Drip."),
         new ShieldCard("Chunky Vans",           10, 50, "Para poucos."),

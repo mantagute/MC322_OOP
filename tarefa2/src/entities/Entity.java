@@ -55,9 +55,12 @@ public abstract class Entity {
         return hasEnoughEnergyForAnyCard(getEnergy());
     }
 
+    public void resetShield() {
+        currentShield = 0;
+    }
+
     public void newTurn(BuyPile buyPile, DiscardPile discardPile) {
         currentEnergy = maxEnergy;
-        currentShield = 0;
         hand.moveAllCardsTo(discardPile);
         while (getHandSize() < Hand.MAX_HAND_SIZE){
             Card drawnCard = buyPile.drawCard(discardPile);

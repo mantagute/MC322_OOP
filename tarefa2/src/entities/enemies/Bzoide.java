@@ -17,7 +17,7 @@ public class Bzoide extends Enemy {
                 totalShield = totalShield + card.getEffectValue();
             }
         }
-        return "O bzoide, " + getName() + ", planeja usar " + totalShield + " de escudo!";
+        return "O bzoide, " + getName() + ", planeja usar " + totalShield + " de escudo no próximo turno!";
     }
 }
 

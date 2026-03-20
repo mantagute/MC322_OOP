@@ -11,7 +11,6 @@ public class App {
 
     private Hero hero;
     private Enemy enemy;
-
     private BuyPile heroBuyPile;
     private DiscardPile heroDiscardPile;
     private BuyPile enemyBuyPile;
@@ -73,10 +72,12 @@ public class App {
     }
 
     public void heroTurn(Scanner scanner) {
-        hero.newTurn(heroBuyPile,heroDiscardPile);
+        hero.resetShield();
+        hero.newTurn(heroBuyPile, heroDiscardPile);
         boolean isTurnOver = false;
 
         while (!isTurnOver && hero.isAlive() && enemy.isAlive()) {
+            App.clearScreen();
             if (!hero.hasEnoughEnergyForAnyCard()) {
                 System.out.println(
                         "\n" + hero.getName() + " sem energia, passando a vez para " + enemy.getName() + "...\n");
@@ -97,11 +98,11 @@ public class App {
                 boolean isDamageCard = card instanceof DamageCard;
                 System.out.println((i + 1) + " - " + card.getName() + (isDamageCard ? " (Dano: " + card.getEffectValue() + ")" : " (Escudo: " + card.getEffectValue() + ")") + " (Custo: " + card.getEnergyCost() + ")");
             }
-            
+
             System.out.println((hero.getHandSize() + 1) + " - Passar a vez\n");
             System.out.println("Escolha uma ação:");
             int choice = scanner.nextInt();
-            
+
             if (choice == hero.getHandSize() + 1) {
                 System.out.println("\n" + hero.getName() + " passa a vez para " + enemy.getName() + "...\n");
                 App.Wait(2000);
@@ -109,17 +110,18 @@ public class App {
                 continue;
             } else if (choice < 1 || choice > hero.getHandSize()) {
                 System.out.println("\nOpção inválida. Tente novamente.");
+                App.Wait(2000);
                 continue;
             } else {
                 Card chosenCard = hero.getCardFromHand(choice - 1);
                 if (chosenCard.getEnergyCost() > hero.getEnergy()) {
                     System.out.println("\nEnergia insuficiente para usar esta carta. Tente novamente.");
+                    App.Wait(1500);
                     continue;
                 }
                 hero.useCard(choice - 1, enemy, heroDiscardPile);
+                App.Wait(2000);
             }
-
-            App.Wait(5000);
 
             if (!enemy.isAlive()) {
                 isTurnOver = true;
@@ -128,14 +130,15 @@ public class App {
     }
 
     public void enemyTurn() {
-        enemy.newTurn(enemyBuyPile,enemyDiscardPile);
+        App.clearScreen();
+        enemy.newTurn(enemyBuyPile, enemyDiscardPile);
         System.out.println(enemy.prepareForBattle());
-        App.Wait(1500);
+        App.Wait(2000);
     }
 
     public static void main(String[] args) throws Exception {
         App.gameIntro();
-        App.Wait(2000);
+        App.Wait(3000);
         Scanner scanner = new Scanner(System.in);
         App app = new App();
         app.start();
@@ -143,22 +146,23 @@ public class App {
         while (app.hero.isAlive() && app.enemy.isAlive()) {
             app.enemyTurn();
             app.heroTurn(scanner);
+            app.enemy.resetShield();
             if (app.enemy.isAlive()) {
+                App.clearScreen();
+                System.out.println("\n=== ATAQUE DE " + app.enemy.getName().toUpperCase() + " ===\n");
                 app.enemy.executeEnemyStrategy(app.hero, app.enemyDiscardPile);
+                App.Wait(2000);
             }
-            App.Wait(1500);
-            
         }
-
+        App.clearScreen();
         if (app.hero.isAlive()) {
             System.out.println(app.hero.getName() + " venceu!\n");
             System.out.println(app.enemy.getName() + ", " + app.hero.getName() + " ainda não terminou o experimento. F carona...");
-            App.Wait(10000);
         } else {
             System.out.println(app.enemy.getName() + " venceu!\n");
             System.out.println("Não sobrou nada...");
-            App.Wait(10000);
         }
+        App.Wait(10000);
         scanner.close();
     }
 }

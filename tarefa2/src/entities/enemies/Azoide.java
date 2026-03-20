@@ -17,6 +17,6 @@ public class Azoide extends Enemy {
                 totalDamage = totalDamage + card.getEffectValue();
             }
         }
-        return "O azoide, " + getName() + ", planeja causar " + totalDamage + " de dano!";
+        return "O azoide, " + getName() + ", planeja causar " + totalDamage + " de dano no próximo turno!";
     }
 }

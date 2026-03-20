@@ -27,6 +27,7 @@ public abstract class Entity {
         if (currentEnergy >= cardToUse.getEnergyCost()) {
             currentEnergy = currentEnergy - cardToUse.getEnergyCost();
             cardToUse.useCard(this, target);
+            System.out.println(getName() + " usou " + cardToUse.getName() + "! " + cardToUse.getDescription());
             hand.extractCard(index);
             discardPile.push(cardToUse);
 

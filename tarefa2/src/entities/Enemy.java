@@ -17,17 +17,28 @@ public abstract class Enemy extends Entity {
     }
 
     private void defineEnemyStrategy() {
-        for (int index = 0 ; index < MAX_PLANNED_CARDS ; index++) {
+        for (int index = 0; index < MAX_PLANNED_CARDS; index++) {
             enemyStrategy[index] = null;
         }
         int totalCardsDefined = 0;
         int auxcurrentEnergy = getEnergy();
-        while (getHandSize() > 0 && totalCardsDefined < MAX_PLANNED_CARDS && super.hasEnoughEnergyForAnyCard(auxcurrentEnergy)){
-            int index = rand.nextInt(getHandSize()); 
-            if (getCardFromHand(index).getEnergyCost() <= auxcurrentEnergy) {
-                enemyStrategy[totalCardsDefined] = getCardFromHand(index);
+        boolean[] selectedCards = new boolean[getHandSize()];
+        while (totalCardsDefined < MAX_PLANNED_CARDS) {
+            boolean anyAvailable = false;
+            for (int i = 0; i < getHandSize(); i++) {
+                if (!selectedCards[i] && getCardFromHand(i).getEnergyCost() <= auxcurrentEnergy) {
+                    anyAvailable = true;
+                    break;
+                }
+            }
+            if (!anyAvailable) break;
+            int index = rand.nextInt(getHandSize());
+            Card card = getCardFromHand(index);
+            if (!selectedCards[index] && card.getEnergyCost() <= auxcurrentEnergy) {
+                enemyStrategy[totalCardsDefined] = card;
                 totalCardsDefined++;
-                auxcurrentEnergy = auxcurrentEnergy - getCardFromHand(index).getEnergyCost();
+                auxcurrentEnergy -= card.getEnergyCost();
+                selectedCards[index] = true;
             }
         }
     }

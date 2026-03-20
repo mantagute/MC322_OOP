@@ -6,7 +6,6 @@ import deck.BuyPile;
 import deck.DiscardPile;
 import entities.Enemy;
 import entities.Hero;
-import entities.enemies.Azoide;
 
 public class App {
 
@@ -56,17 +55,25 @@ public class App {
     }
 
     public void start() {
-        hero = new Hero("Didi Marco", 100, 10);
-        enemy = new Azoide("Sr. Dr. Cabo Arruda", 100, 10);
+        hero = Data.heroes.get(0);
+        enemy = Data.azoides.get(0);
 
         heroBuyPile = new BuyPile();
+        Data.fillPile(heroBuyPile, Data.heroDamageCards);
+        Data.fillPile(heroBuyPile, Data.heroShieldCards);
         heroDiscardPile = new DiscardPile();
 
         enemyBuyPile = new BuyPile();
+        Data.fillPile(enemyBuyPile, Data.azoideDamageCards);
+        Data.fillPile(enemyBuyPile, Data.azoideShieldCards);
         enemyDiscardPile = new DiscardPile();
+
+        heroBuyPile.shuffle();
+        enemyBuyPile.shuffle();
     }
 
     public void heroTurn(Scanner scanner) {
+        hero.newTurn(heroBuyPile,heroDiscardPile);
         boolean isTurnOver = false;
 
         while (!isTurnOver && hero.isAlive() && enemy.isAlive()) {
@@ -91,11 +98,11 @@ public class App {
                 System.out.println((i + 1) + " - " + card.getName() + (isDamageCard ? " (Dano: " + card.getEffectValue() + ")" : " (Escudo: " + card.getEffectValue() + ")") + " (Custo: " + card.getEnergyCost() + ")");
             }
             
-            System.out.println("5 - Passar a vez\n");
+            System.out.println((hero.getHandSize() + 1) + " - Passar a vez\n");
             System.out.println("Escolha uma ação:");
             int choice = scanner.nextInt();
             
-            if (choice == 5) {
+            if (choice == hero.getHandSize() + 1) {
                 System.out.println("\n" + hero.getName() + " passa a vez para " + enemy.getName() + "...\n");
                 App.Wait(2000);
                 isTurnOver = true;
@@ -120,27 +127,27 @@ public class App {
         }
     }
 
+    public void enemyTurn() {
+        enemy.newTurn(enemyBuyPile,enemyDiscardPile);
+        System.out.println(enemy.prepareForBattle());
+        App.Wait(1500);
+    }
+
     public static void main(String[] args) throws Exception {
-        App.clearScreen();
         App.gameIntro();
-        App.Wait(5000);
+        App.Wait(2000);
         Scanner scanner = new Scanner(System.in);
         App app = new App();
         app.start();
 
         while (app.hero.isAlive() && app.enemy.isAlive()) {
-            app.enemy.newTurn(app.enemyBuyPile, app.enemyDiscardPile);
-            app.hero.newTurn(app.heroBuyPile, app.heroDiscardPile);
-
-            app.enemy.prepareForBattle();
-            App.Wait(5000);
-            App.clearScreen();
-
+            app.enemyTurn();
             app.heroTurn(scanner);
-            App.clearScreen();
-
-            app.enemy.executeEnemyStrategy(app.hero, app.enemyDiscardPile);
-            App.Wait(5000);
+            if (app.enemy.isAlive()) {
+                app.enemy.executeEnemyStrategy(app.hero, app.enemyDiscardPile);
+            }
+            App.Wait(1500);
+            
         }
 
         if (app.hero.isAlive()) {

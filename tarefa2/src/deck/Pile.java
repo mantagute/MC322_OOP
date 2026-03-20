@@ -1,4 +1,6 @@
 package deck;
+
+import java.util.Random;
 import cards.Card;
 
 public abstract class Pile {
@@ -24,6 +26,14 @@ public abstract class Pile {
             cards[index1] = cards[index2];
             cards[index2] = auxCard;
         } 
+    }
+
+        public void shuffle() {
+        Random rand = new Random();
+        for (int i = getSize() - 1; i > 0; i--) {
+            int j = rand.nextInt(i + 1); 
+            swapCards(i,j);
+        }
     }
 
     public Card extractCard(int index) {

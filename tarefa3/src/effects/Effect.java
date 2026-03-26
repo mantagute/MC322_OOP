@@ -5,14 +5,14 @@ import observer.Publisher;
 import entities.Entity;
 
 public abstract class Effect extends Subscriber{
-    private String name;
+    private String type;
     private Entity character;
     private int balance;
     protected Publisher publisher;
 
 
-    public Effect(String name, Entity character, int balance, Publisher publisher) {
-        this.name = name;
+    public Effect(String type, Entity character, int balance, Publisher publisher) {
+        this.type = type;
         this.character = character;
         this.balance = balance;
         this.publisher = publisher;
@@ -26,12 +26,12 @@ public abstract class Effect extends Subscriber{
         }
     }
 
-    protected void addBalance(int addition) {
+    public void addBalance(int addition) {
         balance = balance + addition;
     }
 
     public String getString() {
-        return "Efeito" + name + ": aplicado por mais" + balance + " turnos." ;
+        return "Efeito do tipo" + type + ": aplicado por mais" + balance + " turnos." ;
     }
 
 

@@ -4,6 +4,8 @@ import cards.Card;
 import deck.BuyPile;
 import deck.DiscardPile;
 import deck.Hand;
+import effects.Effect;
+import java.util.ArrayList;
 
 public abstract class Entity {
     private String name;
@@ -12,6 +14,7 @@ public abstract class Entity {
     private int currentEnergy;
     private int maxEnergy;
     private Hand hand;
+    private ArrayList<Effect> effects;
 
     public Entity(String name, int health, int energy) {
         this.name = name;
@@ -20,6 +23,19 @@ public abstract class Entity {
         this.maxEnergy = energy;
         this.currentShield = 0;
         this.hand = new Hand();
+    }
+
+    public void applyEffect(Effect effect) {
+        if (effects.contains(effect)) {
+            effect.addBalance(1);
+        }
+        else {
+            effects.add(effect);
+        }
+    }
+
+    public void manageEffects(ArrayList<Effect> effects) {
+        effects.removeIf(effect -> effect.getBalance() <= 0);
     }
 
     public void useCard(int index, Entity target, DiscardPile discardPile) {
@@ -61,6 +77,7 @@ public abstract class Entity {
 
     public void newTurn(BuyPile buyPile, DiscardPile discardPile) {
         currentEnergy = maxEnergy;
+        manageEffects(effects);
         hand.moveAllCardsTo(discardPile);
         while (getHandSize() < Hand.MAX_HAND_SIZE){
             Card drawnCard = buyPile.drawCard(discardPile);

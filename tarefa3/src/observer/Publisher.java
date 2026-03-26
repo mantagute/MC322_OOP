@@ -12,7 +12,7 @@ public class Publisher {
         subscribers.add(subscriber);
     }
 
-    public void snsubscribe(Subscriber subscriber) {
+    public void unsubscribe(Subscriber subscriber) {
         subscribers.remove(subscriber);
     }
 

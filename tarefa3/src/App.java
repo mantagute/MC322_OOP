@@ -95,9 +95,9 @@ public class App {
                     " | Escudo: " + String.format("%.1f", hero.getShield()) +
                     " | Energia: " + hero.getEnergy() +
                     " | Efeitos: " + hero.getEffectString() + "\nvs");
-            System.out.println(enemy.getName() + " | Vida: " + enemy.getHealth() +
-                    " | Escudo: " + String.format("%.1f", enemy.getHealth()) + 
-                    " | Efeitos: " + String.format("%.1f", enemy.getShield()) + "\n");
+            System.out.println(enemy.getName() + " | Vida: " + String.format("%.1f", enemy.getHealth()) +
+                    " | Escudo: " + String.format("%.1f", enemy.getShield()) + 
+                    " | Efeitos: " + hero.getEffectString() + "\nvs");
 
             for (int i = 0; i < hero.getHandSize(); i++) {
                 Card card = hero.getCardFromHand(i);

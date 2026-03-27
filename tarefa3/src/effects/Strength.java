@@ -12,6 +12,9 @@ public class Strength extends Effect {
     public void beNotified(String event, Entity user, Entity target) {
         if (event.equals("FIM_TURNO") && getBalance() > 1) {
             reduceBalance(0.25);
+            if (getBalance() <= 1) {
+                publisher.unsubscribe(this);
+            }
         }
     }
 

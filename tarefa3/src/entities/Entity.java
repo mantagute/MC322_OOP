@@ -9,6 +9,7 @@ import effects.Effect.EffectType;
 import effects.Poison;
 import effects.Strength;
 import observer.Publisher;
+import java.util.StringJoiner;
 
 import java.util.ArrayList;
 
@@ -63,6 +64,17 @@ public abstract class Entity {
 
     public void manageEffects() {
         effects.removeIf(effect -> effect.getBalance() <= 0);
+    }
+
+    public String getEffectString() {
+        if (effects.isEmpty()) {
+            return "Sem efeitos ativos";
+        }
+        StringJoiner joiner = new StringJoiner(" | ");
+        for (Effect effect : effects) {
+            joiner.add(effect.getString());
+        }
+        return joiner.toString();
     }
 
     public void useCard(int index, Entity target, DiscardPile discardPile) {

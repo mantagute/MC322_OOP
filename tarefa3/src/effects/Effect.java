@@ -36,7 +36,7 @@ public abstract class Effect extends Subscriber{
     public abstract EffectType getType();
 
     public String getString() {
-        return "Efeito do tipo" + type + ": aplicado por mais" + balance + " turnos." ;
+        return type + "-> " + balance + (balance == 1 ? "acúmulo." : "acúmulos." ) ;
     }
 
 

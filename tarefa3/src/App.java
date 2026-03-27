@@ -1,11 +1,11 @@
 import java.util.Scanner;
 
 import cards.Card;
-import cards.DamageCard;
 import deck.BuyPile;
 import deck.DiscardPile;
 import entities.Enemy;
 import entities.Hero;
+import observer.Publisher;
 
 public class App {
 
@@ -15,6 +15,7 @@ public class App {
     private DiscardPile heroDiscardPile;
     private BuyPile enemyBuyPile;
     private DiscardPile enemyDiscardPile;
+    private Publisher publisher = new Publisher();
 
     public static void gameIntro() {
         System.out.println("  _____  _____ _____ _____   __  __          _____   _____ ____  ");
@@ -67,6 +68,9 @@ public class App {
         Data.fillPile(enemyBuyPile, Data.azoideShieldCards);
         enemyDiscardPile = new DiscardPile();
 
+        Data.fillPile(heroBuyPile, Data.heroEffectCards(publisher));
+        Data.fillPile(enemyBuyPile, Data.azoideEffectCards(publisher));
+
         heroBuyPile.shuffle();
         enemyBuyPile.shuffle();
     }
@@ -89,14 +93,15 @@ public class App {
             System.out.println("\n=== TURNO DE " + hero.getName().toUpperCase() + " ===\n");
             System.out.println(hero.getName() + " | Vida: " + hero.getHealth() +
                     " | Escudo: " + hero.getShield() +
-                    " | Energia: " + hero.getEnergy() + "\nvs");
+                    " | Energia: " + hero.getEnergy() +
+                    " | Efeitos: " + hero.getEffectString() + "\nvs");
             System.out.println(enemy.getName() + " | Vida: " + enemy.getHealth() +
-                    " | Escudo: " + enemy.getShield() + "\n");
+                    " | Escudo: " + enemy.getShield() + 
+                    " | Efeitos: " + enemy.getEffectString() + "\n");
 
             for (int i = 0; i < hero.getHandSize(); i++) {
                 Card card = hero.getCardFromHand(i);
-                boolean isDamageCard = card instanceof DamageCard;
-                System.out.println((i + 1) + " - " + card.getName() + (isDamageCard ? " (Dano: " + card.getEffectValue() + ")" : " (Escudo: " + card.getEffectValue() + ")") + " (Custo: " + card.getEnergyCost() + ")");
+                System.out.println((i + 1) + " - " + card.getName() + card.getDetails() + " (Custo: " + card.getEnergyCost() + ")");
             }
 
             System.out.println((hero.getHandSize() + 1) + " - Passar a vez\n");
@@ -133,7 +138,7 @@ public class App {
         App.clearScreen();
         enemy.newTurn(enemyBuyPile, enemyDiscardPile);
         System.out.println(enemy.prepareForBattle());
-        App.Wait(2000);
+        App.Wait(4000);
     }
 
     public static void main(String[] args) throws Exception {
@@ -153,6 +158,8 @@ public class App {
                 app.enemy.executeEnemyStrategy(app.hero, app.enemyDiscardPile);
                 App.Wait(2000);
             }
+            app.publisher.notify("FIM_TURNO", app.hero, app.enemy);
+            app.publisher.notify("FIM_TURNO", app.enemy, app.hero);
         }
         App.clearScreen();
         if (app.hero.isAlive()) {

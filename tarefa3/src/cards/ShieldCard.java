@@ -19,4 +19,8 @@ public class ShieldCard extends Card {
         return shield;
     }
 
+    public String getDetails() {
+        return " (Escudo: " + this.getEffectValue() + ")";
+    }
+
 }

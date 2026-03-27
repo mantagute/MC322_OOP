@@ -3,10 +3,13 @@ import java.util.List;
 import cards.DamageCard;
 import cards.Card;
 import cards.ShieldCard;
+import cards.EffectCard;
 import deck.BuyPile;
+import effects.Effect.EffectType;
 import entities.Hero;
 import entities.enemies.Azoide;
 import entities.enemies.Bzoide;
+import observer.Publisher;
 
 public class Data {
     
@@ -87,6 +90,27 @@ public class Data {
         new ShieldCard("Chains",                 8, 40, "Ouro no pescoço, armadura no espírito."),
         new ShieldCard("Birkin",                10, 50, "Exclusividade que protege.")
     );
+
+    public static final List<EffectCard> heroEffectCards(Publisher publisher) {
+        return List.of(
+            new EffectCard("The one, the only.", 3, "É o tal do 01", EffectType.STRENGTH, 2, true, publisher),
+            new EffectCard("Moggar", 1, "Não está sobrando nada...", EffectType.POISON, 10, false, publisher)
+        );
+    }
+
+    public static final List<EffectCard> azoideEffectCards(Publisher publisher) {
+        return List.of(
+            new EffectCard("Ancestrais Paraenses", 3, "Todo o know-how do interior invocado", EffectType.STRENGTH, 2, true, publisher),
+            new EffectCard("AET", 1, "Cuidado para não se contaminar...", EffectType.POISON, 10, false, publisher)
+        );
+    }
+
+    public static final List<EffectCard> bzoideEffectCards(Publisher publisher) {
+        return List.of(
+            new EffectCard("Girl", 3, "Na frente dela, não pode passar vergonha", EffectType.STRENGTH, 2, true, publisher),
+            new EffectCard("Curitiba way of life", 1, "Não brinque com os sulistas...", EffectType.POISON, 10, false, publisher)
+        );
+    }
 
     public static final List <Hero> heroes = List.of(
         new Hero("Didi Marco",100, 10)

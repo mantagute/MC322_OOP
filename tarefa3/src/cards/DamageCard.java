@@ -18,4 +18,8 @@ public class DamageCard extends Card {
     public int getEffectValue() {
         return damage;
     }
+
+    public String getDetails() {
+        return " (Dano: " + this.getEffectValue() + ")";
+    }
 }

@@ -27,4 +27,13 @@ public class EffectCard extends Card {
         Entity character = selfTarget ? user : target;
         character.applyEffect(effectType, balance, publisher);
     }
+
+    public String getDetails() {
+        if (effectType == EffectType.POISON) {
+            return " (Reduz o HP do inimigo na quantidade de acúmulos atuais associados ao efeito.)";
+        } else if (effectType == EffectType.STRENGTH) {
+            return " (Multiplica dano e escudo pela quantidade de acúmulos atuais associados ao efeito.)";
+        }
+        return "";
+    }
 }

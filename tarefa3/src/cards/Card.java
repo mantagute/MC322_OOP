@@ -24,6 +24,8 @@ public abstract class Card {
     public String getDescription() {
         return description;
     }
+
+    public abstract String getDetails();
     
     public abstract void useCard(Entity user, Entity target);
 

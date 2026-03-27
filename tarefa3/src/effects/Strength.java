@@ -5,13 +5,13 @@ import observer.Publisher;
 
 public class Strength extends Effect {
 
-    public Strength(Entity character, int balance, Publisher publisher) {
+    public Strength(Entity character, double balance, Publisher publisher) {
         super("Strength", character, balance, publisher);
     }
     
     public void beNotified(String event, Entity user, Entity target) {
         if (event.equals("FIM_TURNO") && getBalance() > 1) {
-            reduceBalance(1);
+            reduceBalance(0.25);
         }
     }
 

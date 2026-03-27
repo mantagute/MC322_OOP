@@ -15,8 +15,8 @@ import java.util.ArrayList;
 
 public abstract class Entity {
     private String name;
-    private int health;
-    private int currentShield;
+    private double health;
+    private double currentShield;
     private int currentEnergy;
     private int maxEnergy;
     private Hand hand;
@@ -31,7 +31,7 @@ public abstract class Entity {
         this.hand = new Hand();
     }
 
-    public void applyEffect(EffectType type, int balance, Publisher publisher) {
+    public void applyEffect(EffectType type, double balance, Publisher publisher) {
         for (Effect effect : effects) {
             if (effect.getType() == type) {
                 effect.addBalance(balance);
@@ -53,7 +53,7 @@ public abstract class Entity {
         effects.add(newEffect);
     }
 
-    public int applyEffectMultiplier(int baseValue) {
+    public double applyEffectMultiplier(double baseValue) {
         for (Effect effect : effects) {
             if (effect.getType() == Effect.EffectType.STRENGTH) {
                 return baseValue * effect.getBalance();
@@ -89,7 +89,7 @@ public abstract class Entity {
         }
     }
 
-    public void receiveDamage(int damage) {
+    public void receiveDamage(double damage) {
         if (currentShield > damage) {
             currentShield = currentShield - damage;
         } else {
@@ -98,7 +98,7 @@ public abstract class Entity {
         }
     }
 
-    public void receiveShield(int shield) {
+    public void receiveShield(double shield) {
         currentShield = currentShield + shield;
     }
 
@@ -138,7 +138,7 @@ public abstract class Entity {
         return hand.getCard(index);
     }
 
-    public int getHealth() {
+    public double getHealth() {
         return health;
     }
 
@@ -151,7 +151,7 @@ public abstract class Entity {
         return -1;
     }
 
-    public int getShield() {
+    public double getShield() {
         return currentShield;
     }
 

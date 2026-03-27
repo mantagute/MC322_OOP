@@ -7,11 +7,11 @@ import observer.Publisher;
 public class EffectCard extends Card {
 
     private EffectType effectType;
-    private int balance;
+    private double balance;
     private Publisher publisher;
     private boolean selfTarget;
 
-    public EffectCard(String name, int energyCost, String description, EffectType effectType, int balance, boolean selfTarget, Publisher publisher) {
+    public EffectCard(String name, int energyCost, String description, EffectType effectType, double balance, boolean selfTarget, Publisher publisher) {
         super(name, energyCost, description);
         this.effectType = effectType;
         this.balance = balance;
@@ -19,7 +19,7 @@ public class EffectCard extends Card {
         this.publisher = publisher;
     }
 
-    public int getEffectValue() {
+    public double getEffectValue() {
         return balance;
     }
 

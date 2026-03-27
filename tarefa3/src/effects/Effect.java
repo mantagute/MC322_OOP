@@ -6,7 +6,7 @@ import entities.Entity;
 
 public abstract class Effect extends Subscriber{
     private String type;
-    private int balance;
+    private double balance;
     protected Publisher publisher;
     protected Entity character;
 
@@ -14,7 +14,7 @@ public abstract class Effect extends Subscriber{
         POISON, STRENGTH
     }
 
-    public Effect(String type, Entity character, int balance, Publisher publisher) {
+    public Effect(String type, Entity character, double balance, Publisher publisher) {
         this.type = type;
         this.character = character;
         this.balance = balance;
@@ -22,14 +22,14 @@ public abstract class Effect extends Subscriber{
         publisher.subscribe(this);
     }
 
-    protected void reduceBalance(int reduction) {
+    protected void reduceBalance(double reduction) {
         balance = balance - reduction;
         if (balance <= 0) {
             publisher.unsubscribe(this);
         }
     }
 
-    public void addBalance(int addition) {
+    public void addBalance(double addition) {
         balance = balance + addition;
     }
 
@@ -40,7 +40,7 @@ public abstract class Effect extends Subscriber{
     }
 
 
-    public int getBalance() {
+    public double getBalance() {
         return balance;
     }
 }

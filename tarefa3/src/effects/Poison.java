@@ -5,7 +5,7 @@ import entities.Entity;
 
 public class Poison extends Effect {
 
-    public Poison(Entity character, int balance, Publisher publisher) {
+    public Poison(Entity character, double balance, Publisher publisher) {
         super("Poison",character, balance, publisher);
     }
 

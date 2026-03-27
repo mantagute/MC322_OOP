@@ -29,5 +29,5 @@ public abstract class Card {
     
     public abstract void useCard(Entity user, Entity target);
 
-    public abstract int getEffectValue();
+    public abstract double getEffectValue();
 }

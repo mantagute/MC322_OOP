@@ -12,7 +12,7 @@ public class DamageCard extends Card {
     }
 
     public void useCard(Entity user, Entity target) {
-        target.receiveDamage(this.damage);
+        target.receiveDamage(user.applyEffectMultiplier(this.damage));
     }
 
     public int getEffectValue() {

@@ -12,7 +12,7 @@ public class ShieldCard extends Card {
     }
 
     public void useCard(Entity user, Entity target) {
-        user.receiveShield(this.shield);
+        user.receiveShield(user.applyEffectMultiplier(this.shield));
     }
 
     public int getEffectValue() {

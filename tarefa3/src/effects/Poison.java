@@ -9,9 +9,15 @@ public class Poison extends Effect {
         super("Poison",character, balance, publisher);
     }
 
-    public void beNotified(String event) {
-        if (event == "FIM_TURNO") {
+    public void beNotified(String event, Entity user, Entity target) {
+        if (event.equals("FIM_TURNO")) {
+            character.receiveDamage(getBalance());
             reduceBalance(1);
         }
     }
+
+    public Effect.EffectType getType() { 
+        return Effect.EffectType.POISON; 
+    }
+
 }

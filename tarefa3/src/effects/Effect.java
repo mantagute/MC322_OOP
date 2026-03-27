@@ -6,10 +6,13 @@ import entities.Entity;
 
 public abstract class Effect extends Subscriber{
     private String type;
-    private Entity character;
     private int balance;
     protected Publisher publisher;
+    protected Entity character;
 
+    public enum EffectType {
+        POISON, STRENGTH
+    }
 
     public Effect(String type, Entity character, int balance, Publisher publisher) {
         this.type = type;
@@ -29,6 +32,8 @@ public abstract class Effect extends Subscriber{
     public void addBalance(int addition) {
         balance = balance + addition;
     }
+
+    public abstract EffectType getType();
 
     public String getString() {
         return "Efeito do tipo" + type + ": aplicado por mais" + balance + " turnos." ;

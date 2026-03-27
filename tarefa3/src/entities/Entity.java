@@ -5,6 +5,11 @@ import deck.BuyPile;
 import deck.DiscardPile;
 import deck.Hand;
 import effects.Effect;
+import effects.Effect.EffectType;
+import effects.Poison;
+import effects.Strength;
+import observer.Publisher;
+
 import java.util.ArrayList;
 
 public abstract class Entity {
@@ -14,7 +19,7 @@ public abstract class Entity {
     private int currentEnergy;
     private int maxEnergy;
     private Hand hand;
-    private ArrayList<Effect> effects;
+    private ArrayList<Effect> effects = new ArrayList<>();
 
     public Entity(String name, int health, int energy) {
         this.name = name;
@@ -25,16 +30,38 @@ public abstract class Entity {
         this.hand = new Hand();
     }
 
-    public void applyEffect(Effect effect) {
-        if (effects.contains(effect)) {
-            effect.addBalance(1);
+    public void applyEffect(EffectType type, int balance, Publisher publisher) {
+        for (Effect effect : effects) {
+            if (effect.getType() == type) {
+                effect.addBalance(balance);
+                return;
+            }
         }
-        else {
-            effects.add(effect);
+        
+        Effect newEffect;
+        switch (type) {
+            case POISON:
+                newEffect = new Poison(this, balance, publisher);
+                break;
+            case STRENGTH:
+                newEffect = new Strength(this, balance, publisher);
+                break;
+            default:
+                return;
         }
+        effects.add(newEffect);
     }
 
-    public void manageEffects(ArrayList<Effect> effects) {
+    public int applyEffectMultiplier(int baseValue) {
+        for (Effect effect : effects) {
+            if (effect.getType() == Effect.EffectType.STRENGTH) {
+                return baseValue * effect.getBalance();
+            }
+        }
+        return baseValue;
+    }
+
+    public void manageEffects() {
         effects.removeIf(effect -> effect.getBalance() <= 0);
     }
 
@@ -77,7 +104,7 @@ public abstract class Entity {
 
     public void newTurn(BuyPile buyPile, DiscardPile discardPile) {
         currentEnergy = maxEnergy;
-        manageEffects(effects);
+        manageEffects();
         hand.moveAllCardsTo(discardPile);
         while (getHandSize() < Hand.MAX_HAND_SIZE){
             Card drawnCard = buyPile.drawCard(discardPile);

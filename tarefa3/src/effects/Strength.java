@@ -9,9 +9,13 @@ public class Strength extends Effect {
         super("Strength", character, balance, publisher);
     }
     
-    public void beNotified(String event) {
-        if (event == "FIM_TURNO") {
+    public void beNotified(String event, Entity user, Entity target) {
+        if (event.equals("FIM_TURNO") && getBalance() > 1) {
             reduceBalance(1);
         }
+    }
+
+    public Effect.EffectType getType() { 
+        return Effect.EffectType.STRENGTH; 
     }
 }

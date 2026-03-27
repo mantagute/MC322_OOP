@@ -4,9 +4,9 @@ import entities.Entity;
 
 public class ShieldCard extends Card {
     
-    private int shield;
+    private double shield;
 
-    public ShieldCard(String name, int energyCost, int shield, String description) {
+    public ShieldCard(String name, int energyCost, double shield, String description) {
         super(name, energyCost, description);
         this.shield = shield;
     }
@@ -15,7 +15,7 @@ public class ShieldCard extends Card {
         user.receiveShield(user.applyEffectMultiplier(this.shield));
     }
 
-    public int getEffectValue() {
+    public double getEffectValue() {
         return shield;
     }
 

@@ -11,7 +11,7 @@ public class Azoide extends Enemy {
     }
 
     public String announceEnemyStrategy(){
-        int totalDamage = 0;
+        double totalDamage = 0;
         for (Card card : enemyStrategy) {
             if (card instanceof DamageCard) {
                 totalDamage = totalDamage + card.getEffectValue();

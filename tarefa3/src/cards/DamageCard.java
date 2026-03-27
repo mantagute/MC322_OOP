@@ -4,9 +4,9 @@ import entities.Entity;
 
 public class DamageCard extends Card {
     
-    private int damage;
+    private double damage;
 
-    public DamageCard(String name, int cost, int damage, String description) {
+    public DamageCard(String name, int cost, double damage, String description) {
         super(name, cost, description);
         this.damage = damage;
     }
@@ -15,7 +15,7 @@ public class DamageCard extends Card {
         target.receiveDamage(user.applyEffectMultiplier(this.damage));
     }
 
-    public int getEffectValue() {
+    public double getEffectValue() {
         return damage;
     }
 

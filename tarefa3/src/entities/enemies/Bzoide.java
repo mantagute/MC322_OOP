@@ -11,7 +11,7 @@ public class Bzoide extends Enemy {
     }
 
     public String announceEnemyStrategy(){
-        int totalShield = 0;
+        double totalShield = 0;
         for (Card card : enemyStrategy) {
             if (card instanceof ShieldCard) {
                 totalShield = totalShield + card.getEffectValue();

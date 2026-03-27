@@ -91,13 +91,13 @@ public class App {
             }
 
             System.out.println("\n=== TURNO DE " + hero.getName().toUpperCase() + " ===\n");
-            System.out.println(hero.getName() + " | Vida: " + hero.getHealth() +
-                    " | Escudo: " + hero.getShield() +
+            System.out.println(hero.getName() + " | Vida: " + String.format("%.1f", hero.getHealth()) +
+                    " | Escudo: " + String.format("%.1f", hero.getShield()) +
                     " | Energia: " + hero.getEnergy() +
                     " | Efeitos: " + hero.getEffectString() + "\nvs");
             System.out.println(enemy.getName() + " | Vida: " + enemy.getHealth() +
-                    " | Escudo: " + enemy.getShield() + 
-                    " | Efeitos: " + enemy.getEffectString() + "\n");
+                    " | Escudo: " + String.format("%.1f", enemy.getHealth()) + 
+                    " | Efeitos: " + String.format("%.1f", enemy.getShield()) + "\n");
 
             for (int i = 0; i < hero.getHandSize(); i++) {
                 Card card = hero.getCardFromHand(i);

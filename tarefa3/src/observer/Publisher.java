@@ -2,6 +2,7 @@ package observer;
 
 import java.util.ArrayList;
 import java.util.List;
+import entities.Entity;
 
 public class Publisher {
 
@@ -12,14 +13,14 @@ public class Publisher {
         subscribers.add(subscriber);
     }
 
-    public void snsubscribe(Subscriber subscriber) {
+    public void unsubscribe(Subscriber subscriber) {
         subscribers.remove(subscriber);
     }
 
-    public void notify(String Event) {
+    public void notify(String Event, Entity user, Entity target) {
         List <Subscriber> currentSubscribers = new ArrayList<>(subscribers);
         for (Subscriber subscriber : currentSubscribers) {
-            subscriber.beNotified(Event);
+            subscriber.beNotified(Event, user, target);
         }
     }
 }

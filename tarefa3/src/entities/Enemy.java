@@ -10,9 +10,9 @@ public abstract class Enemy extends Entity {
 
     private static final int MAX_PLANNED_CARDS = 5;
     private Random rand = new Random();
-    protected Card[] enemyStrategy = new Card[MAX_PLANNED_CARDS];
-    protected BuyPile buyPile = new  BuyPile();
-    protected DiscardPile discardPile = new DiscardPile();
+    private Card[] enemyStrategy = new Card[MAX_PLANNED_CARDS];
+    private BuyPile buyPile = new  BuyPile();
+    private DiscardPile discardPile = new DiscardPile();
     protected Publisher publisher;
 
 
@@ -23,6 +23,18 @@ public abstract class Enemy extends Entity {
     }
 
     protected abstract void initializeDeck();
+
+    protected void addCardToBuypile (Card card) {
+        buyPile.push(card);
+    }
+
+    protected void shuffleBuyPile() {
+        buyPile.shuffle();
+    }
+
+    protected Card[] getEnemyStrategy() {
+        return enemyStrategy;
+    }
 
     private void defineEnemyStrategy() {
         for (int index = 0; index < MAX_PLANNED_CARDS; index++) {

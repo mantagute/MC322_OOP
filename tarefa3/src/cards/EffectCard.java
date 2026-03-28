@@ -11,8 +11,8 @@ public class EffectCard extends Card {
     private Publisher publisher;
     private boolean selfTarget;
 
-    public EffectCard(String name, int energyCost, String description, EffectType effectType, double balance, boolean selfTarget, Publisher publisher) {
-        super(name, energyCost, description);
+    public EffectCard(String name, int energyCost, String description, EffectType effectType, double balance, boolean selfTarget, Publisher publisher, boolean multiTarget) {
+        super(name, energyCost, description, multiTarget);
         this.effectType = effectType;
         this.balance = balance;
         this.selfTarget = selfTarget;
@@ -27,6 +27,11 @@ public class EffectCard extends Card {
         Entity character = selfTarget ? user : target;
         character.applyEffect(effectType, balance, publisher);
     }
+
+    @Override
+    public boolean isSelfTarget() {
+        return selfTarget;
+    }   
 
     public String getDetails() {
         if (effectType == EffectType.POISON) {

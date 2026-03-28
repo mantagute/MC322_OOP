@@ -6,8 +6,8 @@ public class DamageCard extends Card {
     
     private double damage;
 
-    public DamageCard(String name, int cost, double damage, String description) {
-        super(name, cost, description);
+    public DamageCard(String name, int cost, double damage, String description, boolean multiTarget) {
+        super(name, cost, description, multiTarget);
         this.damage = damage;
     }
 

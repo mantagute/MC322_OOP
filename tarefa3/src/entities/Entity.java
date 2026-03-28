@@ -22,7 +22,7 @@ public abstract class Entity {
     private Hand hand;
     private ArrayList<Effect> effects = new ArrayList<>();
 
-    public Entity(String name, int health, int energy) {
+    public Entity(String name, double health, int energy) {
         this.name = name;
         this.health = health;
         this.currentEnergy = energy;
@@ -63,7 +63,7 @@ public abstract class Entity {
     }
 
     public void manageEffects() {
-        effects.removeIf(effect -> effect.getBalance() <= 0);
+        effects.removeIf(effect -> effect.shouldExpire());
     }
 
     public String getEffectString() {

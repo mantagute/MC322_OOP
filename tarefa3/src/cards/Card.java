@@ -6,11 +6,13 @@ public abstract class Card {
     private String name;
     private int energyCost;
     private String description;
+    private boolean multiTarget;
 
-    public Card(String name, int energyCost, String description) {
+    public Card(String name, int energyCost, String description, boolean multiTarget) {
         this.name = name;
         this.energyCost = energyCost;
         this.description = description;
+        this.multiTarget = multiTarget;
     }
 
     public int getEnergyCost() {
@@ -23,6 +25,14 @@ public abstract class Card {
 
     public String getDescription() {
         return description;
+    }
+
+    public boolean isMultiTarget() {
+        return multiTarget;
+    }
+
+    public boolean isSelfTarget() {
+        return false;
     }
 
     public abstract String getDetails();

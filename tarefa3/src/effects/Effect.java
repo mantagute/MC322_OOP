@@ -36,9 +36,10 @@ public abstract class Effect extends Subscriber{
     public abstract EffectType getType();
 
     public String getString() {
-        return type + "-> " + balance + (balance == 1 ? "acúmulo." : "acúmulos." ) ;
+        return type + " -> " + balance + (balance == 1 ? " acúmulo." : " acúmulos." ) ;
     }
 
+    public abstract boolean shouldExpire();
 
     public double getBalance() {
         return balance;

@@ -1,20 +1,22 @@
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 import cards.Card;
 import deck.BuyPile;
 import deck.DiscardPile;
 import entities.Enemy;
 import entities.Hero;
+import gameOrchestrator.Data;
 import observer.Publisher;
 
 public class App {
 
     private Hero hero;
-    private Enemy enemy;
+    private List<Enemy> enemies = new ArrayList<>();
     private BuyPile heroBuyPile;
     private DiscardPile heroDiscardPile;
-    private BuyPile enemyBuyPile;
-    private DiscardPile enemyDiscardPile;
     private Publisher publisher = new Publisher();
 
     public static void gameIntro() {
@@ -55,24 +57,18 @@ public class App {
     }
 
     public void start() {
+
         hero = Data.heroes.get(0);
-        enemy = Data.azoides.get(0);
 
         heroBuyPile = new BuyPile();
         Data.fillPile(heroBuyPile, Data.heroDamageCards);
         Data.fillPile(heroBuyPile, Data.heroShieldCards);
+        Data.fillPile(heroBuyPile, Data.heroEffectCards(publisher));
+        heroBuyPile.shuffle();
         heroDiscardPile = new DiscardPile();
 
-        enemyBuyPile = new BuyPile();
-        Data.fillPile(enemyBuyPile, Data.azoideDamageCards);
-        Data.fillPile(enemyBuyPile, Data.azoideShieldCards);
-        enemyDiscardPile = new DiscardPile();
-
-        Data.fillPile(heroBuyPile, Data.heroEffectCards(publisher));
-        Data.fillPile(enemyBuyPile, Data.azoideEffectCards(publisher));
-
-        heroBuyPile.shuffle();
-        enemyBuyPile.shuffle();
+        enemies.add(Data.createAzoide("Sr. Doutor Cabo Arruda", 100, 10, publisher));
+        enemies.add(Data.createBzoide("3L", 100, 10, publisher));
     }
 
     public void heroTurn(Scanner scanner) {
@@ -80,11 +76,11 @@ public class App {
         hero.newTurn(heroBuyPile, heroDiscardPile);
         boolean isTurnOver = false;
 
-        while (!isTurnOver && hero.isAlive() && enemy.isAlive()) {
+        while (!isTurnOver && hero.isAlive() && enemies.stream().anyMatch(enemy -> enemy.isAlive())) {
             App.clearScreen();
             if (!hero.hasEnoughEnergyForAnyCard()) {
                 System.out.println(
-                        "\n" + hero.getName() + " sem energia, passando a vez para " + enemy.getName() + "...\n");
+                        "\n" + hero.getName() + " sem energia, passando a vez para a gang dos Paraenses ...\n");
                 App.Wait(2000);
                 isTurnOver = true;
                 break;
@@ -94,14 +90,20 @@ public class App {
             System.out.println(hero.getName() + " | Vida: " + String.format("%.1f", hero.getHealth()) +
                     " | Escudo: " + String.format("%.1f", hero.getShield()) +
                     " | Energia: " + hero.getEnergy() +
-                    " | Efeitos: " + hero.getEffectString() + "\nvs");
-            System.out.println(enemy.getName() + " | Vida: " + String.format("%.1f", enemy.getHealth()) +
+                    " | Efeitos: " + hero.getEffectString() + " \n");
+            System.out.println("vs\n");
+
+            for (Enemy enemy : enemies){
+                if (enemy.isAlive()) {
+                    System.out.println(enemy.getName() + " | Vida: " + String.format("%.1f", enemy.getHealth()) +
                     " | Escudo: " + String.format("%.1f", enemy.getShield()) + 
-                    " | Efeitos: " + hero.getEffectString() + "\nvs");
+                    " | Efeitos: " + enemy.getEffectString() + "\n");
+                }
+            }
 
             for (int i = 0; i < hero.getHandSize(); i++) {
                 Card card = hero.getCardFromHand(i);
-                System.out.println((i + 1) + " - " + card.getName() + card.getDetails() + " (Custo: " + card.getEnergyCost() + ")");
+                System.out.println((i + 1) + " - " + card.getName() + card.getDetails() + " (Custo: " + card.getEnergyCost() + ")" + (card.isMultiTarget() ? " -> Ataca todos os inimigos!" : ""));
             }
 
             System.out.println((hero.getHandSize() + 1) + " - Passar a vez\n");
@@ -109,7 +111,7 @@ public class App {
             int choice = scanner.nextInt();
 
             if (choice == hero.getHandSize() + 1) {
-                System.out.println("\n" + hero.getName() + " passa a vez para " + enemy.getName() + "...\n");
+                System.out.println("\n" + hero.getName() + " passa a vez para a gang dos Paraenses ...\n");
                 App.Wait(2000);
                 isTurnOver = true;
                 continue;
@@ -124,11 +126,52 @@ public class App {
                     App.Wait(1500);
                     continue;
                 }
-                hero.useCard(choice - 1, enemy, heroDiscardPile);
+
+                if (chosenCard.isMultiTarget()) {
+                    boolean first = true;
+                    for (Enemy enemy : enemies) {
+                        if (enemy.isAlive()) {
+                            if (first) {
+                                hero.useCard(choice - 1, enemy, heroDiscardPile); 
+                                first = false;
+                            } else {
+                                chosenCard.useCard(hero, enemy); 
+                            }
+                        }
+                    }
+                }
+                else if (chosenCard.isSelfTarget()) {
+                    hero.useCard(choice - 1, hero, heroDiscardPile);
+                }
+                else{
+                    List<Enemy> aliveEnemies = enemies.stream()
+                        .filter(Enemy::isAlive)
+                        .collect(Collectors.toList());
+                    if (aliveEnemies.size() == 1) {
+                        hero.useCard(choice - 1, aliveEnemies.get(0), heroDiscardPile);
+                    } else {
+                        System.out.println("\nEscolha qual inimigo atacar.");
+                        for (Enemy enemy : aliveEnemies) {
+                            System.out.println((aliveEnemies.indexOf(enemy) + 1) + " - "  + enemy.getName() + " | Vida: " + String.format("%.1f", enemy.getHealth()) +
+                            " | Escudo: " + String.format("%.1f", enemy.getShield()) + 
+                            " | Efeitos: " + enemy.getEffectString() + "\n");
+                        }
+                        int chosenEnemy = scanner.nextInt();
+                        if (chosenEnemy < 1 || chosenEnemy > aliveEnemies.size()) {
+                            System.out.println("\nOpção inválida. Tente novamente.");
+                            App.Wait(2000);
+                            continue;
+                        }
+                        else{
+                            hero.useCard(choice - 1, aliveEnemies.get(chosenEnemy - 1), heroDiscardPile);
+                        }
+                    }
+                }
                 App.Wait(2000);
             }
 
-            if (!enemy.isAlive()) {
+            boolean allEnemiesDead = enemies.stream().allMatch(enemy -> !enemy.isAlive());
+            if (allEnemiesDead) {
                 isTurnOver = true;
             }
         }
@@ -136,9 +179,13 @@ public class App {
 
     public void enemyTurn() {
         App.clearScreen();
-        enemy.newTurn(enemyBuyPile, enemyDiscardPile);
-        System.out.println(enemy.prepareForBattle());
-        App.Wait(4000);
+        for (Enemy enemy : enemies){
+            if (enemy.isAlive()){
+                enemy.newTurn();
+                System.out.println(enemy.prepareForBattle());
+                App.Wait(4000);
+            }
+        }
     }
 
     public static void main(String[] args) throws Exception {
@@ -148,25 +195,29 @@ public class App {
         App app = new App();
         app.start();
 
-        while (app.hero.isAlive() && app.enemy.isAlive()) {
+        while (app.hero.isAlive() && app.enemies.stream().anyMatch(enemy -> enemy.isAlive())) {
             app.enemyTurn();
             app.heroTurn(scanner);
-            app.enemy.resetShield();
-            if (app.enemy.isAlive()) {
-                App.clearScreen();
-                System.out.println("\n=== ATAQUE DE " + app.enemy.getName().toUpperCase() + " ===\n");
-                app.enemy.executeEnemyStrategy(app.hero, app.enemyDiscardPile);
-                App.Wait(2000);
+            for (Enemy enemy : app.enemies) {
+                if (enemy.isAlive()) {
+                    enemy.resetShield();
+                    App.clearScreen();
+                    System.out.println("\n=== ATAQUE DE " + enemy.getName().toUpperCase() + " ===\n");
+                    enemy.executeEnemyStrategy(app.hero);
+                    App.Wait(2000);
+                }
             }
-            app.publisher.notify("FIM_TURNO", app.hero, app.enemy);
-            app.publisher.notify("FIM_TURNO", app.enemy, app.hero);
+            app.publisher.notify("FIM_TURNO", app.hero, app.enemies.get(0));
+            for (Enemy enemy : app.enemies) {  
+                app.publisher.notify("FIM_TURNO", enemy, app.hero);
+            }
         }
         App.clearScreen();
         if (app.hero.isAlive()) {
             System.out.println(app.hero.getName() + " venceu!\n");
-            System.out.println(app.enemy.getName() + ", " + app.hero.getName() + " ainda não terminou o experimento. F carona...");
+            System.out.println(app.enemies.get(0).getName() + ", " + app.hero.getName() + " ainda não terminou o experimento. F carona...");
         } else {
-            System.out.println(app.enemy.getName() + " venceu!\n");
+            System.out.println(app.enemies.get(0).getName() + "e " + app.enemies.get(1).getName() + " venceram!\n");
             System.out.println("Não sobrou nada...");
         }
         App.Wait(10000);

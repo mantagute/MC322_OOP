@@ -1,7 +1,9 @@
 package entities;
 import java.util.Random;
 
+import observer.Publisher;
 import cards.Card;
+import deck.BuyPile;
 import deck.DiscardPile;
 
 public abstract class Enemy extends Entity {
@@ -9,12 +11,18 @@ public abstract class Enemy extends Entity {
     private static final int MAX_PLANNED_CARDS = 5;
     private Random rand = new Random();
     protected Card[] enemyStrategy = new Card[MAX_PLANNED_CARDS];
+    protected BuyPile buyPile = new  BuyPile();
+    protected DiscardPile discardPile = new DiscardPile();
+    protected Publisher publisher;
 
 
-
-    public Enemy(String name, int health, int energy) {
+    public Enemy(String name, double health, int energy, Publisher publisher) {
         super(name, health, energy);
+        this.publisher = publisher;
+        initializeDeck();
     }
+
+    protected abstract void initializeDeck();
 
     private void defineEnemyStrategy() {
         for (int index = 0; index < MAX_PLANNED_CARDS; index++) {
@@ -50,7 +58,7 @@ public abstract class Enemy extends Entity {
         return announceEnemyStrategy();
     }
 
-    public void executeEnemyStrategy(Entity target, DiscardPile discardPile) {
+    public void executeEnemyStrategy(Entity target) {
         for (Card card : enemyStrategy) {
             int index = getCardIndex(card);
             if (card != null && index != -1)  {
@@ -58,6 +66,10 @@ public abstract class Enemy extends Entity {
             }
                 
         }
+    }
+
+    public void newTurn() {
+        newTurn(buyPile, discardPile);
     }
 
 }

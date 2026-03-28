@@ -188,6 +188,11 @@ public class App {
         }
     }
 
+    private void notifyAndClean(String event, entities.Entity user, entities.Entity target) {
+        publisher.notify(event, user, target);
+        user.manageEffects();
+    }
+
     public static void main(String[] args) throws Exception {
         App.gameIntro();
         App.Wait(3000);
@@ -207,9 +212,9 @@ public class App {
                     App.Wait(2000);
                 }
             }
-            app.publisher.notify("FIM_TURNO", app.hero, app.enemies.get(0));
+            app.notifyAndClean("FIM_TURNO", app.hero, app.enemies.get(0));
             for (Enemy enemy : app.enemies) {  
-                app.publisher.notify("FIM_TURNO", enemy, app.hero);
+                app.notifyAndClean("FIM_TURNO", enemy, app.hero);
             }
         }
         App.clearScreen();

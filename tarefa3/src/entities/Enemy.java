@@ -60,11 +60,12 @@ public abstract class Enemy extends Entity {
 
     public void executeEnemyStrategy(Entity target) {
         for (Card card : enemyStrategy) {
-            int index = getCardIndex(card);
-            if (card != null && index != -1)  {
-                useCard(getCardIndex(card), target, discardPile);
-            }
-                
+            if (card != null){
+                int index = getCardIndex(card);
+                if (index != -1)  {
+                    useCard(getCardIndex(card), target, discardPile);
+                }
+            }    
         }
     }
 

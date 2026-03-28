@@ -63,7 +63,7 @@ public abstract class Entity {
     }
 
     public void manageEffects() {
-        effects.removeIf(effect -> effect.shouldExpire());
+        effects.removeIf(effect -> effect.getBalance() <= 0);
     }
 
     public String getEffectString() {

@@ -14,7 +14,7 @@ public class Bzoide extends Enemy {
 
     public String announceEnemyStrategy(){
         double totalShield = 0;
-        for (Card card : enemyStrategy) {
+        for (Card card : getEnemyStrategy()) {
             if (card instanceof ShieldCard) {
                 totalShield = totalShield + card.getEffectValue();
             }
@@ -23,10 +23,10 @@ public class Bzoide extends Enemy {
     }
 
     public void initializeDeck() {
-        Data.fillPile(buyPile, Data.bzoideDamageCards);
-        Data.fillPile(buyPile, Data.bzoideShieldCards);
-        Data.fillPile(buyPile, Data.bzoideEffectCards(publisher));
-        buyPile.shuffle();
+        for (Card card : Data.bzoideDamageCards) addCardToBuypile(card);
+        for (Card card : Data.bzoideShieldCards) addCardToBuypile(card);
+        for (Card card : Data.bzoideEffectCards(publisher)) addCardToBuypile(card);
+        shuffleBuyPile();
     }
 }
 

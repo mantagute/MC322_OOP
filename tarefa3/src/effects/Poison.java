@@ -16,10 +16,6 @@ public class Poison extends Effect {
         }
     }
 
-    public boolean shouldExpire(){
-        return getBalance() <= 0;
-    }
-
     public Effect.EffectType getType() { 
         return Effect.EffectType.POISON; 
     }

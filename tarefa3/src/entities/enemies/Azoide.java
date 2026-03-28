@@ -15,7 +15,7 @@ public class Azoide extends Enemy {
 
     public String announceEnemyStrategy(){
         double totalDamage = 0;
-        for (Card card : enemyStrategy) {
+        for (Card card : getEnemyStrategy()) {
             if (card instanceof DamageCard) {
                 totalDamage = totalDamage + card.getEffectValue();
             }
@@ -24,9 +24,9 @@ public class Azoide extends Enemy {
     }
 
     public void initializeDeck() {
-        Data.fillPile(buyPile, Data.azoideDamageCards);
-        Data.fillPile(buyPile, Data.azoideShieldCards);
-        Data.fillPile(buyPile, Data.azoideEffectCards(publisher));
-        buyPile.shuffle();
+        for (Card card : Data.azoideDamageCards) addCardToBuypile(card);
+        for (Card card : Data.azoideShieldCards) addCardToBuypile(card);
+        for (Card card : Data.azoideEffectCards(publisher)) addCardToBuypile(card);
+        shuffleBuyPile();
     }
 }

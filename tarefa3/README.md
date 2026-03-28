@@ -1,6 +1,8 @@
-# Tarefa 2 - Roguelike Deckbuilder Computeiros 025
+# Tarefa 3 — Roguelike Deckbuilder Computeiros 025
 
-Este projeto é um jogo de batalha em turnos inspirado no roguelike deckbuilder *Slay the Spire*. O jogador controla o herói **Didi Marco**, usando cartas de ataque e defesa para derrotar o temível **Sr. Dr. Cabo Arruda**. O jogo gerencia automaticamente a energia, os escudos e os turnos, com o inimigo tomando decisões automatizadas de ataque e defesa. A tematização do game busca caracterizar figuras icônicas do curso de engenharia de computacao 025 da UNICAMP e suas personalidades.
+Este projeto é um jogo de batalha em turnos inspirado no roguelike deckbuilder *Slay the Spire*. O jogador controla o herói **Didi Marco**, usando cartas de ataque, defesa e efeitos para derrotar os inimigos **Sr. Doutor Cabo Arruda** (Azoide) e **3L** (Bzoide). O jogo implementa o padrão de design **Observer** para gerenciar efeitos acumuláveis aplicados às entidades durante o combate.
+
+A tematização busca caracterizar figuras icônicas do curso de Engenharia de Computação 025 da UNICAMP e suas personalidades.
 
 ---
 
@@ -19,36 +21,101 @@ java -cp bin App
 
 ```
 src/
-├── App.java                        # Ponto de entrada e loop principal de batalha
-├── Data.java                       # Dados estáticos: cartas, heróis e inimigos
+├── App.java                            # Ponto de entrada e loop principal de batalha
 ├── cards/
-│   ├── Card.java                   # Classe abstrata base para cartas
-│   ├── DamageCard.java             # Carta que causa dano ao alvo
-│   └── ShieldCard.java             # Carta que concede escudo ao usuário
+│   ├── Card.java                       # Classe abstrata base para cartas
+│   ├── DamageCard.java                 # Carta que causa dano ao alvo
+│   ├── ShieldCard.java                 # Carta que concede escudo ao usuário
+│   └── EffectCard.java                 # Carta que aplica um efeito em uma entidade
 ├── deck/
-│   ├── Pile.java                   # Classe abstrata base para coleções de cartas
-│   ├── BuyPile.java                # Pilha de compra (baralho)
-│   ├── DiscardPile.java            # Pilha de descarte
-│   └── Hand.java                   # Mão do jogador
-└── entities/
-    ├── Entity.java                 # Classe abstrata base para personagens
-    ├── Hero.java                   # Herói controlado pelo jogador
-    ├── Enemy.java                  # Classe abstrata para inimigos
-    └── enemies/
-        ├── Azoide.java             # Inimigo com alerta ofensivo
-        └── Bzoide.java             # Inimigo com alerta defensivo 
+│   ├── Pile.java                       # Classe abstrata base para coleções de cartas
+│   ├── BuyPile.java                    # Pilha de compra (baralho)
+│   ├── DiscardPile.java                # Pilha de descarte
+│   └── Hand.java                       # Mão do jogador
+├── effects/
+│   ├── Effect.java                     # Classe abstrata base para efeitos (age como Subscriber)
+│   ├── Poison.java                     # Efeito de veneno
+│   └── Strength.java                   # Efeito de força
+├── entities/
+│   ├── Entity.java                     # Classe abstrata base para personagens
+│   ├── Hero.java                       # Herói controlado pelo jogador
+│   ├── Enemy.java                      # Classe abstrata para inimigos
+│   └── enemies/
+│       ├── Azoide.java                 # Inimigo ofensivo 
+│       └── Bzoide.java                 # Inimigo defensivo
+├── gameOrchestrator/
+│   └── Data.java                       # Dados estáticos: cartas, heróis e inimigos
+└── observer/
+    ├── Publisher.java                  # Gerencia inscrições e notificações de eventos
+    └── Subscriber.java                 # Interface abstrata para ouvintes de eventos
 ```
+
+---
+
+## Padrão de Design Observer
+
+O sistema de efeitos é implementado por meio do padrão **Observer**:
+
+- **`Publisher`** mantém uma lista de `Subscriber`s e os notifica sempre que um evento de combate ocorre (ex: `"FIM_TURNO"`). A classe `App` orquestra as notificações ao final de cada turno.
+- **`Subscriber`** é uma classe abstrata com o método `beNotified(String event, Entity user, Entity target)`, chamado pelo `Publisher` a cada evento.
+- **`Effect`** estende `Subscriber`. Ao ser criado, um efeito se inscreve automaticamente no `Publisher`. Quando seus acúmulos chegam a zero, ele se desincreve automaticamente, evitando efeitos "fantasma".
+
+---
+
+## Sistema de Efeitos
+
+Cada efeito possui um alvo (a entidade afligida) e uma quantidade de **acúmulos**. Aplicar o mesmo efeito a uma entidade que já o possui soma os acúmulos ao invés de criar uma nova instância.
+
+Os efeitos ativos são exibidos no terminal junto com as informações de combate (vida e escudo de cada entidade).
+
+### Poison (Veneno)
+
+- **Trigger:** `FIM_TURNO` da entidade afligida.
+- **Efeito:** A entidade sofre dano igual à quantidade atual de acúmulos e perde 1 acúmulo.
+- **Encerramento:** Removido automaticamente quando os acúmulos chegam a zero.
+
+> Exemplo: 5 acúmulos de Poison causam 5 de dano no fim do turno, passando para 4 acúmulos na rodada seguinte.
+
+### Strength (Força)
+
+- **Trigger:** Passivo — multiplicador aplicado a todo dano ou escudo gerado pela entidade afligida via `applyEffectMultiplier()`.
+- **Efeito:** Multiplica o valor base de dano e escudo pela quantidade de acúmulos.
+- **Decaimento:** Reduz 0,25 acúmulos por `FIM_TURNO`, decaindo gradualmente.
+
+> Exemplo: 2 acúmulos de Strength dobram o dano e escudo gerados pela entidade.
+
+---
+
+## Cartas de Efeito
+
+### Cartas do Herói
+
+| Carta | Custo | Efeito | Alvo |
+|---|---|---|---|
+| The one, the only. | 3 | Aplica 2 acúmulos de **Strength** | Próprio herói |
+| Moggar | 1 | Aplica 10 acúmulos de **Poison** | Todos os inimigos |
+
+### Cartas dos Inimigos
+
+| Inimigo | Carta | Custo | Efeito | Alvo |
+|---|---|---|---|---|
+| Azoide | Ancestrais Paraenses | 3 | Aplica 2 acúmulos de **Strength** | Si mesmo |
+| Azoide | AET | 1 | Aplica 10 acúmulos de **Poison** | Herói |
+| Bzoide | Girl | 3 | Aplica 2 acúmulos de **Strength** | Si mesmo |
+| Bzoide | Curitiba way of life | 1 | Aplica 10 acúmulos de **Poison** a todos | Herói |
+
+---
 
 ## Sistema de Baralho
 
-A implementação segue o funcionamento do jogo original *Slay the Spire*:
+O funcionamento segue o original de *Slay the Spire*:
 
-- **No início de cada turno**, o jogador compra automaticamente 5 cartas do topo da pilha de compra, sem custo de energia e sem ação do jogador. Essas cartas formam a mão do turno.
-- **Durante o turno**, o jogador utiliza as cartas que desejar na ordem que preferir, desde que tenha energia suficiente. Cada carta utilizada é imediatamente movida para o topo da pilha de descarte.
-- **Ao final do turno** (ao passar a vez ou ficar sem energia), as cartas restantes na mão vão para a pilha de descarte.
-- **Se a pilha de compra se esgotar** (inclusive durante a fase de compra), as cartas da pilha de descarte são embaralhadas e passam a formar a nova pilha de compra. Isso ocorre automaticamente, sem intervenção do jogador.
+- **Início do turno:** o jogador compra automaticamente 5 cartas.
+- **Durante o turno:** cartas usadas vão imediatamente para o descarte. Cada carta consome energia.
+- **Fim do turno:** cartas restantes na mão vão para o descarte.
+- **Pilha vazia:** as cartas do descarte são embaralhadas e formam uma nova pilha de compra automaticamente.
 
-Tanto o herói quanto o inimigo possuem suas próprias pilhas de compra e descarte, independentes entre si.
+Herói e inimigos possuem pilhas independentes.
 
 ---
 
@@ -56,17 +123,20 @@ Tanto o herói quanto o inimigo possuem suas próprias pilhas de compra e descar
 
 A cada rodada:
 
-1. **Turno do inimigo (anúncio):** O inimigo compra cartas e anuncia sua intenção para o turno (quanto dano planeja causar ou quanto escudo planeja usar).
-2. **Turno do herói:** O escudo do herói é zerado. O herói compra 5 cartas e escolhe quais usar. Cartas usadas vão para o descarte. Ao passar a vez ou ficar sem energia, as cartas restantes também vão para o descarte.
-3. **Ataque do inimigo:** O escudo do inimigo é zerado (referente ao turno anterior). O inimigo executa a estratégia anunciada. O escudo ganho nessa fase persiste até o início da próxima rodada.
+1. **Anúncio dos inimigos:** cada inimigo define e anuncia sua estratégia para o turno (dano ou escudo planejado).
+2. **Turno do herói:** escudo zerado, 5 cartas compradas, jogador escolhe ações. Ao passar a vez ou ficar sem energia, cartas restantes vão ao descarte.
+3. **Ataque dos inimigos:** cada inimigo executa sua estratégia contra o herói, em sequência.
+4. **Notificação de fim de turno:** `FIM_TURNO` é disparado para o herói e para cada inimigo, ativando efeitos como Poison e o decaimento de Strength.
 
-O combate termina quando o herói ou o inimigo chegam a 0 de vida.
+O combate termina quando o herói ou todos os inimigos chegam a 0 de vida.
 
-## Desafio Extra — Anúncio de Intenções
+---
 
-Implementado conforme o enunciado. O método `announceEnemyStrategy()` é definido como abstrato em `Enemy` e implementado por cada inimigo concreto de acordo com seu estilo de combate:
+## Desafio Extra — Múltiplos Inimigos
 
-- **Azoide** anuncia o total de dano planejado para o turno.
-- **Bzoide** anuncia o total de escudo planejado para o turno.
+Implementado conforme o enunciado. O jogador enfrenta simultaneamente dois inimigos:
 
-O anúncio ocorre no início de cada rodada, antes do turno do herói, permitindo que o jogador adapte sua estratégia.
+- **Sr. Doutor Cabo Arruda** (Azoide) — focado em dano.
+- **3L** (Bzoide) — focado em escudo.
+
+Cada inimigo possui vida, escudo, energia e baralho independentes. Quando uma carta tem alvo único e há mais de um inimigo vivo, o jogador escolhe qual atacar. Cartas com `multiTarget` atingem todos os inimigos vivos automaticamente.

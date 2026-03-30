@@ -93,17 +93,18 @@ public class App {
                     " | Efeitos: " + hero.getEffectString() + " \n");
             System.out.println("vs\n");
 
-            for (Enemy enemy : enemies){
+            for (Enemy enemy : enemies) {
                 if (enemy.isAlive()) {
                     System.out.println(enemy.getName() + " | Vida: " + String.format("%.1f", enemy.getHealth()) +
-                    " | Escudo: " + String.format("%.1f", enemy.getShield()) + 
-                    " | Efeitos: " + enemy.getEffectString() + "\n");
+                            " | Escudo: " + String.format("%.1f", enemy.getShield()) +
+                            " | Efeitos: " + enemy.getEffectString() + "\n");
                 }
             }
 
             for (int i = 0; i < hero.getHandSize(); i++) {
                 Card card = hero.getCardFromHand(i);
-                System.out.println((i + 1) + " - " + card.getName() + card.getDetails() + " (Custo: " + card.getEnergyCost() + ")" + (card.isMultiTarget() ? " -> Ataca todos os inimigos!" : ""));
+                System.out.println((i + 1) + " - " + card.getName() + card.getDetails() + " (Custo: "
+                        + card.getEnergyCost() + ")" + (card.isMultiTarget() ? " -> Ataca todos os inimigos!" : ""));
             }
 
             System.out.println((hero.getHandSize() + 1) + " - Passar a vez\n");
@@ -132,37 +133,35 @@ public class App {
                     for (Enemy enemy : enemies) {
                         if (enemy.isAlive()) {
                             if (first) {
-                                hero.useCard(choice - 1, enemy, heroDiscardPile); 
+                                hero.useCard(choice - 1, enemy, heroDiscardPile);
                                 first = false;
                             } else {
-                                chosenCard.useCard(hero, enemy); 
+                                chosenCard.useCard(hero, enemy);
                             }
                         }
                     }
-                }
-                else if (chosenCard.isSelfTarget()) {
+                } else if (chosenCard.isSelfTarget()) {
                     hero.useCard(choice - 1, hero, heroDiscardPile);
-                }
-                else{
+                } else {
                     List<Enemy> aliveEnemies = enemies.stream()
-                        .filter(Enemy::isAlive)
-                        .collect(Collectors.toList());
+                            .filter(Enemy::isAlive)
+                            .collect(Collectors.toList());
                     if (aliveEnemies.size() == 1) {
                         hero.useCard(choice - 1, aliveEnemies.get(0), heroDiscardPile);
                     } else {
                         System.out.println("\nEscolha qual inimigo atacar.");
                         for (Enemy enemy : aliveEnemies) {
-                            System.out.println((aliveEnemies.indexOf(enemy) + 1) + " - "  + enemy.getName() + " | Vida: " + String.format("%.1f", enemy.getHealth()) +
-                            " | Escudo: " + String.format("%.1f", enemy.getShield()) + 
-                            " | Efeitos: " + enemy.getEffectString() + "\n");
+                            System.out.println((aliveEnemies.indexOf(enemy) + 1) + " - " + enemy.getName() + " | Vida: "
+                                    + String.format("%.1f", enemy.getHealth()) +
+                                    " | Escudo: " + String.format("%.1f", enemy.getShield()) +
+                                    " | Efeitos: " + enemy.getEffectString() + "\n");
                         }
                         int chosenEnemy = scanner.nextInt();
                         if (chosenEnemy < 1 || chosenEnemy > aliveEnemies.size()) {
                             System.out.println("\nOpção inválida. Tente novamente.");
                             App.Wait(2000);
                             continue;
-                        }
-                        else{
+                        } else {
                             hero.useCard(choice - 1, aliveEnemies.get(chosenEnemy - 1), heroDiscardPile);
                         }
                     }
@@ -179,8 +178,8 @@ public class App {
 
     public void enemyTurn() {
         App.clearScreen();
-        for (Enemy enemy : enemies){
-            if (enemy.isAlive()){
+        for (Enemy enemy : enemies) {
+            if (enemy.isAlive()) {
                 enemy.newTurn();
                 System.out.println(enemy.prepareForBattle());
                 App.Wait(4000);
@@ -208,19 +207,23 @@ public class App {
                     enemy.resetShield();
                     App.clearScreen();
                     System.out.println("\n=== ATAQUE DE " + enemy.getName().toUpperCase() + " ===\n");
-                    enemy.executeEnemyStrategy(app.hero);
+                    if (enemy.isAlive()) {
+                        enemy.executeEnemyStrategy(app.hero);
+                    }
+                    
                     App.Wait(2000);
                 }
             }
             app.notifyAndClean("FIM_TURNO", app.hero, app.enemies.get(0));
-            for (Enemy enemy : app.enemies) {  
+            for (Enemy enemy : app.enemies) {
                 app.notifyAndClean("FIM_TURNO", enemy, app.hero);
             }
         }
         App.clearScreen();
         if (app.hero.isAlive()) {
             System.out.println(app.hero.getName() + " venceu!\n");
-            System.out.println(app.enemies.get(0).getName() + ", " + app.hero.getName() + " ainda não terminou o experimento. F carona...");
+            System.out.println(app.enemies.get(0).getName() + ", " + app.hero.getName()
+                    + " ainda não terminou o experimento. F carona...");
         } else {
             System.out.println(app.enemies.get(0).getName() + "e " + app.enemies.get(1).getName() + " venceram!\n");
             System.out.println("Não sobrou nada...");

@@ -38,3 +38,7 @@ application {
 tasks.named<JavaExec>("run") {
     standardInput = System.`in`
 }
+
+tasks.named("build") {
+    dependsOn(tasks.named("javadoc"))
+}

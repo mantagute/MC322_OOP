@@ -10,10 +10,16 @@ import effects.Poison;
 import effects.Strength;
 import observer.Publisher;
 import java.util.StringJoiner;
-
 import java.util.ArrayList;
 
+/**
+ * Classe abstrata base para todos os personagens do jogo (heróis e inimigos).
+ * Gerencia atributos fundamentais de combate: vida, escudo, energia, mão de cartas
+ * e efeitos de status ativos. Subclasses implementam comportamentos específicos
+ * de heróis ({@link Hero}) e inimigos ({@link Enemy}).
+ */
 public abstract class Entity {
+
     private String name;
     private double health;
     private double currentShield;
@@ -22,6 +28,13 @@ public abstract class Entity {
     private Hand hand;
     private ArrayList<Effect> effects = new ArrayList<>();
 
+    /**
+     * Constrói uma entidade com os atributos base especificados.
+     *
+     * @param name   nome do personagem exibido no jogo
+     * @param health pontos de vida iniciais
+     * @param energy quantidade máxima de energia por turno
+     */
     public Entity(String name, double health, int energy) {
         this.name = name;
         this.health = health;
@@ -31,6 +44,14 @@ public abstract class Entity {
         this.hand = new Hand();
     }
 
+    /**
+     * Aplica um efeito de status à entidade. Se a entidade já possui o efeito,
+     * adiciona os acúmulos ao efeito existente em vez de criar uma nova instância.
+     *
+     * @param type      tipo do efeito a aplicar ({@link EffectType})
+     * @param balance   quantidade de acúmulos a adicionar
+     * @param publisher Publisher para inscrição do efeito no sistema Observer
+     */
     public void applyEffect(EffectType type, double balance, Publisher publisher) {
         for (Effect effect : effects) {
             if (effect.getType() == type) {
@@ -38,7 +59,6 @@ public abstract class Entity {
                 return;
             }
         }
-        
         Effect newEffect;
         switch (type) {
             case POISON:
@@ -53,6 +73,13 @@ public abstract class Entity {
         effects.add(newEffect);
     }
 
+    /**
+     * Aplica o multiplicador do efeito Strength sobre um valor base.
+     * Se a entidade não possui Strength ativo, retorna o valor original.
+     *
+     * @param baseValue valor base de dano ou escudo a ser multiplicado
+     * @return valor base multiplicado pelos acúmulos de Strength, ou o próprio valor base
+     */
     public double applyEffectMultiplier(double baseValue) {
         for (Effect effect : effects) {
             if (effect.getType() == Effect.EffectType.STRENGTH) {
@@ -62,10 +89,20 @@ public abstract class Entity {
         return baseValue;
     }
 
+    /**
+     * Remove da lista interna os efeitos cujos acúmulos chegaram a zero.
+     * Deve ser chamado após notificações de fim de turno para manter
+     * a lista de efeitos consistente.
+     */
     public void manageEffects() {
         effects.removeIf(effect -> effect.getBalance() <= 0);
     }
 
+    /**
+     * Retorna uma string legível com todos os efeitos ativos da entidade.
+     *
+     * @return string descrevendo os efeitos ativos, ou {@code "Sem efeitos ativos"} se não houver nenhum
+     */
     public String getEffectString() {
         if (effects.isEmpty()) {
             return "Sem efeitos ativos";
@@ -77,6 +114,14 @@ public abstract class Entity {
         return joiner.toString();
     }
 
+    /**
+     * Usa a carta no índice especificado da mão, aplicando seu efeito sobre o alvo.
+     * Desconta o custo em energia e move a carta para a pilha de descarte.
+     *
+     * @param index       índice da carta na mão
+     * @param target      entidade alvo da carta
+     * @param discardPile pilha de descarte para onde a carta irá após ser usada
+     */
     public void useCard(int index, Entity target, DiscardPile discardPile) {
         Card cardToUse = hand.getCard(index);
         if (currentEnergy >= cardToUse.getEnergyCost()) {
@@ -85,10 +130,15 @@ public abstract class Entity {
             System.out.println(getName() + " usou " + cardToUse.getName() + "! " + cardToUse.getDescription());
             hand.extractCard(index);
             discardPile.push(cardToUse);
-
         }
     }
 
+    /**
+     * Aplica dano à entidade. O dano é absorvido pelo escudo primeiro;
+     * o restante é descontado diretamente da vida.
+     *
+     * @param damage quantidade de dano recebido
+     */
     public void receiveDamage(double damage) {
         if (currentShield > damage) {
             currentShield = currentShield - damage;
@@ -98,27 +148,54 @@ public abstract class Entity {
         }
     }
 
+    /**
+     * Adiciona a quantidade especificada ao escudo atual da entidade.
+     *
+     * @param shield quantidade de escudo a adicionar
+     */
     public void receiveShield(double shield) {
         currentShield = currentShield + shield;
     }
 
+    /**
+     * Verifica se a entidade tem energia suficiente para jogar ao menos uma carta da mão.
+     *
+     * @param energy quantidade de energia a verificar
+     * @return {@code true} se houver pelo menos uma carta jogável com esta energia
+     */
     public boolean hasEnoughEnergyForAnyCard(int energy) {
         return energy >= hand.getMinimumEnergyCost();
     }
-    
+
+    /**
+     * Verifica se a entidade tem energia suficiente para jogar ao menos uma carta,
+     * usando a energia atual como referência.
+     *
+     * @return {@code true} se houver pelo menos uma carta jogável com a energia atual
+     */
     public boolean hasEnoughEnergyForAnyCard() {
         return hasEnoughEnergyForAnyCard(getEnergy());
     }
 
+    /**
+     * Zera o escudo atual da entidade. Chamado no início de cada turno.
+     */
     public void resetShield() {
         currentShield = 0;
     }
 
+    /**
+     * Inicia um novo turno para esta entidade: restaura a energia máxima,
+     * descarta a mão atual e compra {@link Hand#MAX_HAND_SIZE} novas cartas.
+     *
+     * @param buyPile     pilha de compra da entidade
+     * @param discardPile pilha de descarte da entidade
+     */
     public void newTurn(BuyPile buyPile, DiscardPile discardPile) {
         currentEnergy = maxEnergy;
         manageEffects();
         hand.moveAllCardsTo(discardPile);
-        while (getHandSize() < Hand.MAX_HAND_SIZE){
+        while (getHandSize() < Hand.MAX_HAND_SIZE) {
             Card drawnCard = buyPile.drawCard(discardPile);
             if (drawnCard != null) {
                 hand.push(drawnCard);
@@ -126,22 +203,49 @@ public abstract class Entity {
         }
     }
 
+    /**
+     * Verifica se a entidade ainda está viva (vida acima de zero).
+     *
+     * @return {@code true} se a vida for maior que zero
+     */
     public boolean isAlive() {
         return health > 0;
     }
 
+    /**
+     * Retorna o número de cartas atualmente na mão da entidade.
+     *
+     * @return tamanho da mão
+     */
     public int getHandSize() {
         return hand.getSize();
     }
 
+    /**
+     * Retorna a carta no índice especificado da mão sem removê-la.
+     *
+     * @param index índice da carta na mão
+     * @return carta no índice especificado
+     */
     public Card getCardFromHand(int index) {
         return hand.getCard(index);
     }
 
+    /**
+     * Retorna os pontos de vida atuais da entidade.
+     *
+     * @return vida atual
+     */
     public double getHealth() {
         return health;
     }
 
+    /**
+     * Retorna o índice de uma carta específica na mão da entidade.
+     *
+     * @param carta carta a ser localizada na mão
+     * @return índice da carta na mão, ou {@code -1} se não for encontrada
+     */
     protected int getCardIndex(Card carta) {
         for (int i = 0; i < getHandSize(); i++) {
             if (getCardFromHand(i) == carta) {
@@ -151,14 +255,29 @@ public abstract class Entity {
         return -1;
     }
 
+    /**
+     * Retorna o escudo atual da entidade.
+     *
+     * @return escudo atual
+     */
     public double getShield() {
         return currentShield;
     }
 
+    /**
+     * Retorna o nome da entidade.
+     *
+     * @return nome do personagem
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Retorna a energia atual da entidade.
+     *
+     * @return energia disponível no turno atual
+     */
     public int getEnergy() {
         return currentEnergy;
     }

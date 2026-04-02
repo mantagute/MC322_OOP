@@ -31,8 +31,7 @@ java {
 }
 
 application {
-    // Define the main class for the application.
-    mainClass = "App"
+    mainClass = "gameOrchestrator.App"
 }
 
 tasks.named<JavaExec>("run") {

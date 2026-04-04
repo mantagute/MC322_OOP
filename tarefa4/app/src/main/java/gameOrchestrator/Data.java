@@ -50,6 +50,11 @@ public class Data {
         new DamageCard("Biquinho",           1,  5, "Pequeno, mas dói.", false),
         new DamageCard("Terror Bicolor",    10, 50, "Paysanduuuuuu.", false),
         new DamageCard("Continência",        5, 35, "Cria dos milicos!", false),
+        new DamageCard("Açaí com Leite",   5, 25, "O sabOOr paraense.", false),
+        new DamageCard("Freiras Paraenses Arretadas",       10, 50, "Ninguém segura esse grupinho...", false),
+        new DamageCard("Camiseta de Rock",           3,  15, "Led Zeppelin, Iron Maiden ou AC/DC... Pode escolher.", false),
+        new DamageCard("Casaco do Harry Potter",    8, 40, "Viajou para a Europa, já sabe.", false),
+        new DamageCard("New Balance Marrom",        10, 50, "Pau para toda obra.", false),
         new DamageCard("Respirada Profunda", 2, 10, "Ela sempre está lá...", false)
     );
 
@@ -58,11 +63,6 @@ public class Data {
      * Representam itens e traços característicos da personalidade paraense.
      */
     public static final List<ShieldCard> azoideShieldCards = List.of(
-        new ShieldCard("Açaí com Leite",               5, 25, "O sabOOr paraense.", false),
-        new ShieldCard("Freiras Paraenses Arretadas",  10, 50, "Ninguém segura esse grupinho...", false),
-        new ShieldCard("Camiseta de Rock",              3, 15, "Led Zeppelin, Iron Maiden ou AC/DC... Pode escolher.", false),
-        new ShieldCard("Casaco do Harry Potter",        8, 40, "Viajou para a Europa, já sabe.", false),
-        new ShieldCard("New Balance Marrom",           10, 50, "Pau para toda obra.", false),
         new ShieldCard("Charme",                        1,  5, "Às vezes só o charme já resolve.", false),
         new ShieldCard("Xampu Clear Men",               5, 25, "Caspa? Aqui não.", false),
         new ShieldCard("Macbook Rosinha",               2, 10, "Entusiasta do ecossistema Apple.", false),
@@ -97,11 +97,6 @@ public class Data {
      * Focadas em ataques variados com referências à cultura curitibana.
      */
     public static final List<DamageCard> bzoideDamageCards = List.of(
-        new DamageCard("Marcação do Handebol",   10, 50, "Cachorro louco.", false),
-        new DamageCard("Caipirinha de Morango",   5, 25, "Doce por fora, letal por dentro.", false),
-        new DamageCard("Rolê no São Lourenço",    5, 35, "O melhor parque de Cwb.", false),
-        new DamageCard("Arremesso do Handebol",   8, 40, "Com ou sem efeito?", false),
-        new DamageCard("Questão de MecG",         2, 10, "Trivial.", false),
         new DamageCard("Bomba do Ninja",          8, 40, "Silencioso, mas mortal.", false),
         new DamageCard("Tesão, piá",              1,  5, "A gíria dos guri.", false),
         new DamageCard("Cabritinho",              7, 35, "Ninguém esperava.", false),
@@ -123,7 +118,11 @@ public class Data {
         new ShieldCard("Peita de Handebol",       4, 20, "01, não tem jeito.", false),
         new ShieldCard("Ilha do Mel",             7, 35, "Descansar, ninguém é de ferro.", false),
         new ShieldCard("Fúria Independente",      8, 40, "Esperando a volta do Paraná Clube.", false),
-        new ShieldCard("99Food",                 10, 50, "Delivery no precinho.", false)
+        new ShieldCard("99Food",                 10, 50, "Delivery no precinho.", false),
+        new ShieldCard("Marcação do Handebol",   10, 50, "Cachorro louco.", false),
+        new ShieldCard("Rolê no São Lourenço",    5, 35, "O melhor parque de Cwb.", false),
+        new ShieldCard("Arremesso do Handebol",   8, 40, "Com ou sem efeito?", false),
+        new ShieldCard("Questão de MecG",         2, 10, "Trivial.", false)
     );
 
     /**
@@ -140,7 +139,9 @@ public class Data {
             new EffectCard("Girl", 3, "Na frente dela, não pode passar vergonha",
                     EffectType.STRENGTH, 2, true, publisher, false),
             new EffectCard("Curitiba way of life", 1, "Não brinque com os sulistas...",
-                    EffectType.POISON, 10, false, publisher, true)
+                    EffectType.POISON, 10, false, publisher, true),
+            new EffectCard("Caipirinha de Morango", 1, "Doce por fora, letal por dentro.",
+                    EffectType.POISON, 10, false, publisher, true)       
         );
     }
 

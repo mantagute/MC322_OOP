@@ -1,142 +1,146 @@
-# Tarefa 3 — Roguelike Deckbuilder Computeiros 025
+# Tarefa 4 — Ferramentas para Desenvolvimento
+## Roguelike Deckbuilder Computeiros 025
 
-Este projeto é um jogo de batalha em turnos inspirado no roguelike deckbuilder *Slay the Spire*. O jogador controla o herói **Didi Marco**, usando cartas de ataque, defesa e efeitos para derrotar os inimigos **Sr. Doutor Cabo Arruda** (Azoide) e **3L** (Bzoide). O jogo implementa o padrão de design **Observer** para gerenciar efeitos acumuláveis aplicados às entidades durante o combate.
-
-A tematização busca caracterizar figuras icônicas do curso de Engenharia de Computação 025 da UNICAMP e suas personalidades.
+Este projeto é um jogo de batalha em turnos inspirado no roguelike deckbuilder *Slay the Spire*. O jogador controla o herói **Didi Marco**, usando cartas de ataque, defesa e efeitos para derrotar os inimigos **Sr. Doutor Cabo Arruda** (Azoide) e **3L** (Bzoide).
 
 ---
 
 ## Compilação e Execução
 
-A partir da raiz do repositório:
+A partir da raiz do repositório (tarefa4):
 
 ```bash
-javac -d bin $(find src -name "*.java")
-java -cp bin App
+./gradlew build
+./gradlew run
+```
+
+Use a flag --console=plain na execução para maior clareza visual.
+
+O projeto está configurado com Gradle utilizando a estrutura padrão `src/main/java`. A classe principal é `gameOrchestrator.App`, configurada no `build.gradle.kts`.
+
+---
+
+## Estrutura do Projeto (Gradle)
+
+```
+tarefa4/
+├── build.gradle.kts
+├── settings.gradle.kts
+├── gradlew / gradlew.bat
+├── gradle/
+│   ├── libs.versions.toml
+│   └── wrapper/
+└── app/
+    └── src/
+        └── main/
+            └── java/
+                ├── cards/
+                │   ├── Card.java
+                │   ├── DamageCard.java
+                │   ├── ShieldCard.java
+                │   └── EffectCard.java
+                ├── deck/
+                │   ├── Pile.java
+                │   ├── BuyPile.java
+                │   ├── DiscardPile.java
+                │   └── Hand.java
+                ├── effects/
+                │   ├── Effect.java
+                │   ├── Poison.java
+                │   └── Strength.java
+                ├── entities/
+                │   ├── Entity.java
+                │   ├── Hero.java
+                │   ├── Enemy.java
+                │   └── enemies/
+                │       ├── Azoide.java
+                │       └── Bzoide.java
+                ├── gameOrchestrator/
+                │   ├── App.java
+                │   ├── Data.java
+                │   └── UserInterface.java
+                └── observer/
+                    ├── Publisher.java
+                    └── Subscriber.java
 ```
 
 ---
 
-## Estrutura do Projeto
+## Novas Cartas Implementadas (Tarefa 4)
 
+Foram adicionadas **novas cartas** ao jogo, explorando uma decisão de design intencional: discernir os perfis dos inimigos em relação às classes de cartas disponíveis.
+
+A lógica foi a seguinte:
+- O **Azoide**, originalmente focado em dano, recebeu novas **cartas de dano** — as quais inicialmente eram de escudo.
+- O **Bzoide**, originalmente focado em escudo, recebeu novas **cartas de escudo e veneno** — as quais inicialmente eram de dano.
+
+Essa escolha demonstra uma das vantagens práticas do sistema orientado a objetos já construído: como `DamageCard`, `ShieldCard` e `EffectCard` são classes genéricas e reutilizáveis, atribuir qualquer tipo de carta a qualquer inimigo é trivial — basta instanciá-la em `Data.java` e adicioná-la ao baralho correspondente, sem nenhuma alteração nas classes existentes.
+
+A **Caipirinha de Morango** é a carta que satisfaz o requisito de **interação com efeitos**, aplicando Poison via o sistema Observer já existente.
+
+---
+
+## Documentação com Javadoc
+
+Todas as principais classes do projeto estão documentadas com comentários Javadoc, incluindo:
+
+- Descrição de propósito de cada classe
+- Documentação de todos os métodos públicos com `@param` e `@return`
+- Atributos não triviais documentados inline
+
+Para gerar a documentação HTML:
+
+```bash
+./gradlew javadoc
 ```
-src/
-├── App.java                            # Ponto de entrada e loop principal de batalha
-├── cards/
-│   ├── Card.java                       # Classe abstrata base para cartas
-│   ├── DamageCard.java                 # Carta que causa dano ao alvo
-│   ├── ShieldCard.java                 # Carta que concede escudo ao usuário
-│   └── EffectCard.java                 # Carta que aplica um efeito em uma entidade
-├── deck/
-│   ├── Pile.java                       # Classe abstrata base para coleções de cartas
-│   ├── BuyPile.java                    # Pilha de compra (baralho)
-│   ├── DiscardPile.java                # Pilha de descarte
-│   └── Hand.java                       # Mão do jogador
-├── effects/
-│   ├── Effect.java                     # Classe abstrata base para efeitos (age como Subscriber)
-│   ├── Poison.java                     # Efeito de veneno
-│   └── Strength.java                   # Efeito de força
-├── entities/
-│   ├── Entity.java                     # Classe abstrata base para personagens
-│   ├── Hero.java                       # Herói controlado pelo jogador
-│   ├── Enemy.java                      # Classe abstrata para inimigos
-│   └── enemies/
-│       ├── Azoide.java                 # Inimigo ofensivo 
-│       └── Bzoide.java                 # Inimigo defensivo
-├── gameOrchestrator/
-│   └── Data.java                       # Dados estáticos: cartas, heróis e inimigos
-└── observer/
-    ├── Publisher.java                  # Gerencia inscrições e notificações de eventos
-    └── Subscriber.java                 # Interface abstrata para ouvintes de eventos
-```
+
+A documentação gerada estará em `app/build/docs/javadoc/index.html`. A task `javadoc` também é executada automaticamente como dependência do `./gradlew build`.
 
 ---
 
 ## Padrão de Design Observer
 
-O sistema de efeitos é implementado por meio do padrão **Observer**:
+O sistema de efeitos é implementado via padrão **Observer**:
 
-- **`Publisher`** mantém uma lista de `Subscriber`s e os notifica sempre que um evento de combate ocorre (ex: `"FIM_TURNO"`). A classe `App` orquestra as notificações ao final de cada turno.
-- **`Subscriber`** é uma classe abstrata com o método `beNotified(String event, Entity user, Entity target)`, chamado pelo `Publisher` a cada evento.
-- **`Effect`** estende `Subscriber`. Ao ser criado, um efeito se inscreve automaticamente no `Publisher`. Quando seus acúmulos chegam a zero, ele se desincreve automaticamente, evitando efeitos "fantasma".
+- **`Publisher`** mantém uma lista de `Subscriber`s e os notifica ao fim de cada turno com o evento `"FIM_TURNO"`.
+- **`Subscriber`** é classe abstrata com o método `beNotified(String event, Entity user, Entity target)`.
+- **`Effect`** estende `Subscriber`. Ao ser criado, se inscreve automaticamente no `Publisher`; ao expirar (acúmulos zerados), se desinscreve.
 
 ---
 
 ## Sistema de Efeitos
 
-Cada efeito possui um alvo (a entidade afligida) e uma quantidade de **acúmulos**. Aplicar o mesmo efeito a uma entidade que já o possui soma os acúmulos ao invés de criar uma nova instância.
-
-Os efeitos ativos são exibidos no terminal junto com as informações de combate (vida e escudo de cada entidade).
-
 ### Poison (Veneno)
-
 - **Trigger:** `FIM_TURNO` da entidade afligida.
-- **Efeito:** A entidade sofre dano igual à quantidade atual de acúmulos e perde 1 acúmulo.
-- **Encerramento:** Removido automaticamente quando os acúmulos chegam a zero.
-
-> Exemplo: 5 acúmulos de Poison causam 5 de dano no fim do turno, passando para 4 acúmulos na rodada seguinte.
+- **Efeito:** causa dano igual aos acúmulos atuais e perde 1 acúmulo por turno.
 
 ### Strength (Força)
-
-- **Trigger:** Passivo — multiplicador aplicado a todo dano ou escudo gerado pela entidade afligida via `applyEffectMultiplier()`.
-- **Efeito:** Multiplica o valor base de dano e escudo pela quantidade de acúmulos.
-- **Decaimento:** Reduz 0,25 acúmulos por `FIM_TURNO`, decaindo gradualmente.
-
-> Exemplo: 2 acúmulos de Strength dobram o dano e escudo gerados pela entidade.
-
----
-
-## Cartas de Efeito
-
-### Cartas do Herói
-
-| Carta | Custo | Efeito | Alvo |
-|---|---|---|---|
-| The one, the only. | 3 | Aplica 2 acúmulos de **Strength** | Próprio herói |
-| Moggar | 1 | Aplica 10 acúmulos de **Poison** | Todos os inimigos |
-
-### Cartas dos Inimigos
-
-| Inimigo | Carta | Custo | Efeito | Alvo |
-|---|---|---|---|---|
-| Azoide | Ancestrais Paraenses | 3 | Aplica 2 acúmulos de **Strength** | Si mesmo |
-| Azoide | AET | 1 | Aplica 10 acúmulos de **Poison** | Herói |
-| Bzoide | Girl | 3 | Aplica 2 acúmulos de **Strength** | Si mesmo |
-| Bzoide | Curitiba way of life | 1 | Aplica 10 acúmulos de **Poison** a todos | Herói |
-
----
-
-## Sistema de Baralho
-
-O funcionamento segue o original de *Slay the Spire*:
-
-- **Início do turno:** o jogador compra automaticamente 5 cartas.
-- **Durante o turno:** cartas usadas vão imediatamente para o descarte. Cada carta consome energia.
-- **Fim do turno:** cartas restantes na mão vão para o descarte.
-- **Pilha vazia:** as cartas do descarte são embaralhadas e formam uma nova pilha de compra automaticamente.
-
-Herói e inimigos possuem pilhas independentes.
+- **Trigger:** passivo — multiplica dano e escudo gerados pela entidade.
+- **Decaimento:** perde 0,25 acúmulos por `FIM_TURNO`.
 
 ---
 
 ## Fluxo de Batalha
 
-A cada rodada:
-
-1. **Anúncio dos inimigos:** cada inimigo define e anuncia sua estratégia para o turno (dano ou escudo planejado).
-2. **Turno do herói:** escudo zerado, 5 cartas compradas, jogador escolhe ações. Ao passar a vez ou ficar sem energia, cartas restantes vão ao descarte.
-3. **Ataque dos inimigos:** cada inimigo executa sua estratégia contra o herói, em sequência.
-4. **Notificação de fim de turno:** `FIM_TURNO` é disparado para o herói e para cada inimigo, ativando efeitos como Poison e o decaimento de Strength.
+1. **Inimigos anunciam** sua estratégia para o turno.
+2. **Turno do herói:** compra 5 cartas, escolhe ações até passar a vez ou ficar sem energia.
+3. **Inimigos atacam** executando a estratégia planejada.
+4. **Fim de turno:** evento `FIM_TURNO` disparado para todas as entidades, ativando efeitos.
 
 O combate termina quando o herói ou todos os inimigos chegam a 0 de vida.
 
 ---
 
-## Desafio Extra — Múltiplos Inimigos
+## Desafio Extra — Interface Visual
 
-Implementado conforme o enunciado. O jogador enfrenta simultaneamente dois inimigos:
+A saída do terminal foi reformulada com:
 
-- **Sr. Doutor Cabo Arruda** (Azoide) — focado em dano.
-- **3L** (Bzoide) — focado em escudo.
+- **Arte ASCII** na tela de introdução (título "DIDI MARCO vs SR. DR. CABO ARRUDA")
+- **Texto colorido** via escape ANSI (vermelho para dano, azul para escudo, amarelo para energia, magenta para efeitos)
+- **Limpeza de tela** entre turnos com `\033[H\033[2J`
+- **Pausas entre prints** via `Thread.sleep()` para dar tempo de leitura ao jogador
+- **Cabeçalhos de turno** diferenciados por cor para herói (ciano) e inimigos (vermelho/amarelo)
+- **Cartas tachadas** quando o jogador não tem energia suficiente para jogá-las
+- Toda a lógica visual encapsulada na classe `UserInterface`, separada da lógica de negócio
 
-Cada inimigo possui vida, escudo, energia e baralho independentes. Quando uma carta tem alvo único e há mais de um inimigo vivo, o jogador escolhe qual atacar. Cartas com `multiTarget` atingem todos os inimigos vivos automaticamente.
+A classe `UserInterface` foi elaborada com o auxílio do **Claude Code**.

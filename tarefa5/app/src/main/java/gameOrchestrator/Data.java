@@ -9,6 +9,7 @@ import cards.ShieldCard;
 import deck.BuyPile;
 import effects.Effect.EffectType;
 import entities.Hero;
+import entities.enemy;
 import entities.enemies.Azoide;
 import entities.enemies.Bzoide;
 import observer.Publisher;
@@ -200,6 +201,16 @@ public class Data {
                     EffectType.POISON, 10, false, publisher, true)
         );
     }
+
+    public static final List<List<enemy>> enemies = List.of(
+        List.of(new Azoide("Sr. Doutor Cabo Arruda", 100, 10, null), new Bzoide("3L", 100, 10, null)),
+        List.of(new Azoide("Sinhô Jelado", 100, 10, null), new Bzoide("Lucas, o Ético", 100, 10, null)),
+        List.of(new Azoide("Cambuí, o Caído", 100, 10, null), new Bzoide("Cabotian, o Trancado", 100, 10, null)),
+        List.of(new Azoide("Kojak, o que promete", 100, 10, null), new Bzoide("Yugo, o Furtivo", 100, 10, null)),
+        List.of(new Azoide("Marquinhos, o Loiro", 100, 10, null), new Bzoide("Cairê, o Belo", 100, 10, null)),
+        List.of(new Azoide("Adobe, o Insociável", 100, 10, null), new Bzoide("O Inominável", 100, 10, null))
+    );
+
 
     // =========================================================================
     // Heróis e fábrica de inimigos

@@ -439,4 +439,43 @@ public final class UserInterface {
         }
         System.out.println();
     }
+
+    public static void printFaseClear() {
+        System.out.println();
+        printDivider(60, BGREEN);
+        System.out.println(BOLD + BGREEN + "  ✨ NÍVEL CONCLUÍDO! O CAMINHO DIVIDE-SE... ✨" + RESET);
+        printDivider(60, BGREEN);
+        System.out.println();
+
+        // --- OPÇÃO ESQUERDA ---
+        if(currentNode.left != null) {
+            System.out.println("  " + BCYAN + "1.  O Caminho da Esquerda" + RESET);
+            System.out.print("     " + DIM + "Inimigos à espera: " + RESET);
+            printEnemyPreview(currentNode.left.enemies);
+        }
+
+        System.out.println("\n");
+
+        // --- OPÇÃO DIREITA ---
+        if(currentNode.right != null) {
+            System.out.println("  " + BRED + "2.  O Caminho da Direita" + RESET);
+            System.out.print("     " + DIM + "Inimigos à espera: " + RESET);
+            printEnemyPreview(currentNode.right.enemies);
+        }
+
+        System.out.println("\n");
+        printChoicePrompt();
+    }
+
+    /**
+     * Método auxiliar para listar os nomes dos inimigos de forma compacta.
+     */
+    private static void printEnemyPreview(List<Enemy> enemies) {
+        for (int i = 0; i < enemies.size(); i++) {
+            System.out.print(BOLD + enemies.get(i).getName() + RESET);
+            if (i < enemies.size() - 1) {
+                System.out.print(DIM + ", " + RESET);
+            }
+        }
+    }
 }

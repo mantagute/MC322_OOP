@@ -7,11 +7,9 @@ import java.util.stream.Collectors;
 
 import gamePath.Node;
 import gamePath.TreePath;
-import cards.Card;
 import deck.BuyPile;
 import deck.DiscardPile;
 import entities.Enemy;
-import entities.Entity;
 import entities.Hero;
 import gameOrchestrator.Data.EnemyDefinition;
 import observer.Publisher;
@@ -128,24 +126,6 @@ public class App {
         System.out.println(UserInterface.RESET);
     }
 
-    /**
-     * Pausa a execução da thread atual pelo tempo especificado.
-     *
-     * <p>
-     * Caso a thread seja interrompida durante a espera, o flag de interrupção
-     * é restaurado via {@link Thread#interrupt()} para que o chamador possa
-     * tratá-lo.
-     *
-     * @param ms tempo de espera em milissegundos; valores negativos são tratados
-     *           como zero pelo {@link Thread#sleep(long)}
-     */
-    public static void Wait(int ms) {
-        try {
-            Thread.sleep(ms);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
 
     // =========================================================================
     // Inicialização
@@ -173,16 +153,7 @@ public class App {
         heroBuyPile.shuffle();
         heroDiscardPile = new DiscardPile();
 
-        for (EnemyDefinition enemyDef : this.currentNode.getEnemiesDefinitions()) {
-            Enemy enemy;
-            if (enemyDef.type() == EnemyDefinition.EnemyType.AZOIDE) {
-                enemy = new entities.enemies.Azoide(enemyDef.name(), enemyDef.health(), enemyDef.energy());
-            } else {
-                enemy = new entities.enemies.Bzoide(enemyDef.name(), enemyDef.health(), enemyDef.energy());
-            }
-            enemy.initializePublisher(publisher);
-            enemies.add(enemy);
-        }
+        loadEnemiesFromNode(currentNode);
     }
 
     public void startNewFase(Node currentNode, boolean isGoingLeft) {
@@ -196,16 +167,20 @@ public class App {
         }
 
         if (this.currentNode != null) {
-            for (EnemyDefinition enemyDef : this.currentNode.getEnemiesDefinitions()) {
-                Enemy enemy;
-                if (enemyDef.type() == EnemyDefinition.EnemyType.AZOIDE) {
-                    enemy = new entities.enemies.Azoide(enemyDef.name(), enemyDef.health(), enemyDef.energy());
-                } else {
-                    enemy = new entities.enemies.Bzoide(enemyDef.name(), enemyDef.health(), enemyDef.energy());
-                }
-                enemy.initializePublisher(publisher);
-                enemies.add(enemy);
+            loadEnemiesFromNode(this.currentNode);
+        }
+    }
+
+    public void loadEnemiesFromNode(Node node) {
+        for (EnemyDefinition enemyDef : node.getEnemiesDefinitions()) {
+            Enemy enemy;
+            if (enemyDef.type() == EnemyDefinition.EnemyType.AZOIDE) {
+                enemy = new entities.enemies.Azoide(enemyDef.name(), enemyDef.health(), enemyDef.energy());
+            } else {
+                enemy = new entities.enemies.Bzoide(enemyDef.name(), enemyDef.health(), enemyDef.energy());
             }
+            enemy.initializePublisher(publisher);
+            enemies.add(enemy);
         }
     }
 
@@ -230,229 +205,6 @@ public class App {
      */
     public List<Enemy> getEnemies() {
         return List.copyOf(enemies);
-    }
-
-    // =========================================================================
-    // Renderização do estado de combate
-    // =========================================================================
-
-    /**
-     * Renderiza o estado atual do combate no terminal.
-     *
-     * <p>
-     * Exibe o status do herói (com energia) e, abaixo, os status de todos os
-     * inimigos vivos em uma única linha separada por {@code |}.
-     */
-    private void printCombatState() {
-        UserInterface.printEntityStatus(hero, true);
-        System.out.println();
-        System.out.println(UserInterface.DIM + "  vs" + UserInterface.RESET);
-        System.out.println();
-
-        List<Enemy> aliveEnemies = enemies.stream()
-                .filter(Enemy::isAlive)
-                .collect(Collectors.toList());
-
-        if (!aliveEnemies.isEmpty()) {
-            UserInterface.printEnemiesInline(aliveEnemies);
-        }
-
-        System.out.println();
-        UserInterface.printDivider();
-        System.out.println();
-    }
-
-    // =========================================================================
-    // Turnos
-    // =========================================================================
-
-    /**
-     * Executa o turno completo do herói.
-     *
-     * <p>
-     * O turno encerra-se quando ocorre uma das seguintes condições:
-     * <ul>
-     * <li>O jogador escolhe passar a vez;</li>
-     * <li>O herói não possui energia suficiente para nenhuma carta;</li>
-     * <li>Todos os inimigos são derrotados durante o turno;</li>
-     * <li>O herói é derrotado.</li>
-     * </ul>
-     *
-     * <p>
-     * Durante o turno, o herói pode jogar cartas de dano (escolhendo um alvo
-     * específico ou atacando todos com cartas multi-alvo), cartas de escudo
-     * (auto-alvo) ou qualquer outra carta configurada.
-     *
-     * @param scanner leitor de entrada do teclado; não deve ser {@code null}
-     */
-    public void heroTurn(Scanner scanner) {
-        hero.resetShield();
-        hero.newTurn(heroBuyPile, heroDiscardPile);
-        boolean isTurnOver = false;
-
-        while (!isTurnOver && hero.isAlive() && enemies.stream().anyMatch(Enemy::isAlive)) {
-
-            UserInterface.clearScreen();
-
-            // Sem energia — passa automaticamente
-            if (!hero.hasEnoughEnergyForAnyCard()) {
-                UserInterface.printHeroTurnHeader(hero.getName());
-                printCombatState();
-                UserInterface.printNoEnergy(hero.getName());
-                Wait(2000);
-                isTurnOver = true;
-                break;
-            }
-
-            UserInterface.printHeroTurnHeader(hero.getName());
-            printCombatState();
-            UserInterface.printHand(hero, hero.getHandSize());
-            UserInterface.printPassOption(hero.getHandSize() + 1);
-            UserInterface.printChoicePrompt();
-
-            int choice = scanner.nextInt();
-
-            // Passar a vez
-            if (choice == hero.getHandSize() + 1) {
-                UserInterface.printHeroPass(hero.getName());
-                Wait(1500);
-                isTurnOver = true;
-                continue;
-            }
-
-            // Opção fora do intervalo válido
-            if (choice < 1 || choice > hero.getHandSize()) {
-                UserInterface.printError("Opção inválida. Tente novamente.");
-                Wait(1500);
-                continue;
-            }
-
-            Card chosenCard = hero.getCardFromHand(choice - 1);
-
-            // Energia insuficiente para a carta escolhida
-            if (chosenCard.getEnergyCost() > hero.getEnergy()) {
-                UserInterface.printWarning("Energia insuficiente para esta carta.");
-                Wait(1500);
-                continue;
-            }
-
-            // Jogar a carta conforme seu modo de alvo
-            if (chosenCard.isMultiTarget()) {
-                applyCardToAllEnemies(choice - 1, chosenCard);
-            } else if (chosenCard.isSelfTarget()) {
-                hero.useCard(choice - 1, hero, heroDiscardPile);
-            } else {
-                applyCardToSingleEnemy(choice - 1, scanner);
-            }
-
-            Wait(1800);
-
-            if (enemies.stream().allMatch(e -> !e.isAlive())) {
-                isTurnOver = true;
-            }
-        }
-    }
-
-    /**
-     * Aplica uma carta de multi-alvo a todos os inimigos vivos.
-     *
-     * <p>
-     * O descarte da carta é realizado apenas na primeira aplicação (via
-     * {@link Hero#useCard}); nas demais, a carta é aplicada diretamente sem
-     * ser descartada novamente.
-     *
-     * @param cardIndex índice da carta na mão do herói (base 0)
-     * @param card      carta a ser aplicada; deve ter
-     *                  {@code isMultiTarget() == true}
-     */
-    private void applyCardToAllEnemies(int cardIndex, Card card) {
-        boolean first = true;
-        for (Enemy enemy : enemies) {
-            if (enemy.isAlive()) {
-                if (first) {
-                    hero.useCard(cardIndex, enemy, heroDiscardPile);
-                    first = false;
-                } else {
-                    card.useCard(hero, enemy);
-                }
-            }
-        }
-    }
-
-    /**
-     * Solicita ao jogador que escolha um inimigo vivo e aplica a carta selecionada.
-     *
-     * <p>
-     * Se houver apenas um inimigo vivo, ele é atacado automaticamente, sem
-     * necessidade de input do jogador.
-     *
-     * @param cardIndex índice da carta na mão do herói (base 0)
-     * @param scanner   leitor de entrada do teclado; não deve ser {@code null}
-     */
-    private void applyCardToSingleEnemy(int cardIndex, Scanner scanner) {
-        List<Enemy> aliveEnemies = enemies.stream()
-                .filter(Enemy::isAlive)
-                .collect(Collectors.toList());
-
-        if (aliveEnemies.size() == 1) {
-            hero.useCard(cardIndex, aliveEnemies.get(0), heroDiscardPile);
-            return;
-        }
-
-        UserInterface.printEnemyTargetList(aliveEnemies);
-        UserInterface.printEnemyChoicePrompt();
-        int chosenEnemy = scanner.nextInt();
-
-        if (chosenEnemy < 1 || chosenEnemy > aliveEnemies.size()) {
-            UserInterface.printError("Opção inválida. Tente novamente.");
-            Wait(1500);
-            return;
-        }
-
-        hero.useCard(cardIndex, aliveEnemies.get(chosenEnemy - 1), heroDiscardPile);
-    }
-
-    /**
-     * Executa o turno dos inimigos: cada inimigo vivo compra cartas e anuncia
-     * sua estratégia para o próximo ataque.
-     *
-     * <p>
-     * O anúncio de cada inimigo é exibido com uma pausa de {@code 2500 ms}
-     * para que o jogador possa ler a intenção antes do combate.
-     */
-    public void enemyTurn() {
-        UserInterface.clearScreen();
-        UserInterface.printEnemyPlanHeader();
-        for (Enemy enemy : enemies) {
-            if (enemy.isAlive()) {
-                enemy.newTurn();
-                UserInterface.printEnemyAnnouncement(enemy.prepareForBattle());
-                Wait(2500);
-            }
-        }
-    }
-
-    // =========================================================================
-    // Observer
-    // =========================================================================
-
-    /**
-     * Dispara o evento especificado no {@link Publisher} e remove os efeitos
-     * expirados da entidade originadora.
-     *
-     * <p>
-     * Este método centraliza a integração entre o loop de combate e o padrão
-     * Observer, garantindo que efeitos temporários sejam limpos após cada turno.
-     *
-     * @param event  identificador do evento a ser publicado (ex.:
-     *               {@code "FIM_TURNO"})
-     * @param user   entidade que originou o evento; seus efeitos serão gerenciados
-     *               após a notificação
-     * @param target entidade alvo do evento
-     */
-    private void notifyAndClean(String event, Entity user, Entity target) {
-        publisher.notify(event, user, target);
-        user.manageEffects();
     }
 
     // =========================================================================
@@ -484,36 +236,20 @@ public class App {
      */
     public static void main(String[] args) throws Exception {
         App.gameIntro();
-        Wait(3000);
+        GameUtils.Wait(3000);
 
         Scanner scanner = new Scanner(System.in);
         App app = new App();
         app.start();
 
         while (app.hero.isAlive() && app.currentNode != null) {
-            app.enemyTurn();
-            app.heroTurn(scanner);
+            Battle battle = new Battle(app.hero, app.enemies, app.publisher, scanner, app.heroBuyPile, app.heroDiscardPile);
+            boolean victory = battle.runBattle();
 
-            for (Enemy enemy : app.enemies) {
-                if (enemy.isAlive()) {
-                    enemy.resetShield();
-                    UserInterface.clearScreen();
-                    UserInterface.printEnemyAttackHeader(enemy.getName());
-                    app.printCombatState();
-                    enemy.executeEnemyStrategy(app.hero);
-                    Wait(2500);
-                }
-            }
-
-            app.notifyAndClean("FIM_TURNO", app.hero, app.enemies.get(0));
-            for (Enemy enemy : app.enemies) {
-                app.notifyAndClean("FIM_TURNO", enemy, app.hero);
-            }
-
-            if (!app.enemies.stream().anyMatch(Enemy::isAlive)) {
+            if (victory) {
                 UserInterface.printFaseClear(app.currentNode);
-                Wait(2000);
-
+                GameUtils.Wait(2000);
+    
                 if (app.currentNode.getLeftNode() == null && app.currentNode.getRightNode() == null) {
                     app.currentNode = null;
                     continue;
@@ -527,7 +263,10 @@ public class App {
                     app.startNewFase(app.currentNode, isGoingLeft);
                 }
             }
-        }
+            else {
+                break;
+            }  
+    }
 
         // Coleta os nomes dos inimigos para a tela de fim de jogo
         List<String> enemyNames = app.enemies.stream()
@@ -537,7 +276,7 @@ public class App {
         UserInterface.clearScreen();
         UserInterface.printGameOver(app.hero.isAlive(), app.hero.getName(), enemyNames);
 
-        Wait(10000);
+        GameUtils.Wait(10000);
         scanner.close();
     }
 }

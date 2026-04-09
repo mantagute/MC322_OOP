@@ -5,6 +5,8 @@ import cards.DamageCard;
 import cards.ShieldCard;
 import entities.Enemy;
 import entities.Entity;
+import gameOrchestrator.Data.EnemyDefinition;
+import gamePath.Node;
 
 import java.util.List;
 
@@ -440,7 +442,7 @@ public final class UserInterface {
         System.out.println();
     }
 
-    public static void printFaseClear() {
+    public static void printFaseClear(Node currentNode) {
         System.out.println();
         printDivider(60, BGREEN);
         System.out.println(BOLD + BGREEN + "  ✨ NÍVEL CONCLUÍDO! O CAMINHO DIVIDE-SE... ✨" + RESET);
@@ -448,19 +450,19 @@ public final class UserInterface {
         System.out.println();
 
         // --- OPÇÃO ESQUERDA ---
-        if(currentNode.left != null) {
+        if(currentNode.getLeftNode() != null) {
             System.out.println("  " + BCYAN + "1.  O Caminho da Esquerda" + RESET);
             System.out.print("     " + DIM + "Inimigos à espera: " + RESET);
-            printEnemyPreview(currentNode.left.enemies);
+            printEnemyPreview(currentNode.getLeftNode().getEnemiesDefinitions());
         }
 
         System.out.println("\n");
 
         // --- OPÇÃO DIREITA ---
-        if(currentNode.right != null) {
+        if(currentNode.getRightNode() != null) {
             System.out.println("  " + BRED + "2.  O Caminho da Direita" + RESET);
             System.out.print("     " + DIM + "Inimigos à espera: " + RESET);
-            printEnemyPreview(currentNode.right.enemies);
+            printEnemyPreview(currentNode.getRightNode().getEnemiesDefinitions());
         }
 
         System.out.println("\n");
@@ -470,9 +472,9 @@ public final class UserInterface {
     /**
      * Método auxiliar para listar os nomes dos inimigos de forma compacta.
      */
-    private static void printEnemyPreview(List<Enemy> enemies) {
+    private static void printEnemyPreview(List<EnemyDefinition> enemies) {
         for (int i = 0; i < enemies.size(); i++) {
-            System.out.print(BOLD + enemies.get(i).getName() + RESET);
+            System.out.print(BOLD + enemies.get(i).name() + RESET);
             if (i < enemies.size() - 1) {
                 System.out.print(DIM + ", " + RESET);
             }

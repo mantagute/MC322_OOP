@@ -499,9 +499,8 @@ public class App {
             }
 
             if (!app.enemies.stream().anyMatch(Enemy::isAlive) && app.currentNode != null) {
-                UserInterface.printFaseClear();
+                UserInterface.printFaseClear(app.currentNode);
                 Wait(2000);
-                userInterface.printNextFasePrompt(app.currentNode);
 
                 if (app.currentNode.getLeftNode() == null && app.currentNode.getRightNode() == null) {
                     app.currentNode = null;

@@ -9,7 +9,6 @@ import cards.ShieldCard;
 import deck.BuyPile;
 import effects.Effect.EffectType;
 import entities.Hero;
-import entities.Enemy;
 import entities.enemies.Azoide;
 import entities.enemies.Bzoide;
 import observer.Publisher;
@@ -236,8 +235,8 @@ public class Data {
      * @param publisher Publisher para inscrição de efeitos
      * @return nova instância de Azoide
      */
-    public static final Azoide createAzoide(String name, double health, int energy, Publisher publisher) {
-        return new Azoide(name, health, energy, publisher);
+    public static final Azoide createAzoide(String name, double health, int energy) {
+        return new Azoide(name, health, energy);
     }
 
     /**
@@ -249,8 +248,8 @@ public class Data {
      * @param publisher Publisher para inscrição de efeitos
      * @return nova instância de Bzoide
      */
-    public static final Bzoide createBzoide(String name, double health, int energy, Publisher publisher) {
-        return new Bzoide(name, health, energy, publisher);
+    public static final Bzoide createBzoide(String name, double health, int energy) {
+        return new Bzoide(name, health, energy);
     }
 
     // =========================================================================

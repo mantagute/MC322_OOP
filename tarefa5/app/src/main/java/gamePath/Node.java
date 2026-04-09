@@ -6,8 +6,8 @@ import java.util.List;
 import gameOrchestrator.Data.EnemyDefinition;
 
 public class Node {
-    List<EnemyDefinition> enemies;
-    Node left, right;
+    private List<EnemyDefinition> enemies;
+    protected Node left, right;
 
     public Node(List<EnemyDefinition> enemies) {
         this.enemies = new ArrayList<EnemyDefinition>(enemies);

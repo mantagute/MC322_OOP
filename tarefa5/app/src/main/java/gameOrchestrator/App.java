@@ -172,6 +172,17 @@ public class App {
         Data.fillPile(heroBuyPile, Data.heroEffectCards(publisher));
         heroBuyPile.shuffle();
         heroDiscardPile = new DiscardPile();
+
+        for (EnemyDefinition enemyDef : this.currentNode.getEnemiesDefinitions()) {
+            Enemy enemy;
+            if (enemyDef.type() == EnemyDefinition.EnemyType.AZOIDE) {
+                enemy = new entities.enemies.Azoide(enemyDef.name(), enemyDef.health(), enemyDef.energy());
+            } else {
+                enemy = new entities.enemies.Bzoide(enemyDef.name(), enemyDef.health(), enemyDef.energy());
+            }
+            enemy.initializePublisher(publisher);
+            enemies.add(enemy);
+        }
     }
 
     public void startNewFase(Node currentNode, boolean isGoingLeft) {
@@ -479,7 +490,7 @@ public class App {
         App app = new App();
         app.start();
 
-        while (app.hero.isAlive() && app.enemies.stream().anyMatch(Enemy::isAlive) && app.currentNode != null) {
+        while (app.hero.isAlive() && app.currentNode != null) {
             app.enemyTurn();
             app.heroTurn(scanner);
 
@@ -499,7 +510,7 @@ public class App {
                 app.notifyAndClean("FIM_TURNO", enemy, app.hero);
             }
 
-            if (!app.enemies.stream().anyMatch(Enemy::isAlive) && app.currentNode != null) {
+            if (!app.enemies.stream().anyMatch(Enemy::isAlive)) {
                 UserInterface.printFaseClear(app.currentNode);
                 Wait(2000);
 

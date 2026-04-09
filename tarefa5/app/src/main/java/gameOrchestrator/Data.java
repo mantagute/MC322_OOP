@@ -207,7 +207,9 @@ public class Data {
         List.of(new EnemyDefinition("Cambuí, o Caído", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Cabotian, o Trancado", 100, 10, EnemyDefinition.EnemyType.BZOIDE)),
         List.of(new EnemyDefinition("Kojak, o que promete", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Yugo, o Furtivo", 100, 10, EnemyDefinition.EnemyType.BZOIDE)),
         List.of(new EnemyDefinition("Marquinhos, o Loiro", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Cairê, o Belo", 100, 10, EnemyDefinition.EnemyType.BZOIDE)),
-        List.of(new EnemyDefinition("Adobe, o Insociável", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("O Inominável", 100, 10, EnemyDefinition.EnemyType.BZOIDE))
+        List.of(new EnemyDefinition("Adobe, o Insociável", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("O Inominável", 100, 10, EnemyDefinition.EnemyType.BZOIDE)),
+        List.of(new EnemyDefinition("GS, o Doutrinador", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Zé, O sapo", 100, 10, EnemyDefinition.EnemyType.BZOIDE))
+
     );
     
     public record EnemyDefinition(String name, double health, int energy, EnemyType type) {

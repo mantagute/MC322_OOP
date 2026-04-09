@@ -7,8 +7,10 @@ import entities.Enemy;
 import entities.Entity;
 import gameOrchestrator.Data.EnemyDefinition;
 import gamePath.Node;
+import entities.Hero;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Classe utilitária estática responsável por toda a renderização visual do jogo
@@ -101,7 +103,7 @@ public final class UserInterface {
      * visual entre estados do jogo.
      */
     public static void clearScreen() {
-        App.Wait(600);
+        GameUtils.Wait(600);
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
@@ -480,4 +482,37 @@ public final class UserInterface {
             }
         }
     }
+
+
+    // =========================================================================
+    // Renderização do estado de combate
+    // =========================================================================
+
+    /**
+     * Renderiza o estado atual do combate no terminal.
+     *
+     * <p>
+     * Exibe o status do herói (com energia) e, abaixo, os status de todos os
+     * inimigos vivos em uma única linha separada por {@code |}.
+     */
+    public static void printCombatState(Hero hero, List<Enemy> enemies) {
+        UserInterface.printEntityStatus(hero, true);
+        System.out.println();
+        System.out.println(UserInterface.DIM + "  vs" + UserInterface.RESET);
+        System.out.println();
+
+        List<Enemy> aliveEnemies = enemies.stream()
+                .filter(Enemy::isAlive)
+                .collect(Collectors.toList());
+
+        if (!aliveEnemies.isEmpty()) {
+            UserInterface.printEnemiesInline(aliveEnemies);
+        }
+
+        System.out.println();
+        UserInterface.printDivider();
+        System.out.println();
+    }
+
+
 }

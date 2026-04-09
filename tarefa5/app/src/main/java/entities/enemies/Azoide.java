@@ -4,7 +4,6 @@ import cards.Card;
 import cards.DamageCard;
 import entities.Enemy;
 import gameOrchestrator.Data;
-import observer.Publisher;
 
 /**
  * Inimigo do tipo Azoide — focado em cartas de ataque.
@@ -21,8 +20,8 @@ public class Azoide extends Enemy {
      * @param energy    energia máxima por turno
      * @param publisher Publisher para efeitos de status
      */
-    public Azoide(String name, double health, int energy, Publisher publisher) {
-        super(name, health, energy, publisher);
+    public Azoide(String name, double health, int energy) {
+        super(name, health, energy);
     }
 
     /**
@@ -46,7 +45,6 @@ public class Azoide extends Enemy {
      * Inicializa o baralho do Azoide com cartas de dano, escudo e efeitos,
      * conforme definido em {@link Data}.
      */
-    @Override
     public void initializeDeck() {
         for (Card card : Data.azoideDamageCards) addCardToBuypile(card);
         for (Card card : Data.azoideShieldCards) addCardToBuypile(card);

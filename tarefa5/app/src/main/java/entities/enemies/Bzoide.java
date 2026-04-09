@@ -3,7 +3,6 @@ package entities.enemies;
 import cards.Card;
 import cards.ShieldCard;
 import entities.Enemy;
-import observer.Publisher;
 import gameOrchestrator.Data;
 
 /**
@@ -19,10 +18,9 @@ public class Bzoide extends Enemy {
      * @param name      nome do Bzoide
      * @param health    pontos de vida iniciais
      * @param energy    energia máxima por turno
-     * @param publisher Publisher para efeitos de status
      */
-    public Bzoide(String name, double health, int energy, Publisher publisher) {
-        super(name, health, energy, publisher);
+    public Bzoide(String name, double health, int energy) {
+        super(name, health, energy);
     }
 
     /**
@@ -46,7 +44,6 @@ public class Bzoide extends Enemy {
      * Inicializa o baralho do Bzoide com cartas de dano, escudo e efeitos,
      * conforme definido em {@link Data}.
      */
-    @Override
     public void initializeDeck() {
         for (Card card : Data.bzoideDamageCards) addCardToBuypile(card);
         for (Card card : Data.bzoideShieldCards) addCardToBuypile(card);

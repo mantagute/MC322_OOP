@@ -5,38 +5,48 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+import gamePath.Node;
+import gamePath.TreePath;
 import cards.Card;
 import deck.BuyPile;
 import deck.DiscardPile;
 import entities.Enemy;
 import entities.Entity;
 import entities.Hero;
+import gameOrchestrator.Data.EnemyDefinition;
 import observer.Publisher;
 
 /**
- * Classe principal do jogo — orquestra o loop de batalha entre o herói e os inimigos.
+ * Classe principal do jogo — orquestra o loop de batalha entre o herói e os
+ * inimigos.
  *
- * <p>Responsabilidades desta classe:
+ * <p>
+ * Responsabilidades desta classe:
  * <ul>
- *   <li>Inicializar as entidades e baralhos do jogo via {@link Data};</li>
- *   <li>Gerenciar os turnos do herói e dos inimigos;</li>
- *   <li>Disparar notificações de fim de turno para o sistema Observer;</li>
- *   <li>Delegar toda a renderização visual a {@link UserInterface}.</li>
+ * <li>Inicializar as entidades e baralhos do jogo via {@link Data};</li>
+ * <li>Gerenciar os turnos do herói e dos inimigos;</li>
+ * <li>Disparar notificações de fim de turno para o sistema Observer;</li>
+ * <li>Delegar toda a renderização visual a {@link UserInterface}.</li>
  * </ul>
  *
- * <p>Princípios de POO aplicados:
+ * <p>
+ * Princípios de POO aplicados:
  * <ul>
- *   <li><b>Encapsulamento:</b> todos os campos de instância são {@code private},
- *       sendo acessados apenas pelos métodos desta classe ou por getters explícitos,
- *       evitando acesso direto via {@code app.campo} de fora da classe.</li>
- *   <li><b>Responsabilidade única (SRP):</b> {@code App} orquestra o fluxo do jogo,
- *       enquanto {@link UserInterface} cuida exclusivamente da apresentação e
- *       {@link Data} da criação de entidades.</li>
- *   <li><b>Separação de interesses:</b> a lógica de negócio (turno, combate, Observer)
- *       está separada da lógica de renderização (UserInterface) e de dados (Data).</li>
+ * <li><b>Encapsulamento:</b> todos os campos de instância são {@code private},
+ * sendo acessados apenas pelos métodos desta classe ou por getters explícitos,
+ * evitando acesso direto via {@code app.campo} de fora da classe.</li>
+ * <li><b>Responsabilidade única (SRP):</b> {@code App} orquestra o fluxo do
+ * jogo,
+ * enquanto {@link UserInterface} cuida exclusivamente da apresentação e
+ * {@link Data} da criação de entidades.</li>
+ * <li><b>Separação de interesses:</b> a lógica de negócio (turno, combate,
+ * Observer)
+ * está separada da lógica de renderização (UserInterface) e de dados
+ * (Data).</li>
  * </ul>
  *
- * <p>O ponto de entrada da aplicação é o método {@link #main(String[])}.
+ * <p>
+ * O ponto de entrada da aplicação é o método {@link #main(String[])}.
  *
  * @see Data
  * @see UserInterface
@@ -54,20 +64,29 @@ public class App {
     /** Lista de inimigos presentes no combate. */
     private List<Enemy> enemies = new ArrayList<>();
 
-    /** Pilha de compra do herói. Reabastecida automaticamente pelo descarte quando vazia. */
+    /** Árvore que representa o caminho do jogo. */
+    private TreePath treePath;
+
+    /** Nó atual na árvore do jogo. */
+    private Node currentNode;
+
+    /**
+     * Pilha de compra do herói. Reabastecida automaticamente pelo descarte quando
+     * vazia.
+     */
     private BuyPile heroBuyPile;
 
     /** Pilha de descarte do herói. Recebe as cartas jogadas durante o turno. */
     private DiscardPile heroDiscardPile;
-
+    
     /**
      * Publisher central do padrão Observer.
      *
-     * <p>Compartilhado por todos os efeitos do jogo para garantir que um único
+     * <p>
+     * Compartilhado por todos os efeitos do jogo para garantir que um único
      * barramento de eventos gerencie as assinaturas e notificações.
      */
     private Publisher publisher = new Publisher();
-
     // =========================================================================
     // Utilitários de terminal
     // =========================================================================
@@ -75,7 +94,8 @@ public class App {
     /**
      * Exibe a tela de introdução do jogo com arte ASCII colorida via ANSI.
      *
-     * <p>Imprime o título "DIDI MARCO" versus "SR. DR. CABO ARRUDA" em arte
+     * <p>
+     * Imprime o título "DIDI MARCO" versus "SR. DR. CABO ARRUDA" em arte
      * ASCII, usando as constantes de cor definidas em {@link UserInterface}.
      */
     public static void gameIntro() {
@@ -88,7 +108,8 @@ public class App {
         System.out.println(" |_____/|_____|_____/_____| |_|  |_/_/    \\_\\_|  \\_\\\\_____\\____/ ");
         System.out.println(UserInterface.RESET);
 
-        System.out.println(UserInterface.BOLD + UserInterface.WHITE + "                            V S" + UserInterface.RESET);
+        System.out.println(
+                UserInterface.BOLD + UserInterface.WHITE + "                            V S" + UserInterface.RESET);
         System.out.println();
 
         System.out.println(UserInterface.BOLD + UserInterface.BRED);
@@ -110,8 +131,10 @@ public class App {
     /**
      * Pausa a execução da thread atual pelo tempo especificado.
      *
-     * <p>Caso a thread seja interrompida durante a espera, o flag de interrupção
-     * é restaurado via {@link Thread#interrupt()} para que o chamador possa tratá-lo.
+     * <p>
+     * Caso a thread seja interrompida durante a espera, o flag de interrupção
+     * é restaurado via {@link Thread#interrupt()} para que o chamador possa
+     * tratá-lo.
      *
      * @param ms tempo de espera em milissegundos; valores negativos são tratados
      *           como zero pelo {@link Thread#sleep(long)}
@@ -129,14 +152,19 @@ public class App {
     // =========================================================================
 
     /**
-     * Inicializa o estado do jogo: instancia o herói, monta e embaralha seu baralho,
+     * Inicializa o estado do jogo: instancia o herói, monta e embaralha seu
+     * baralho,
      * e cria os inimigos conforme definido em {@link Data}.
      *
-     * <p>Este método deve ser chamado exatamente uma vez, antes de qualquer chamada
+     * <p>
+     * Este método deve ser chamado exatamente uma vez, antes de qualquer chamada
      * a {@link #heroTurn(Scanner)} ou {@link #enemyTurn()}.
      */
     public void start() {
         hero = Data.heroes.get(0);
+
+        treePath = new TreePath(Data.enemies);
+        currentNode = treePath.getRoot();
 
         heroBuyPile = new BuyPile();
         Data.fillPile(heroBuyPile, Data.heroDamageCards);
@@ -145,8 +173,40 @@ public class App {
         heroBuyPile.shuffle();
         heroDiscardPile = new DiscardPile();
 
-        enemies.add(Data.createAzoide("Sr. Doutor Cabo Arruda", 100, 10, publisher));
-        enemies.add(Data.createBzoide("3L", 100, 10, publisher));
+        for (EnemyDefinition enemyDef : this.currentNode.getEnemiesDefinitions()) {
+            Enemy enemy;
+            if (enemyDef.type() == EnemyDefinition.EnemyType.AZOIDE) {
+                enemy = new entities.enemies.Azoide(enemyDef.name(), enemyDef.health(), enemyDef.energy());
+            } else {
+                enemy = new entities.enemies.Bzoide(enemyDef.name(), enemyDef.health(), enemyDef.energy());
+            }
+            enemy.initializePublisher(publisher);
+            enemies.add(enemy);
+        }
+    }
+
+    public void startNewFase(Node currentNode, boolean isGoingLeft) {
+        enemies.clear();
+        publisher.resetPublisher();
+        hero.clearEffects();
+        if (isGoingLeft) {
+            this.currentNode = currentNode.getLeftNode();
+        } else {
+            this.currentNode = currentNode.getRightNode();
+        }
+
+        if (this.currentNode != null) {
+            for (EnemyDefinition enemyDef : this.currentNode.getEnemiesDefinitions()) {
+                Enemy enemy;
+                if (enemyDef.type() == EnemyDefinition.EnemyType.AZOIDE) {
+                    enemy = new entities.enemies.Azoide(enemyDef.name(), enemyDef.health(), enemyDef.energy());
+                } else {
+                    enemy = new entities.enemies.Bzoide(enemyDef.name(), enemyDef.health(), enemyDef.energy());
+                }
+                enemy.initializePublisher(publisher);
+                enemies.add(enemy);
+            }
+        }
     }
 
     // =========================================================================
@@ -156,7 +216,8 @@ public class App {
     /**
      * Retorna o herói controlado pelo jogador.
      *
-     * @return o {@link Hero} atual; {@code null} se {@link #start()} ainda não foi chamado
+     * @return o {@link Hero} atual; {@code null} se {@link #start()} ainda não foi
+     *         chamado
      */
     public Hero getHero() {
         return hero;
@@ -178,7 +239,8 @@ public class App {
     /**
      * Renderiza o estado atual do combate no terminal.
      *
-     * <p>Exibe o status do herói (com energia) e, abaixo, os status de todos os
+     * <p>
+     * Exibe o status do herói (com energia) e, abaixo, os status de todos os
      * inimigos vivos em uma única linha separada por {@code |}.
      */
     private void printCombatState() {
@@ -207,15 +269,17 @@ public class App {
     /**
      * Executa o turno completo do herói.
      *
-     * <p>O turno encerra-se quando ocorre uma das seguintes condições:
+     * <p>
+     * O turno encerra-se quando ocorre uma das seguintes condições:
      * <ul>
-     *   <li>O jogador escolhe passar a vez;</li>
-     *   <li>O herói não possui energia suficiente para nenhuma carta;</li>
-     *   <li>Todos os inimigos são derrotados durante o turno;</li>
-     *   <li>O herói é derrotado.</li>
+     * <li>O jogador escolhe passar a vez;</li>
+     * <li>O herói não possui energia suficiente para nenhuma carta;</li>
+     * <li>Todos os inimigos são derrotados durante o turno;</li>
+     * <li>O herói é derrotado.</li>
      * </ul>
      *
-     * <p>Durante o turno, o herói pode jogar cartas de dano (escolhendo um alvo
+     * <p>
+     * Durante o turno, o herói pode jogar cartas de dano (escolhendo um alvo
      * específico ou atacando todos com cartas multi-alvo), cartas de escudo
      * (auto-alvo) ou qualquer outra carta configurada.
      *
@@ -292,12 +356,14 @@ public class App {
     /**
      * Aplica uma carta de multi-alvo a todos os inimigos vivos.
      *
-     * <p>O descarte da carta é realizado apenas na primeira aplicação (via
+     * <p>
+     * O descarte da carta é realizado apenas na primeira aplicação (via
      * {@link Hero#useCard}); nas demais, a carta é aplicada diretamente sem
      * ser descartada novamente.
      *
      * @param cardIndex índice da carta na mão do herói (base 0)
-     * @param card      carta a ser aplicada; deve ter {@code isMultiTarget() == true}
+     * @param card      carta a ser aplicada; deve ter
+     *                  {@code isMultiTarget() == true}
      */
     private void applyCardToAllEnemies(int cardIndex, Card card) {
         boolean first = true;
@@ -316,7 +382,8 @@ public class App {
     /**
      * Solicita ao jogador que escolha um inimigo vivo e aplica a carta selecionada.
      *
-     * <p>Se houver apenas um inimigo vivo, ele é atacado automaticamente, sem
+     * <p>
+     * Se houver apenas um inimigo vivo, ele é atacado automaticamente, sem
      * necessidade de input do jogador.
      *
      * @param cardIndex índice da carta na mão do herói (base 0)
@@ -349,7 +416,8 @@ public class App {
      * Executa o turno dos inimigos: cada inimigo vivo compra cartas e anuncia
      * sua estratégia para o próximo ataque.
      *
-     * <p>O anúncio de cada inimigo é exibido com uma pausa de {@code 2500 ms}
+     * <p>
+     * O anúncio de cada inimigo é exibido com uma pausa de {@code 2500 ms}
      * para que o jogador possa ler a intenção antes do combate.
      */
     public void enemyTurn() {
@@ -372,10 +440,12 @@ public class App {
      * Dispara o evento especificado no {@link Publisher} e remove os efeitos
      * expirados da entidade originadora.
      *
-     * <p>Este método centraliza a integração entre o loop de combate e o padrão
+     * <p>
+     * Este método centraliza a integração entre o loop de combate e o padrão
      * Observer, garantindo que efeitos temporários sejam limpos após cada turno.
      *
-     * @param event  identificador do evento a ser publicado (ex.: {@code "FIM_TURNO"})
+     * @param event  identificador do evento a ser publicado (ex.:
+     *               {@code "FIM_TURNO"})
      * @param user   entidade que originou o evento; seus efeitos serão gerenciados
      *               após a notificação
      * @param target entidade alvo do evento
@@ -392,20 +462,21 @@ public class App {
     /**
      * Ponto de entrada da aplicação.
      *
-     * <p>Sequência de execução:
+     * <p>
+     * Sequência de execução:
      * <ol>
-     *   <li>Exibe a tela de introdução e aguarda {@code 3000 ms};</li>
-     *   <li>Inicializa o estado do jogo via {@link #start()};</li>
-     *   <li>Executa o loop de batalha enquanto o herói e pelo menos um inimigo
-     *       estiverem vivos:
-     *       <ol>
-     *         <li>Turno dos inimigos ({@link #enemyTurn()});</li>
-     *         <li>Turno do herói ({@link #heroTurn(Scanner)});</li>
-     *         <li>Execução dos ataques dos inimigos vivos;</li>
-     *         <li>Notificação de fim de turno para todas as entidades.</li>
-     *       </ol>
-     *   </li>
-     *   <li>Exibe a tela de fim de jogo e aguarda {@code 10000 ms}.</li>
+     * <li>Exibe a tela de introdução e aguarda {@code 3000 ms};</li>
+     * <li>Inicializa o estado do jogo via {@link #start()};</li>
+     * <li>Executa o loop de batalha enquanto o herói e pelo menos um inimigo
+     * estiverem vivos:
+     * <ol>
+     * <li>Turno dos inimigos ({@link #enemyTurn()});</li>
+     * <li>Turno do herói ({@link #heroTurn(Scanner)});</li>
+     * <li>Execução dos ataques dos inimigos vivos;</li>
+     * <li>Notificação de fim de turno para todas as entidades.</li>
+     * </ol>
+     * </li>
+     * <li>Exibe a tela de fim de jogo e aguarda {@code 10000 ms}.</li>
      * </ol>
      *
      * @param args argumentos de linha de comando (não utilizados)
@@ -419,7 +490,7 @@ public class App {
         App app = new App();
         app.start();
 
-        while (app.hero.isAlive() && app.enemies.stream().anyMatch(Enemy::isAlive)) {
+        while (app.hero.isAlive() && app.currentNode != null) {
             app.enemyTurn();
             app.heroTurn(scanner);
 
@@ -437,6 +508,24 @@ public class App {
             app.notifyAndClean("FIM_TURNO", app.hero, app.enemies.get(0));
             for (Enemy enemy : app.enemies) {
                 app.notifyAndClean("FIM_TURNO", enemy, app.hero);
+            }
+
+            if (!app.enemies.stream().anyMatch(Enemy::isAlive)) {
+                UserInterface.printFaseClear(app.currentNode);
+                Wait(2000);
+
+                if (app.currentNode.getLeftNode() == null && app.currentNode.getRightNode() == null) {
+                    app.currentNode = null;
+                    continue;
+                } else if (app.currentNode.getLeftNode() == null) {
+                    app.startNewFase(app.currentNode, false);
+                } else if (app.currentNode.getRightNode() == null) {
+                    app.startNewFase(app.currentNode, true);
+                } else {
+                    int choice = scanner.nextInt();
+                    boolean isGoingLeft = (choice == 1) ? true : false;
+                    app.startNewFase(app.currentNode, isGoingLeft);
+                }
             }
         }
 

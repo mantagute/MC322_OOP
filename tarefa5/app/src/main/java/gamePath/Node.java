@@ -7,7 +7,7 @@ import gameOrchestrator.Data.EnemyDefinition;
 
 public class Node {
     private List<EnemyDefinition> enemies;
-    protected Node left, right;
+    private Node left, right;
 
     public Node(List<EnemyDefinition> enemies) {
         this.enemies = new ArrayList<EnemyDefinition>(enemies);
@@ -23,6 +23,16 @@ public class Node {
     }
 
     public Node getRightNode() {
+        return right;
+    }
+
+    protected Node setLeftNode(Node left) {
+        this.left = left;
+        return left;
+    }
+
+    protected Node setRightNode(Node right) {
+        this.right = right;
         return right;
     }
 }

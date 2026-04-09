@@ -156,7 +156,7 @@ public class App {
         loadEnemiesFromNode(currentNode);
     }
 
-    public void startNewFase(Node currentNode, boolean isGoingLeft) {
+    private void startNewFase(Node currentNode, boolean isGoingLeft) {
         enemies.clear();
         publisher.resetPublisher();
         hero.clearEffects();
@@ -171,7 +171,7 @@ public class App {
         }
     }
 
-    public void loadEnemiesFromNode(Node node) {
+    private void loadEnemiesFromNode(Node node) {
         for (EnemyDefinition enemyDef : node.getEnemiesDefinitions()) {
             Enemy enemy;
             if (enemyDef.type() == EnemyDefinition.EnemyType.AZOIDE) {

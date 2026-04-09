@@ -18,8 +18,8 @@ public class TreePath {
         int mid = (start + end) / 2;
         Node node = new Node(enemies.get(mid));
 
-        node.left = listToTree(enemies, start, mid - 1);
-        node.right = listToTree(enemies, mid + 1, end);
+        node.setLeftNode(listToTree(enemies, start, mid - 1));
+        node.setRightNode(listToTree(enemies, mid + 1, end));
 
         return node;
     }

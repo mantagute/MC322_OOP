@@ -1,11 +1,16 @@
+package gamePath;
+
+import java.util.List;
+import gameOrchestrator.Data.EnemyDefinition;
+
 public class TreePath {
     Node root;
 
-    public void TreePath(List<List<enemy>> enemies) {
+    public TreePath(List<List<EnemyDefinition>> enemies) {
         this.root = listToTree(enemies, 0, enemies.size() - 1);
     }
 
-    private listToTree(List<List<enemy>> enemies, int start, int end) {
+    private Node listToTree(List<List<EnemyDefinition>> enemies, int start, int end) {
         if (start > end) {
             return null;
         }
@@ -17,5 +22,9 @@ public class TreePath {
         node.right = listToTree(enemies, mid + 1, end);
 
         return node;
+    }
+
+    public Node getRoot() {
+        return root;
     }
 }

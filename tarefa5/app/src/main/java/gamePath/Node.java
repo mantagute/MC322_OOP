@@ -1,15 +1,28 @@
 package gamePath;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import entities.enemy;;
+import gameOrchestrator.Data.EnemyDefinition;
 
 public class Node {
-    List<enemy> enemies;
+    List<EnemyDefinition> enemies;
     Node left, right;
 
-    Node(List<enemy> enemies) {
-        this.enemies = new ArrayList<enemy>(enemies);
+    public Node(List<EnemyDefinition> enemies) {
+        this.enemies = new ArrayList<EnemyDefinition>(enemies);
         left = right = null;
+    }
+
+    public List<EnemyDefinition> getEnemiesDefinitions() {
+        return enemies;
+    }
+
+    public Node getLeftNode() {
+        return left;
+    }
+
+    public Node getRightNode() {
+        return right;
     }
 }

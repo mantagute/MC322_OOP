@@ -13,6 +13,7 @@ import deck.DiscardPile;
 import entities.Enemy;
 import entities.Entity;
 import entities.Hero;
+import gameOrchestrator.Data.EnemyDefinition;
 import observer.Publisher;
 
 /**
@@ -77,7 +78,7 @@ public class App {
 
     /** Pilha de descarte do herói. Recebe as cartas jogadas durante o turno. */
     private DiscardPile heroDiscardPile;
-
+    
     /**
      * Publisher central do padrão Observer.
      *
@@ -86,7 +87,6 @@ public class App {
      * barramento de eventos gerencie as assinaturas e notificações.
      */
     private Publisher publisher = new Publisher();
-
     // =========================================================================
     // Utilitários de terminal
     // =========================================================================
@@ -164,7 +164,7 @@ public class App {
         hero = Data.heroes.get(0);
 
         treePath = new TreePath(Data.enemies);
-        currentNode = treePath.root;
+        currentNode = treePath.getRoot();
 
         heroBuyPile = new BuyPile();
         Data.fillPile(heroBuyPile, Data.heroDamageCards);
@@ -175,14 +175,25 @@ public class App {
     }
 
     public void startNewFase(Node currentNode, boolean isGoingLeft) {
+        enemies.clear();
+        publisher.resetPublisher();
         if (isGoingLeft) {
-            currentNode = currentNode.left;
+            this.currentNode = currentNode.getLeftNode();
         } else {
-            currentNode = currentNode.right;
+            this.currentNode = currentNode.getRightNode();
         }
 
-        if (currentNode != null) {
-            enemies = currentNode.enemies;
+        if (this.currentNode != null) {
+            for (EnemyDefinition enemyDef : this.currentNode.getEnemiesDefinitions()) {
+                Enemy enemy;
+                if (enemyDef.type() == EnemyDefinition.EnemyType.AZOIDE) {
+                    enemy = new entities.enemies.Azoide(enemyDef.name(), enemyDef.health(), enemyDef.energy());
+                } else {
+                    enemy = new entities.enemies.Bzoide(enemyDef.name(), enemyDef.health(), enemyDef.energy());
+                }
+                enemy.initializePublisher(publisher);
+                enemies.add(enemy);
+            }
         }
     }
 
@@ -492,12 +503,12 @@ public class App {
                 Wait(2000);
                 userInterface.printNextFasePrompt(app.currentNode);
 
-                if (app.currentNode.left == null && app.currentNode.right == null) {
+                if (app.currentNode.getLeftNode() == null && app.currentNode.getRightNode() == null) {
                     app.currentNode = null;
                     continue;
-                } else if (app.currentNode.left == null) {
+                } else if (app.currentNode.getLeftNode() == null) {
                     app.startNewFase(app.currentNode, false);
-                } else if (app.currentNode.right == null) {
+                } else if (app.currentNode.getRightNode() == null) {
                     app.startNewFase(app.currentNode, true);
                 } else {
                     int choice = scanner.nextInt();

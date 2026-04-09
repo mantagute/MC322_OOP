@@ -9,7 +9,7 @@ import cards.ShieldCard;
 import deck.BuyPile;
 import effects.Effect.EffectType;
 import entities.Hero;
-import entities.enemy;
+import entities.Enemy;
 import entities.enemies.Azoide;
 import entities.enemies.Bzoide;
 import observer.Publisher;
@@ -202,15 +202,18 @@ public class Data {
         );
     }
 
-    public static final List<List<enemy>> enemies = List.of(
-        List.of(new Azoide("Sr. Doutor Cabo Arruda", 100, 10, null), new Bzoide("3L", 100, 10, null)),
-        List.of(new Azoide("Sinhô Jelado", 100, 10, null), new Bzoide("Lucas, o Ético", 100, 10, null)),
-        List.of(new Azoide("Cambuí, o Caído", 100, 10, null), new Bzoide("Cabotian, o Trancado", 100, 10, null)),
-        List.of(new Azoide("Kojak, o que promete", 100, 10, null), new Bzoide("Yugo, o Furtivo", 100, 10, null)),
-        List.of(new Azoide("Marquinhos, o Loiro", 100, 10, null), new Bzoide("Cairê, o Belo", 100, 10, null)),
-        List.of(new Azoide("Adobe, o Insociável", 100, 10, null), new Bzoide("O Inominável", 100, 10, null))
+    public static final List<List<EnemyDefinition>> enemies = List.of(
+        List.of(new EnemyDefinition("Sr. Doutor Cabo Arruda", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("3L", 100, 10, EnemyDefinition.EnemyType.BZOIDE)),
+        List.of(new EnemyDefinition("Sinhô Jelado", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Lucas, o Ético", 100, 10, EnemyDefinition.EnemyType.BZOIDE)),
+        List.of(new EnemyDefinition("Cambuí, o Caído", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Cabotian, o Trancado", 100, 10, EnemyDefinition.EnemyType.BZOIDE)),
+        List.of(new EnemyDefinition("Kojak, o que promete", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Yugo, o Furtivo", 100, 10, EnemyDefinition.EnemyType.BZOIDE)),
+        List.of(new EnemyDefinition("Marquinhos, o Loiro", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Cairê, o Belo", 100, 10, EnemyDefinition.EnemyType.BZOIDE)),
+        List.of(new EnemyDefinition("Adobe, o Insociável", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("O Inominável", 100, 10, EnemyDefinition.EnemyType.BZOIDE))
     );
-
+    
+    public record EnemyDefinition(String name, double health, int energy, EnemyType type) {
+        enum EnemyType { AZOIDE, BZOIDE }
+    }
 
     // =========================================================================
     // Heróis e fábrica de inimigos

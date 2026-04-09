@@ -50,4 +50,8 @@ public class Publisher {
             subscriber.beNotified(event, user, target);
         }
     }
+
+    public void resetPublisher() {
+        subscribers.clear();
+    }
 }

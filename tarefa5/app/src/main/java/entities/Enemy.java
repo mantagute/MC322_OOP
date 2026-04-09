@@ -28,15 +28,17 @@ public abstract class Enemy extends Entity {
     protected Publisher publisher;
 
     /**
-     * Constrói um inimigo com os atributos base e inicializa seu baralho.
+     * Constrói um inimigo com os atributos base.
      *
      * @param name      nome do inimigo
      * @param health    pontos de vida iniciais
      * @param energy    energia máxima por turno
-     * @param publisher Publisher para efeitos de status
      */
-    public Enemy(String name, double health, int energy, Publisher publisher) {
+    public Enemy(String name, double health, int energy) {
         super(name, health, energy);
+    }
+
+    public void initializePublisher(Publisher publisher) {
         this.publisher = publisher;
         initializeDeck();
     }

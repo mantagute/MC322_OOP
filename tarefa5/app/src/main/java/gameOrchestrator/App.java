@@ -177,6 +177,7 @@ public class App {
     public void startNewFase(Node currentNode, boolean isGoingLeft) {
         enemies.clear();
         publisher.resetPublisher();
+        hero.clearEffects();
         if (isGoingLeft) {
             this.currentNode = currentNode.getLeftNode();
         } else {

@@ -73,6 +73,10 @@ public abstract class Entity {
         effects.add(newEffect);
     }
 
+    public void clearEffects() {
+        effects.clear();
+    }
+
     /**
      * Aplica o multiplicador do efeito Strength sobre um valor base.
      * Se a entidade não possui Strength ativo, retorna o valor original.

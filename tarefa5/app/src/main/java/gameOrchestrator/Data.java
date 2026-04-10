@@ -9,8 +9,6 @@ import cards.ShieldCard;
 import deck.BuyPile;
 import effects.Effect.EffectType;
 import entities.Hero;
-import entities.enemies.Azoide;
-import entities.enemies.Bzoide;
 import observer.Publisher;
 
 /**
@@ -31,6 +29,11 @@ import observer.Publisher;
  * @see cards.EffectCard
  */
 public class Data {
+
+    /**
+     * Classe utilitária de dados — não deve ser instanciada.
+     */
+    private Data() {}
 
     // =========================================================================
     // Cartas do Azoide
@@ -201,6 +204,12 @@ public class Data {
         );
     }
 
+    /**
+     * Lista de grupos de inimigos usada para construir a árvore de progressão.
+     * Cada elemento representa os inimigos de um nó do mapa.
+     * O elemento central torna-se a raiz; os demais formam as subárvores.
+     */
+
     public static final List<List<EnemyDefinition>> enemies = List.of(
         List.of(new EnemyDefinition("Sr. Doutor Cabo Arruda", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("3L", 100, 10, EnemyDefinition.EnemyType.BZOIDE)),
         List.of(new EnemyDefinition("Sinhô Jelado", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Lucas, o Ético", 100, 10, EnemyDefinition.EnemyType.BZOIDE)),
@@ -211,6 +220,15 @@ public class Data {
         List.of(new EnemyDefinition("GS, o Doutrinador", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Zé, O sapo", 100, 10, EnemyDefinition.EnemyType.BZOIDE))
 
     );
+
+    /**
+     * Define um inimigo com seus atributos e tipo.
+     *
+     * @param name   nome do inimigo
+     * @param health pontos de vida iniciais
+     * @param energy energia máxima por turno
+     * @param type   tipo do inimigo ({@link EnemyDefinition.EnemyType})
+     */
     
     public record EnemyDefinition(String name, double health, int energy, EnemyType type) {
         enum EnemyType { AZOIDE, BZOIDE }
@@ -227,32 +245,6 @@ public class Data {
     public static final List<Hero> heroes = List.of(
         new Hero("Didi Marco", 200, 10)
     );
-
-    /**
-     * Cria e retorna uma nova instância de {@link Azoide} com os atributos fornecidos.
-     *
-     * @param name      nome do inimigo
-     * @param health    pontos de vida iniciais
-     * @param energy    energia máxima por turno
-     * @param publisher Publisher para inscrição de efeitos
-     * @return nova instância de Azoide
-     */
-    public static final Azoide createAzoide(String name, double health, int energy) {
-        return new Azoide(name, health, energy);
-    }
-
-    /**
-     * Cria e retorna uma nova instância de {@link Bzoide} com os atributos fornecidos.
-     *
-     * @param name      nome do inimigo
-     * @param health    pontos de vida iniciais
-     * @param energy    energia máxima por turno
-     * @param publisher Publisher para inscrição de efeitos
-     * @return nova instância de Bzoide
-     */
-    public static final Bzoide createBzoide(String name, double health, int energy) {
-        return new Bzoide(name, health, energy);
-    }
 
     // =========================================================================
     // Utilitários

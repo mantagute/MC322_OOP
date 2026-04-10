@@ -15,10 +15,9 @@ public class Azoide extends Enemy {
     /**
      * Constrói um inimigo Azoide com os atributos especificados.
      *
-     * @param name      nome do Azoide
-     * @param health    pontos de vida iniciais
-     * @param energy    energia máxima por turno
-     * @param publisher Publisher para efeitos de status
+     * @param name   nome do Azoide
+     * @param health pontos de vida iniciais
+     * @param energy energia máxima por turno
      */
     public Azoide(String name, double health, int energy) {
         super(name, health, energy);

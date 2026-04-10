@@ -5,31 +5,82 @@ import java.util.List;
 
 import gameOrchestrator.Data.EnemyDefinition;
 
+/**
+ * Representa um nó da árvore de progressão do jogo.
+ * Cada nó contém uma lista de inimigos que o jogador enfrentará
+ * ao chegar nesse ponto do mapa, além de referências para os
+ * próximos nós disponíveis (esquerda e direita).
+ *
+ * <p>A navegação na árvore é sempre unidirecional — o jogador
+ * só pode avançar para nós filhos, nunca retornar.
+ */
+
 public class Node {
     private List<EnemyDefinition> enemies;
     private Node left, right;
+
+    /**
+     * Constrói um nó com a lista de inimigos especificada.
+    * Os ponteiros para os nós filhos são inicializados como {@code null}.
+    *
+    * @param enemies lista de definições de inimigos presentes neste nó
+    */
 
     public Node(List<EnemyDefinition> enemies) {
         this.enemies = new ArrayList<EnemyDefinition>(enemies);
         left = right = null;
     }
 
+    /**
+     * Retorna a lista de definições de inimigos deste nó.
+     *
+     * @return lista imutável de {@link EnemyDefinition}
+     */
+
     public List<EnemyDefinition> getEnemiesDefinitions() {
         return enemies;
     }
+
+    /**
+     * Retorna o nó filho à esquerda, representando um dos
+     * caminhos disponíveis após vencer este nó.
+     *
+     * @return nó à esquerda, ou {@code null} se não existir
+     */
 
     public Node getLeftNode() {
         return left;
     }
 
+    /**
+     * Retorna o nó filho à direita, representando um dos
+     * caminhos disponíveis após vencer este nó.
+     *
+     * @return nó à direita, ou {@code null} se não existir
+     */
+
     public Node getRightNode() {
         return right;
     }
+
+    /**
+     * Define o nó filho à esquerda desta posição no mapa.
+     * Visível apenas dentro do pacote {@code gamePath}.
+     *
+     * @param left nó a ser conectado como filho esquerdo
+     */
 
     protected Node setLeftNode(Node left) {
         this.left = left;
         return left;
     }
+
+    /**
+     * Define o nó filho à direita desta posição no mapa.
+     * Visível apenas dentro do pacote {@code gamePath}.
+     *
+     * @param right nó a ser conectado como filho direito
+     */
 
     protected Node setRightNode(Node right) {
         this.right = right;

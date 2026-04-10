@@ -38,6 +38,13 @@ public abstract class Enemy extends Entity {
         super(name, health, energy);
     }
 
+    /**
+     * Inicializa o Publisher do sistema Observer e popula o baralho do inimigo.
+     * Deve ser chamado imediatamente após a instanciação do inimigo.
+     *
+     * @param publisher Publisher central do jogo, usado para inscrição de efeitos
+     */
+
     public void initializePublisher(Publisher publisher) {
         this.publisher = publisher;
         initializeDeck();

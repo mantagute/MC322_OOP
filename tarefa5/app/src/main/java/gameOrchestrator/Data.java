@@ -9,8 +9,6 @@ import cards.ShieldCard;
 import deck.BuyPile;
 import effects.Effect.EffectType;
 import entities.Hero;
-import entities.enemies.Azoide;
-import entities.enemies.Bzoide;
 import observer.Publisher;
 
 /**

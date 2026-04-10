@@ -15,6 +15,11 @@ import entities.Entity;
  */
 public class Publisher {
 
+    /**
+     * Constrói um novo Publisher com lista de subscribers vazia.
+     */
+    public Publisher() {}
+
     private List<Subscriber> subscribers = new ArrayList<>();
 
     /**
@@ -50,6 +55,12 @@ public class Publisher {
             subscriber.beNotified(event, user, target);
         }
     }
+
+    /**
+     * Remove todos os subscribers inscritos, limpando o barramento de eventos.
+     * Chamado ao iniciar uma nova fase para evitar que efeitos expirados
+     * de batalhas anteriores recebam notificações indevidas.
+     */
 
     public void resetPublisher() {
         subscribers.clear();

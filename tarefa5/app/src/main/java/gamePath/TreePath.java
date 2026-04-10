@@ -3,12 +3,41 @@ package gamePath;
 import java.util.List;
 import gameOrchestrator.Data.EnemyDefinition;
 
+/**
+ * Representa o mapa de progressão do jogo como uma árvore binária.
+ * A árvore é construída a partir de uma lista de grupos de inimigos,
+ * onde o elemento central da lista vira a raiz, e as metades
+ * esquerda e direita formam as subárvores recursivamente.
+ *
+ * <p>Essa estrutura garante que o jogador sempre avance para nós
+ * mais profundos, nunca retrocedendo no mapa.
+ */
+
 public class TreePath {
     Node root;
+
+    /**
+     * Constrói a árvore de progressão a partir da lista de grupos de inimigos.
+     * O elemento central da lista torna-se a raiz; as metades esquerda
+     * e direita formam as subárvores de forma recursiva.
+     *
+     * @param enemies lista de grupos de inimigos, onde cada grupo representa os inimigos de um nó do mapa             
+     */
 
     public TreePath(List<List<EnemyDefinition>> enemies) {
         this.root = listToTree(enemies, 0, enemies.size() - 1);
     }
+
+    /**
+     * Constrói recursivamente a subárvore a partir do intervalo
+     * {@code [start, end]} da lista de grupos de inimigos.
+     * O elemento central do intervalo torna-se a raiz da subárvore.
+     *
+     * @param enemies lista completa de grupos de inimigos
+     * @param start   índice inicial do intervalo atual
+     * @param end     índice final do intervalo atual
+     * @return raiz da subárvore construída, ou {@code null} se {@code start > end}
+     */
 
     private Node listToTree(List<List<EnemyDefinition>> enemies, int start, int end) {
         if (start > end) {
@@ -23,6 +52,13 @@ public class TreePath {
 
         return node;
     }
+
+    /**
+     * Retorna o nó raiz da árvore de progressão, que representa
+     * a batalha inicial do jogo.
+     *
+     * @return nó raiz da árvore
+     */
 
     public Node getRoot() {
         return root;

@@ -30,6 +30,11 @@ import java.util.stream.Collectors;
  */
 public final class UserInterface {
 
+    /**
+     * Construtor privado — impede instanciação desta classe utilitária.
+     */
+    private UserInterface() {}
+
     // =========================================================================
     // Constantes de escape ANSI
     // =========================================================================
@@ -444,6 +449,17 @@ public final class UserInterface {
         System.out.println();
     }
 
+    /**
+     * Exibe a tela de conclusão de fase, mostrando os caminhos disponíveis
+     * para o próximo nó da árvore de progressão.
+     *
+     * <p>Lista os inimigos de cada caminho e solicita ao jogador que escolha
+     * entre o caminho da esquerda (1) e o da direita (2).
+     *
+     * @param currentNode nó atual da árvore, cujos filhos representam
+     *                    as opções de progressão; não deve ser {@code null}
+     */
+
     public static void printFaseClear(Node currentNode) {
         System.out.println();
         printDivider(60, BGREEN);
@@ -491,9 +507,11 @@ public final class UserInterface {
     /**
      * Renderiza o estado atual do combate no terminal.
      *
-     * <p>
-     * Exibe o status do herói (com energia) e, abaixo, os status de todos os
+     * <p>Exibe o status do herói (com energia) e, abaixo, os status de todos os
      * inimigos vivos em uma única linha separada por {@code |}.
+     *
+     * @param hero    herói controlado pelo jogador; não deve ser {@code null}
+     * @param enemies lista de inimigos presentes no combate; não deve ser {@code null}
      */
     public static void printCombatState(Hero hero, List<Enemy> enemies) {
         UserInterface.printEntityStatus(hero, true);

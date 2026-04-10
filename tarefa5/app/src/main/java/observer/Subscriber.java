@@ -13,6 +13,13 @@ import entities.Entity;
 public abstract class Subscriber {
 
     /**
+     * Constrói um novo Subscriber.
+     * Subclasses devem implementar {@link #beNotified(String, entities.Entity, entities.Entity)}
+     * para reagir aos eventos publicados pelo {@link Publisher}.
+     */
+    public Subscriber() {}
+
+    /**
      * Chamado pelo {@link Publisher} quando um evento de combate ocorre.
      * Implementações devem verificar o tipo de evento e as entidades envolvidas
      * antes de aplicar qualquer lógica.

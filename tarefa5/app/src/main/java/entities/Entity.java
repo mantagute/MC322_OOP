@@ -73,6 +73,12 @@ public abstract class Entity {
         effects.add(newEffect);
     }
 
+    /**
+     * Remove todos os efeitos de status ativos da entidade.
+     * Chamado ao iniciar uma nova fase para garantir que efeitos
+     * de batalhas anteriores não persistam.
+     */
+
     public void clearEffects() {
         effects.clear();
     }

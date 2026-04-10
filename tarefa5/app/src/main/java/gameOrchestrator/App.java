@@ -52,6 +52,12 @@ import observer.Publisher;
  */
 public class App {
 
+    /**
+     * Constrói uma nova instância de {@code App}.
+     * Inicializa a lista de inimigos e o Publisher central do sistema Observer.
+     */
+    public App() {}
+
     // =========================================================================
     // Campos de instância (privados — encapsulamento)
     // =========================================================================
@@ -132,14 +138,14 @@ public class App {
     // =========================================================================
 
     /**
-     * Inicializa o estado do jogo: instancia o herói, monta e embaralha seu
-     * baralho,
-     * e cria os inimigos conforme definido em {@link Data}.
+     * Inicializa o estado do jogo: instancia o herói, constrói a árvore
+     * de progressão, monta e embaralha o baralho do herói, e carrega
+     * os inimigos do nó raiz.
      *
-     * <p>
-     * Este método deve ser chamado exatamente uma vez, antes de qualquer chamada
-     * a {@link #heroTurn(Scanner)} ou {@link #enemyTurn()}.
+     * <p>Este método deve ser chamado exatamente uma vez antes do início
+     * do loop principal em {@link #main(String[])}.
      */
+
     public void start() {
         hero = Data.heroes.get(0);
 
@@ -156,6 +162,16 @@ public class App {
         loadEnemiesFromNode(currentNode);
     }
 
+    /**
+     * Avança o jogo para o próximo nó da árvore de progressão,
+     * limpando os inimigos e efeitos da fase anterior e carregando
+     * os inimigos do nó escolhido.
+     *
+     * @param currentNode  nó atual, cujos filhos representam as opções de avanço
+     * @param isGoingLeft  {@code true} para avançar pelo filho esquerdo;
+     *                     {@code false} para o filho direito
+     */
+
     private void startNewFase(Node currentNode, boolean isGoingLeft) {
         enemies.clear();
         publisher.resetPublisher();
@@ -170,6 +186,13 @@ public class App {
             loadEnemiesFromNode(this.currentNode);
         }
     }
+
+    /**
+     * Carrega os inimigos do nó especificado na lista de inimigos ativa,
+     * instanciando e inicializando cada um conforme seu tipo.
+     *
+     * @param node nó cujos inimigos serão carregados; não deve ser {@code null}
+     */
 
     private void loadEnemiesFromNode(Node node) {
         for (EnemyDefinition enemyDef : node.getEnemiesDefinitions()) {
@@ -207,28 +230,23 @@ public class App {
         return List.copyOf(enemies);
     }
 
-    // =========================================================================
-    // Ponto de entrada
-    // =========================================================================
-
     /**
      * Ponto de entrada da aplicação.
      *
-     * <p>
-     * Sequência de execução:
+     * <p>Sequência de execução:
      * <ol>
-     * <li>Exibe a tela de introdução e aguarda {@code 3000 ms};</li>
-     * <li>Inicializa o estado do jogo via {@link #start()};</li>
-     * <li>Executa o loop de batalha enquanto o herói e pelo menos um inimigo
-     * estiverem vivos:
-     * <ol>
-     * <li>Turno dos inimigos ({@link #enemyTurn()});</li>
-     * <li>Turno do herói ({@link #heroTurn(Scanner)});</li>
-     * <li>Execução dos ataques dos inimigos vivos;</li>
-     * <li>Notificação de fim de turno para todas as entidades.</li>
-     * </ol>
-     * </li>
-     * <li>Exibe a tela de fim de jogo e aguarda {@code 10000 ms}.</li>
+     *   <li>Exibe a tela de introdução e aguarda {@code 3000 ms};</li>
+     *   <li>Inicializa o estado do jogo via {@link #start()};</li>
+     *   <li>Executa o loop de progressão enquanto o herói estiver vivo
+     *       e houver nós no mapa:
+     *     <ol>
+     *       <li>Cria uma nova {@link Battle} com o estado atual;</li>
+     *       <li>Executa o combate via {@link Battle#runBattle()};</li>
+     *       <li>Em vitória, navega para o próximo nó do mapa;</li>
+     *       <li>Em derrota, encerra o loop.</li>
+     *     </ol>
+     *   </li>
+     *   <li>Exibe a tela de fim de jogo e aguarda {@code 10000 ms}.</li>
      * </ol>
      *
      * @param args argumentos de linha de comando (não utilizados)

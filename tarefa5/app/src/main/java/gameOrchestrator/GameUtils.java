@@ -1,6 +1,19 @@
 package gameOrchestrator;
 
+/**
+ * Classe utilitária com métodos estáticos de uso geral no jogo.
+ * Centraliza funcionalidades que não pertencem a nenhuma classe
+ * de domínio específica, como controle de tempo de execução.
+ *
+ * <p>Não deve ser instanciada — todos os métodos são estáticos.
+ */
+
 public final class GameUtils {
+
+    /**
+     * Construtor privado — impede instanciação desta classe utilitária.
+     */
+    private GameUtils() {}
     
     /**
      * Pausa a execução da thread atual pelo tempo especificado.

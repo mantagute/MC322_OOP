@@ -13,6 +13,29 @@ import entities.Enemy;
 import entities.Entity;
 
 
+/**
+ * Encapsula a lógica de um combate individual entre o herói e os inimigos.
+ * Responsável por gerenciar os turnos do herói e dos inimigos, executar
+ * os ataques e disparar notificações do sistema Observer ao fim de cada turno.
+ *
+ * <p>Ao final do combate, retorna {@code true} se o herói sobreviveu
+ * ou {@code false} em caso de derrota, permitindo que {@link App}
+ * tome a decisão de progressão no mapa.
+ *
+ * <p>Princípios de POO aplicados:
+ * <ul>
+ *   <li><b>Responsabilidade única (SRP):</b> {@code Battle} cuida exclusivamente
+ *       da lógica de combate, delegando apresentação a {@link UserInterface}
+ *       e progressão a {@link App}.</li>
+ *   <li><b>Encapsulamento:</b> todos os campos são {@code private};
+ *       a lógica interna de turno não é exposta ao chamador.</li>
+ * </ul>
+ *
+ * @see App
+ * @see UserInterface
+ * @see observer.Publisher
+ */
+
 public class Battle {
     private Hero hero;
     private List<Enemy> enemies;
@@ -20,6 +43,17 @@ public class Battle {
     private Scanner scanner;
     private BuyPile heroBuyPile;
     private DiscardPile heroDiscardPile;
+
+    /**
+     * Constrói uma nova instância de batalha com os participantes e recursos fornecidos.
+     *
+     * @param hero            herói controlado pelo jogador
+     * @param enemies         lista de inimigos presentes no combate
+     * @param publisher       Publisher central do sistema Observer
+     * @param scanner         leitor de entrada do terminal; não deve ser {@code null}
+     * @param heroBuyPile     pilha de compra do herói; persiste entre batalhas
+     * @param heroDiscardPile pilha de descarte do herói; persiste entre batalhas
+     */
 
     public Battle (Hero hero, List<Enemy> enemies, Publisher publisher, Scanner scanner, BuyPile heroBuyPile, DiscardPile heroDiscardPile) {
         this.hero = hero;
@@ -29,6 +63,21 @@ public class Battle {
         this.heroBuyPile = heroBuyPile;
         this.heroDiscardPile = heroDiscardPile;
     }
+
+    /**
+     * Executa o loop completo de combate até que o herói ou todos os inimigos
+     * sejam derrotados.
+     *
+     * <p>A cada iteração do loop:
+     * <ol>
+     *   <li>Os inimigos definem e anunciam sua estratégia ({@link #enemyTurn()});</li>
+     *   <li>O herói realiza suas ações ({@link #heroTurn(Scanner)});</li>
+     *   <li>Os inimigos vivos executam seus ataques;</li>
+     *   <li>O evento {@code "FIM_TURNO"} é disparado para todas as entidades.</li>
+     * </ol>
+     *
+     * @return {@code true} se o herói sobreviveu ao combate; {@code false} em caso de derrota
+     */
 
     public boolean runBattle() {
         while (hero.isAlive() && enemies.stream().anyMatch(Enemy::isAlive)) {

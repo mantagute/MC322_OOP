@@ -3,8 +3,9 @@
 
 [versions]
 guava = "33.5.0-jre"
-junit = "4.13.2"
+junit = "5.11.0"
 
 [libraries]
-guava = { module = "com.google.guava:guava", version.ref = "guava" }
-junit = { module = "junit:junit", version.ref = "junit" }
+guava                = { module = "com.google.guava:guava",                 version.ref = "guava" }
+junit-jupiter-api    = { module = "org.junit.jupiter:junit-jupiter-api",    version.ref = "junit" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }

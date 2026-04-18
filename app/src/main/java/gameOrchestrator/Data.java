@@ -231,7 +231,7 @@ public class Data {
      */
     
     public record EnemyDefinition(String name, double health, int energy, EnemyType type) {
-        enum EnemyType { AZOIDE, BZOIDE }
+        public enum EnemyType { AZOIDE, BZOIDE }
     }
 
     // =========================================================================

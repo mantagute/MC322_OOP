@@ -16,6 +16,7 @@ repositories {
 
 dependencies {
     implementation(libs.guava)
+    implementation("com.google.code.gson:gson:2.11.0")
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.11.0")

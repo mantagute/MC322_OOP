@@ -223,6 +223,8 @@ public class App {
         SaveState saveState = SaveManager.loadGame();
         hero.setHealth(saveState.getHeroHealth());
         enemies.clear();
+        while (heroBuyPile.getSize() > 0) heroBuyPile.extractCard(0);
+        while (heroDiscardPile.getSize() > 0) heroDiscardPile.extractCard(0);
         for (String cardName : saveState.getDeckCardNames()) {
             heroBuyPile.push(Data.getCardbyName(cardName, publisher));
         }
@@ -297,13 +299,13 @@ public class App {
             BattleResult battleResult = battle.runBattle();
 
             if (battleResult.equals(BattleResult.VICTORY)) {
-                UserInterface.printFaseClear(app.currentNode);
-                GameUtils.Wait(2000);
-    
                 if (app.currentNode.getLeftNode() == null && app.currentNode.getRightNode() == null) {
                     app.currentNode = null;
                     continue;
-                } else if (app.currentNode.getLeftNode() == null) {
+                }
+                UserInterface.printFaseClear(app.currentNode);
+                GameUtils.Wait(2000);
+                if (app.currentNode.getLeftNode() == null) {
                     app.startNewFase(app.currentNode, false);
                     SaveState saveState = app.buildSaveState();
                     SaveManager.saveGame(saveState);

@@ -291,4 +291,8 @@ public abstract class Entity {
     public int getEnergy() {
         return currentEnergy;
     }
+
+    public void setHealth(double health) {
+        this.health = health;
+    }
 }

@@ -212,11 +212,11 @@ public class Data {
 
     public static final List<List<EnemyDefinition>> enemies = List.of(
         List.of(new EnemyDefinition("Sr. Doutor Cabo Arruda", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("3L", 100, 10, EnemyDefinition.EnemyType.BZOIDE)),
-        List.of(new EnemyDefinition("Sinhô Jelado", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Lucas, o Ético", 100, 10, EnemyDefinition.EnemyType.BZOIDE)),
+        List.of(new EnemyDefinition("Sinhô Jelado", 50, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Lucas, o Ético", 50, 10, EnemyDefinition.EnemyType.BZOIDE)),
         List.of(new EnemyDefinition("Cambuí, o Caído", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Cabotian, o Trancado", 100, 10, EnemyDefinition.EnemyType.BZOIDE)),
-        List.of(new EnemyDefinition("Kojak, o que promete", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Yugo, o Furtivo", 100, 10, EnemyDefinition.EnemyType.BZOIDE)),
+        List.of(new EnemyDefinition("Kojak, o que promete", 25, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Yugo, o Furtivo", 25, 10, EnemyDefinition.EnemyType.BZOIDE)),
         List.of(new EnemyDefinition("Marquinhos, o Loiro", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Cairê, o Belo", 100, 10, EnemyDefinition.EnemyType.BZOIDE)),
-        List.of(new EnemyDefinition("Adobe, o Insociável", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("O Inominável", 100, 10, EnemyDefinition.EnemyType.BZOIDE)),
+        List.of(new EnemyDefinition("Adobe, o Insociável", 50, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("O Inominável", 50, 10, EnemyDefinition.EnemyType.BZOIDE)),
         List.of(new EnemyDefinition("GS, o Doutrinador", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Zé, O sapo", 100, 10, EnemyDefinition.EnemyType.BZOIDE))
 
     );
@@ -261,5 +261,24 @@ public class Data {
         for (Card card : cards) {
             buyPile.push(card);
         }
+    }
+
+    public static Card getCardbyName(String name, Publisher publisher) {
+        for (Card card : heroDamageCards) {
+            if (card.getName().equals(name)) {
+                return card;
+            }
+        }
+        for (Card card : heroShieldCards) {
+            if (card.getName().equals(name)) {
+                return card;
+            }
+        }
+        for (Card card : heroEffectCards(publisher)) {
+            if (card.getName().equals(name)) {
+                return card;
+            }
+        }
+        return null;
     }
 }

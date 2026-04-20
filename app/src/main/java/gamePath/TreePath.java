@@ -63,4 +63,29 @@ public class TreePath {
     public Node getRoot() {
         return root;
     }
+
+    public Node getNodeBeforeSave(List<String> path) {
+        Node currentNode = root;
+        for (String direction : path) {
+            if (direction.equals("left")) {
+                if (currentNode.getLeftNode() != null) {
+                    currentNode = currentNode.getLeftNode();
+                } 
+                else {
+                    return currentNode;
+                }
+            }
+            else if (direction.equals("right")) {
+                if (currentNode.getRightNode() != null) {
+                    currentNode = currentNode.getRightNode();
+                } 
+                else {
+                    return currentNode;
+                }
+            }
+        }
+        return currentNode;
+    }
+
 }
+

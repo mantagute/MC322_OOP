@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html","k":"18"},{"l":"cards"},{"l":"deck"},{"l":"effects"},{"l":"entities"},{"l":"entities.enemies"},{"l":"gameOrchestrator"},{"l":"gamePath"},{"l":"observer"}];updateSearchResults();

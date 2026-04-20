@@ -43,6 +43,7 @@ public class Battle {
     private Scanner scanner;
     private BuyPile heroBuyPile;
     private DiscardPile heroDiscardPile;
+    private boolean quitRequested = false;
 
     /**
      * Constrói uma nova instância de batalha com os participantes e recursos fornecidos.
@@ -76,13 +77,23 @@ public class Battle {
      *   <li>O evento {@code "FIM_TURNO"} é disparado para todas as entidades.</li>
      * </ol>
      *
-     * @return {@code true} se o herói sobreviveu ao combate; {@code false} em caso de derrota
+     * 
      */
 
-    public boolean runBattle() {
+    public enum BattleResult {
+        VICTORY,
+        DEFEAT,
+        QUIT
+    }
+
+    public BattleResult runBattle() {
         while (hero.isAlive() && enemies.stream().anyMatch(Enemy::isAlive)) {
             enemyTurn();
             heroTurn(scanner);
+
+            if (quitRequested) {
+                return BattleResult.QUIT;
+            }
 
             for (Enemy enemy : enemies) {
                 if (enemy.isAlive()) {
@@ -99,7 +110,7 @@ public class Battle {
                 notifyAndClean("FIM_TURNO", enemy,hero);
             }
         }
-        return hero.isAlive();
+        return hero.isAlive() ? BattleResult.VICTORY : BattleResult.DEFEAT;
     }
 
        // =========================================================================
@@ -148,6 +159,7 @@ public class Battle {
             UserInterface.printCombatState(hero, enemies);
             UserInterface.printHand(hero, hero.getHandSize());
             UserInterface.printPassOption(hero.getHandSize() + 1);
+            UserInterface.printQuitOption(hero.getHandSize() + 2);
             UserInterface.printChoicePrompt();
 
             int choice = scanner.nextInt();
@@ -158,6 +170,11 @@ public class Battle {
                 GameUtils.Wait(1500);
                 isTurnOver = true;
                 continue;
+            }
+
+            if (choice == hero.getHandSize() + 2) {
+                quitRequested = true;
+                return;
             }
 
             // Opção fora do intervalo válido

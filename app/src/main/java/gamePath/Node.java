@@ -68,11 +68,11 @@ public class Node {
      * Visível apenas dentro do pacote {@code gamePath}.
      *
      * @param left nó a ser conectado como filho esquerdo
+     * @return o nó recém-conectado à esquerda (retorna o próprio parâmetro {@code left})
      */
-
     protected Node setLeftNode(Node left) {
-        this.left = left;
-        return left;
+    this.left = left;
+    return left;
     }
 
     /**
@@ -80,8 +80,8 @@ public class Node {
      * Visível apenas dentro do pacote {@code gamePath}.
      *
      * @param right nó a ser conectado como filho direito
+     * @return o nó recém-conectado à direita (retorna o próprio parâmetro {@code right})
      */
-
     protected Node setRightNode(Node right) {
         this.right = right;
         return right;

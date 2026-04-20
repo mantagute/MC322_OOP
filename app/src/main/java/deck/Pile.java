@@ -30,6 +30,7 @@ public abstract class Pile {
 
     /**
      * Insere uma carta no topo da pilha, se houver espaço disponível.
+     * Não faz nada se a pilha já estiver cheia.
      *
      * @param card carta a ser inserida
      */
@@ -42,6 +43,7 @@ public abstract class Pile {
 
     /**
      * Troca as posições de duas cartas na pilha.
+     * Não faz nada se qualquer um dos índices for inválido.
      *
      * @param index1 índice da primeira carta
      * @param index2 índice da segunda carta
@@ -70,7 +72,7 @@ public abstract class Pile {
      * Remove e retorna a carta no índice especificado,
      * deslocando as demais cartas para preencher o espaço.
      *
-     * @param index índice da carta a ser extraída
+     * @param index índice da carta a ser extraída (base 0)
      * @return a carta extraída, ou {@code null} se o índice for inválido
      */
     public Card extractCard(int index) {
@@ -87,8 +89,8 @@ public abstract class Pile {
     }
 
     /**
-     * Move todas as cartas desta pilha para a pilha de destino.
-     * Esta pilha fica vazia após a operação.
+     * Move todas as cartas desta pilha para a pilha de destino,
+     * preservando a ordem. Esta pilha fica vazia após a operação.
      *
      * @param targetPile pilha que receberá todas as cartas
      */
@@ -111,7 +113,7 @@ public abstract class Pile {
     /**
      * Retorna a carta no índice especificado sem removê-la da pilha.
      *
-     * @param index índice da carta desejada
+     * @param index índice da carta desejada (base 0)
      * @return a carta no índice, ou {@code null} se o índice for inválido
      */
     public Card getCard(int index) {
@@ -134,9 +136,16 @@ public abstract class Pile {
         return pileCards;
     }
 
+    /**
+     * Retorna uma lista com os nomes de todas as cartas da pilha, na ordem
+     * em que se encontram. Utilizado por {@link gameOrchestrator.App#buildSaveState()}
+     * para serializar o baralho no save.
+     *
+     * @return lista de nomes das cartas presentes na pilha
+     */
     public List<String> getCardNames() {
         List<String> cardNames = new java.util.ArrayList<>();
-        for (int i = 0 ; i < getSize() ; i++) {
+        for (int i = 0; i < getSize(); i++) {
             cardNames.add(cards[i].getName());
         }
         return cardNames;

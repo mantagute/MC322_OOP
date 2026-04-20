@@ -12,15 +12,14 @@ import observer.Publisher;
 import entities.Enemy;
 import entities.Entity;
 
-
 /**
  * Encapsula a lógica de um combate individual entre o herói e os inimigos.
  * Responsável por gerenciar os turnos do herói e dos inimigos, executar
  * os ataques e disparar notificações do sistema Observer ao fim de cada turno.
  *
- * <p>Ao final do combate, retorna {@code true} se o herói sobreviveu
- * ou {@code false} em caso de derrota, permitindo que {@link App}
- * tome a decisão de progressão no mapa.
+ * <p>Ao final do combate, retorna um {@link BattleResult} indicando se o herói
+ * venceu ({@code VICTORY}), foi derrotado ({@code DEFEAT}) ou escolheu sair
+ * e salvar ({@code QUIT}), permitindo que {@link App} tome a decisão adequada.
  *
  * <p>Princípios de POO aplicados:
  * <ul>
@@ -35,7 +34,6 @@ import entities.Entity;
  * @see UserInterface
  * @see observer.Publisher
  */
-
 public class Battle {
     private Hero hero;
     private List<Enemy> enemies;
@@ -43,6 +41,12 @@ public class Battle {
     private Scanner scanner;
     private BuyPile heroBuyPile;
     private DiscardPile heroDiscardPile;
+
+    /**
+     * Flag que indica se o jogador solicitou sair e salvar durante o turno.
+     * Quando {@code true}, {@link #heroTurn(Scanner)} retorna imediatamente
+     * e {@link #runBattle()} encerra o combate com {@link BattleResult#QUIT}.
+     */
     private boolean quitRequested = false;
 
     /**
@@ -55,8 +59,7 @@ public class Battle {
      * @param heroBuyPile     pilha de compra do herói; persiste entre batalhas
      * @param heroDiscardPile pilha de descarte do herói; persiste entre batalhas
      */
-
-    public Battle (Hero hero, List<Enemy> enemies, Publisher publisher, Scanner scanner, BuyPile heroBuyPile, DiscardPile heroDiscardPile) {
+    public Battle(Hero hero, List<Enemy> enemies, Publisher publisher, Scanner scanner, BuyPile heroBuyPile, DiscardPile heroDiscardPile) {
         this.hero = hero;
         this.enemies = enemies;
         this.publisher = publisher;
@@ -66,26 +69,36 @@ public class Battle {
     }
 
     /**
-     * Executa o loop completo de combate até que o herói ou todos os inimigos
-     * sejam derrotados.
+     * Possíveis resultados de um combate.
+     */
+    public enum BattleResult {
+        /** O herói derrotou todos os inimigos. */
+        VICTORY,
+        /** O herói foi derrotado. */
+        DEFEAT,
+        /** O jogador escolheu sair e salvar durante seu turno. */
+        QUIT
+    }
+
+    /**
+     * Executa o loop completo de combate até que o herói, todos os inimigos
+     * sejam derrotados, ou o jogador escolha sair.
      *
      * <p>A cada iteração do loop:
      * <ol>
      *   <li>Os inimigos definem e anunciam sua estratégia ({@link #enemyTurn()});</li>
-     *   <li>O herói realiza suas ações ({@link #heroTurn(Scanner)});</li>
-     *   <li>Os inimigos vivos executam seus ataques;</li>
-     *   <li>O evento {@code "FIM_TURNO"} é disparado para todas as entidades.</li>
+     *   <li>O herói realiza suas ações ({@link #heroTurn(Scanner)});
+     *       se {@link #quitRequested} for marcado, retorna {@link BattleResult#QUIT}
+     *       imediatamente, sem que os inimigos ataquem;</li>
+     *   <li>Os inimigos vivos executam seus ataques contra o herói;</li>
+     *   <li>O evento {@code "FIM_TURNO"} é disparado para todas as entidades,
+     *       aplicando efeitos de status pendentes.</li>
      * </ol>
      *
-     * 
+     * @return {@link BattleResult#VICTORY} se todos os inimigos forem derrotados,
+     *         {@link BattleResult#DEFEAT} se o herói morrer,
+     *         {@link BattleResult#QUIT} se o jogador escolher sair e salvar
      */
-
-    public enum BattleResult {
-        VICTORY,
-        DEFEAT,
-        QUIT
-    }
-
     public BattleResult runBattle() {
         while (hero.isAlive() && enemies.stream().anyMatch(Enemy::isAlive)) {
             enemyTurn();
@@ -107,13 +120,13 @@ public class Battle {
 
             notifyAndClean("FIM_TURNO", hero, enemies.get(0));
             for (Enemy enemy : enemies) {
-                notifyAndClean("FIM_TURNO", enemy,hero);
+                notifyAndClean("FIM_TURNO", enemy, hero);
             }
         }
         return hero.isAlive() ? BattleResult.VICTORY : BattleResult.DEFEAT;
     }
 
-       // =========================================================================
+    // =========================================================================
     // Turnos
     // =========================================================================
 
@@ -126,13 +139,13 @@ public class Battle {
      * <li>O jogador escolhe passar a vez;</li>
      * <li>O herói não possui energia suficiente para nenhuma carta;</li>
      * <li>Todos os inimigos são derrotados durante o turno;</li>
-     * <li>O herói é derrotado.</li>
+     * <li>O jogador escolhe sair e salvar (marca {@link #quitRequested} e retorna).</li>
      * </ul>
      *
      * <p>
      * Durante o turno, o herói pode jogar cartas de dano (escolhendo um alvo
      * específico ou atacando todos com cartas multi-alvo), cartas de escudo
-     * (auto-alvo) ou qualquer outra carta configurada.
+     * (auto-alvo) ou cartas de efeito.
      *
      * @param scanner leitor de entrada do teclado; não deve ser {@code null}
      */
@@ -145,7 +158,6 @@ public class Battle {
 
             UserInterface.clearScreen();
 
-            // Sem energia — passa automaticamente
             if (!hero.hasEnoughEnergyForAnyCard()) {
                 UserInterface.printHeroTurnHeader(hero.getName());
                 UserInterface.printCombatState(hero, enemies);
@@ -164,7 +176,6 @@ public class Battle {
 
             int choice = scanner.nextInt();
 
-            // Passar a vez
             if (choice == hero.getHandSize() + 1) {
                 UserInterface.printHeroPass(hero.getName());
                 GameUtils.Wait(1500);
@@ -177,7 +188,6 @@ public class Battle {
                 return;
             }
 
-            // Opção fora do intervalo válido
             if (choice < 1 || choice > hero.getHandSize()) {
                 UserInterface.printError("Opção inválida. Tente novamente.");
                 GameUtils.Wait(1500);
@@ -186,14 +196,12 @@ public class Battle {
 
             Card chosenCard = hero.getCardFromHand(choice - 1);
 
-            // Energia insuficiente para a carta escolhida
             if (chosenCard.getEnergyCost() > hero.getEnergy()) {
                 UserInterface.printWarning("Energia insuficiente para esta carta.");
                 GameUtils.Wait(1500);
                 continue;
             }
 
-            // Jogar a carta conforme seu modo de alvo
             if (chosenCard.isMultiTarget()) {
                 applyCardToAllEnemies(choice - 1, chosenCard);
             } else if (chosenCard.isSelfTarget()) {
@@ -214,13 +222,13 @@ public class Battle {
      * Aplica uma carta de multi-alvo a todos os inimigos vivos.
      *
      * <p>
-     * O descarte da carta é realizado apenas na primeira aplicação (via
-     * {@link Hero#useCard}); nas demais, a carta é aplicada diretamente sem
-     * ser descartada novamente.
+     * O uso formal da carta (desconto de energia e descarte) é realizado apenas
+     * na primeira aplicação via {@link Hero#useCard}; nas aplicações seguintes,
+     * o efeito é executado diretamente sobre cada inimigo sem descontar energia
+     * nem descartar a carta novamente.
      *
      * @param cardIndex índice da carta na mão do herói (base 0)
-     * @param card      carta a ser aplicada; deve ter
-     *                  {@code isMultiTarget() == true}
+     * @param card      carta a ser aplicada; deve ter {@code isMultiTarget() == true}
      */
     private void applyCardToAllEnemies(int cardIndex, Card card) {
         boolean first = true;
@@ -299,10 +307,11 @@ public class Battle {
      *
      * <p>
      * Este método centraliza a integração entre o loop de combate e o padrão
-     * Observer, garantindo que efeitos temporários sejam limpos após cada turno.
+     * Observer: primeiro notifica todos os subscribers (que podem reduzir seus
+     * próprios acúmulos e se desinscrever), depois chama {@link Entity#manageEffects()}
+     * para remover da lista interna os efeitos com acúmulos zerados.
      *
-     * @param event  identificador do evento a ser publicado (ex.:
-     *               {@code "FIM_TURNO"})
+     * @param event  identificador do evento a ser publicado (ex.: {@code "FIM_TURNO"})
      * @param user   entidade que originou o evento; seus efeitos serão gerenciados
      *               após a notificação
      * @param target entidade alvo do evento

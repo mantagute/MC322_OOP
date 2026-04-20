@@ -74,11 +74,11 @@ public abstract class Entity {
     }
 
     /**
-     * Remove todos os efeitos de status ativos da entidade.
-     * Chamado ao iniciar uma nova fase para garantir que efeitos
-     * de batalhas anteriores não persistam.
+     * Remove todos os efeitos de status ativos da entidade sem desinscrever
+     * os respectivos {@link effects.Effect} do {@link Publisher}.
+     * Chamado ao iniciar uma nova fase, após o Publisher já ter sido resetado,
+     * para garantir que a lista interna fique consistente com o novo barramento.
      */
-
     public void clearEffects() {
         effects.clear();
     }
@@ -89,6 +89,7 @@ public abstract class Entity {
      *
      * @param baseValue valor base de dano ou escudo a ser multiplicado
      * @return valor base multiplicado pelos acúmulos de Strength, ou o próprio valor base
+     *         se não houver Strength ativo
      */
     public double applyEffectMultiplier(double baseValue) {
         for (Effect effect : effects) {
@@ -101,8 +102,9 @@ public abstract class Entity {
 
     /**
      * Remove da lista interna os efeitos cujos acúmulos chegaram a zero.
-     * Deve ser chamado após notificações de fim de turno para manter
-     * a lista de efeitos consistente.
+     * Deve ser chamado após notificações de fim de turno, já que é durante
+     * a notificação que os efeitos reduzem seus próprios acúmulos e se
+     * desinscrevem do Publisher — mas não se removem desta lista.
      */
     public void manageEffects() {
         effects.removeIf(effect -> effect.getBalance() <= 0);
@@ -126,9 +128,10 @@ public abstract class Entity {
 
     /**
      * Usa a carta no índice especificado da mão, aplicando seu efeito sobre o alvo.
-     * Desconta o custo em energia e move a carta para a pilha de descarte.
+     * Desconta o custo em energia, executa o efeito da carta e a move para a pilha
+     * de descarte. Não faz nada se a energia atual for insuficiente para a carta.
      *
-     * @param index       índice da carta na mão
+     * @param index       índice da carta na mão (base 0)
      * @param target      entidade alvo da carta
      * @param discardPile pilha de descarte para onde a carta irá após ser usada
      */
@@ -188,15 +191,17 @@ public abstract class Entity {
     }
 
     /**
-     * Zera o escudo atual da entidade. Chamado no início de cada turno.
+     * Zera o escudo atual da entidade. Chamado no início de cada turno,
+     * pois o escudo não é acumulado entre turnos.
      */
     public void resetShield() {
         currentShield = 0;
     }
 
     /**
-     * Inicia um novo turno para esta entidade: restaura a energia máxima,
-     * descarta a mão atual e compra {@link Hand#MAX_HAND_SIZE} novas cartas.
+     * Inicia um novo turno para esta entidade: remove efeitos expirados,
+     * restaura a energia máxima, descarta a mão atual e compra
+     * {@link Hand#MAX_HAND_SIZE} novas cartas da pilha de compra.
      *
      * @param buyPile     pilha de compra da entidade
      * @param discardPile pilha de descarte da entidade
@@ -234,7 +239,7 @@ public abstract class Entity {
     /**
      * Retorna a carta no índice especificado da mão sem removê-la.
      *
-     * @param index índice da carta na mão
+     * @param index índice da carta na mão (base 0)
      * @return carta no índice especificado
      */
     public Card getCardFromHand(int index) {
@@ -254,7 +259,7 @@ public abstract class Entity {
      * Retorna o índice de uma carta específica na mão da entidade.
      *
      * @param carta carta a ser localizada na mão
-     * @return índice da carta na mão, ou {@code -1} se não for encontrada
+     * @return índice da carta na mão (base 0), ou {@code -1} se não for encontrada
      */
     protected int getCardIndex(Card carta) {
         for (int i = 0; i < getHandSize(); i++) {
@@ -292,6 +297,13 @@ public abstract class Entity {
         return currentEnergy;
     }
 
+    /**
+     * Define diretamente os pontos de vida da entidade, sobrescrevendo o valor atual.
+     * Usado exclusivamente para restaurar o estado do herói ao carregar um save
+     * via {@link gameOrchestrator.App#loadGame()}.
+     *
+     * @param health novo valor de vida a ser atribuído
+     */
     public void setHealth(double health) {
         this.health = health;
     }

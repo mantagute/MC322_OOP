@@ -91,6 +91,8 @@ public class App {
      * barramento de eventos gerencie as assinaturas e notificações.
      */
     private Publisher publisher = new Publisher();
+
+    private List<String> pathTaken = new ArrayList<>();
     // =========================================================================
     // Utilitários de terminal
     // =========================================================================
@@ -178,8 +180,10 @@ public class App {
         hero.clearEffects();
         if (isGoingLeft) {
             this.currentNode = currentNode.getLeftNode();
+            pathTaken.add("left");
         } else {
             this.currentNode = currentNode.getRightNode();
+            pathTaken.add("right");
         }
 
         if (this.currentNode != null) {
@@ -205,6 +209,26 @@ public class App {
             enemy.initializePublisher(publisher);
             enemies.add(enemy);
         }
+    }
+
+    public SaveState buildSaveState() {
+        List<String> allCardNames = new ArrayList<>();
+        allCardNames.addAll(heroBuyPile.getCardNames());
+        allCardNames.addAll(heroDiscardPile.getCardNames());
+        return new SaveState(hero.getHealth(),allCardNames, pathTaken);
+    }
+
+    public void loadGame(){
+        SaveState saveState = SaveManager.loadGame();
+        hero.setHealth(saveState.getHeroHealth());
+        for (String cardName : saveState.getDeckCardNames()) {
+            heroBuyPile.push(Data.getCardbyName(cardName, publisher));
+        }
+        Node nodeBeforeSave = treePath.getNodeBeforeSave(saveState.getPathTaken());
+        pathTaken.clear();
+        saveState.getPathTaken().forEach(direction -> pathTaken.add(direction));
+        currentNode = nodeBeforeSave;
+        loadEnemiesFromNode(currentNode);
     }
 
     // =========================================================================
@@ -260,6 +284,12 @@ public class App {
         App app = new App();
         app.start();
 
+        if (SaveManager.isThereAnySave()) {
+            UserInterface.printSaveFound();
+            GameUtils.Wait(2000);
+            app.loadGame();
+        }
+
         while (app.hero.isAlive() && app.currentNode != null) {
             Battle battle = new Battle(app.hero, app.enemies, app.publisher, scanner, app.heroBuyPile, app.heroDiscardPile);
             boolean victory = battle.runBattle();
@@ -273,15 +303,22 @@ public class App {
                     continue;
                 } else if (app.currentNode.getLeftNode() == null) {
                     app.startNewFase(app.currentNode, false);
+                    SaveState saveState = app.buildSaveState();
+                    SaveManager.saveGame(saveState);
                 } else if (app.currentNode.getRightNode() == null) {
                     app.startNewFase(app.currentNode, true);
+                    SaveState saveState = app.buildSaveState();
+                    SaveManager.saveGame(saveState);
                 } else {
                     int choice = scanner.nextInt();
                     boolean isGoingLeft = (choice == 1) ? true : false;
                     app.startNewFase(app.currentNode, isGoingLeft);
+                    SaveState saveState = app.buildSaveState();
+                    SaveManager.saveGame(saveState);
                 }
             }
             else {
+                SaveManager.resetSave();
                 break;
             }  
     }

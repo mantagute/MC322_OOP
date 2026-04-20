@@ -348,6 +348,10 @@ public final class UserInterface {
         System.out.println("  " + BWHITE + "▶ " + RESET + message);
     }
 
+    public static void printSaveFound(){
+        System.out.println("  " + BWHITE + "▶ " + RESET + "Save encontrado! Carregando progresso anterior...");
+    }
+
     /**
      * Imprime uma mensagem de aviso com ícone de alerta amarelo.
      *

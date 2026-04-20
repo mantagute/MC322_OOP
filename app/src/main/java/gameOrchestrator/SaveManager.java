@@ -34,4 +34,11 @@ public class SaveManager {
             return null;
         }
     }
+
+    public static void resetSave() {
+        File save = new File(SAVE_FILE);
+        if (save.exists()) {
+            save.delete();
+        }
+    }
 }

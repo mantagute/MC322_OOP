@@ -1,6 +1,7 @@
 package deck;
 
 import java.util.Random;
+import java.util.List;
 import cards.Card;
 
 /**
@@ -131,5 +132,13 @@ public abstract class Pile {
             pileCards[i] = cards[i];
         }
         return pileCards;
+    }
+
+    public List<String> getCardNames() {
+        List<String> cardNames = new java.util.ArrayList<>();
+        for (int i = 0 ; i < getSize() ; i++) {
+            cardNames.add(cards[i].getName());
+        }
+        return cardNames;
     }
 }

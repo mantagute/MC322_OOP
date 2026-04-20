@@ -262,4 +262,23 @@ public class Data {
             buyPile.push(card);
         }
     }
+
+    public static Card getCardbyName(String name, Publisher publisher) {
+        for (Card card : heroDamageCards) {
+            if (card.getName().equals(name)) {
+                return card;
+            }
+        }
+        for (Card card : heroShieldCards) {
+            if (card.getName().equals(name)) {
+                return card;
+            }
+        }
+        for (Card card : heroEffectCards(publisher)) {
+            if (card.getName().equals(name)) {
+                return card;
+            }
+        }
+        return null;
+    }
 }

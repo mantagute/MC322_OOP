@@ -220,19 +220,26 @@ public class Data {
         List.of(new EnemyDefinition("GS, o Doutrinador", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Zé, O sapo", 100, 10, EnemyDefinition.EnemyType.BZOIDE))
 
     );
-
+    
     /**
      * Define um inimigo com seus atributos e tipo.
      *
      * @param name   nome do inimigo
      * @param health pontos de vida iniciais
      * @param energy energia máxima por turno
-     * @param type   tipo do inimigo ({@link EnemyDefinition.EnemyType})
+     * @param type   tipo do inimigo ({@link EnemyType})
      */
-    
     public record EnemyDefinition(String name, double health, int energy, EnemyType type) {
-        public enum EnemyType { AZOIDE, BZOIDE }
+    /**
+     * Representa os tipos de inimigos disponíveis.
+     */
+    public enum EnemyType { 
+        /** Inimigo do tipo Azoide. */
+        AZOIDE, 
+        /** Inimigo do tipo Bzoide. */
+        BZOIDE 
     }
+}
 
     // =========================================================================
     // Heróis e fábrica de inimigos
@@ -263,6 +270,18 @@ public class Data {
         }
     }
 
+    /**
+     * Busca e retorna uma carta específica com base no seu nome.
+     * <p>
+     * O método procura a carta sequencialmente nas coleções de cartas de dano, 
+     * cartas de escudo e, por fim, nas cartas de efeito associadas ao editor (publisher) fornecido. 
+     * A primeira carta encontrada cujo nome corresponda exatamente ao parâmetro será retornada.
+     * </p>
+     *
+     * @param name      O nome exato da carta a ser buscada.
+     * @param publisher O editor ({@code Publisher}) utilizado para obter a coleção de cartas de efeito específicas.
+     * @return A instância de {@code Card} correspondente ao nome procurado, ou {@code null} caso a carta não seja encontrada em nenhuma das coleções.
+     */
     public static Card getCardbyName(String name, Publisher publisher) {
         for (Card card : heroDamageCards) {
             if (card.getName().equals(name)) {

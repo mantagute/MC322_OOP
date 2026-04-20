@@ -30,21 +30,24 @@ public abstract class Enemy extends Entity {
     /**
      * Constrói um inimigo com os atributos base.
      *
-     * @param name      nome do inimigo
-     * @param health    pontos de vida iniciais
-     * @param energy    energia máxima por turno
+     * @param name   nome do inimigo
+     * @param health pontos de vida iniciais
+     * @param energy energia máxima por turno
      */
     public Enemy(String name, double health, int energy) {
         super(name, health, energy);
     }
 
     /**
-     * Inicializa o Publisher do sistema Observer e popula o baralho do inimigo.
-     * Deve ser chamado imediatamente após a instanciação do inimigo.
+     * Armazena o Publisher do sistema Observer e popula o baralho do inimigo
+     * chamando {@link #initializeDeck()}.
      *
-     * @param publisher Publisher central do jogo, usado para inscrição de efeitos
+     * <p>Deve ser invocado imediatamente após a instanciação do inimigo,
+     * pois {@link #initializeDeck()} pode criar {@code effects.EffectCard}s
+     * que precisam do Publisher para se inscrever no barramento de eventos.
+     *
+     * @param publisher Publisher central do jogo, compartilhado entre todos os efeitos
      */
-
     public void initializePublisher(Publisher publisher) {
         this.publisher = publisher;
         initializeDeck();
@@ -75,7 +78,8 @@ public abstract class Enemy extends Entity {
     /**
      * Retorna a estratégia de cartas planejada para o turno atual.
      *
-     * @return array de cartas selecionadas para executar neste turno
+     * @return array de cartas selecionadas para executar neste turno;
+     *         posições não preenchidas contêm {@code null}
      */
     protected Card[] getEnemyStrategy() {
         return enemyStrategy;
@@ -84,6 +88,7 @@ public abstract class Enemy extends Entity {
     /**
      * Define aleatoriamente a estratégia de cartas para o turno,
      * respeitando o limite de energia disponível e sem repetir cartas.
+     * Seleciona até {@value #MAX_PLANNED_CARDS} cartas da mão atual.
      */
     private void defineEnemyStrategy() {
         for (int index = 0; index < MAX_PLANNED_CARDS; index++) {
@@ -123,7 +128,8 @@ public abstract class Enemy extends Entity {
     public abstract String announceEnemyStrategy();
 
     /**
-     * Define a estratégia do turno e retorna a mensagem de anúncio ao jogador.
+     * Define a estratégia do turno via {@link #defineEnemyStrategy()} e
+     * retorna a mensagem de anúncio ao jogador via {@link #announceEnemyStrategy()}.
      *
      * @return mensagem de anúncio da estratégia do inimigo
      */
@@ -134,6 +140,7 @@ public abstract class Enemy extends Entity {
 
     /**
      * Executa a estratégia definida, usando cada carta planejada contra o alvo.
+     * Cartas nulas (posições não preenchidas na estratégia) são ignoradas.
      *
      * @param target entidade alvo dos ataques (geralmente o herói)
      */
@@ -149,7 +156,8 @@ public abstract class Enemy extends Entity {
     }
 
     /**
-     * Inicia o novo turno do inimigo, comprando cartas de seu próprio baralho.
+     * Inicia o novo turno do inimigo, descartando a mão atual e comprando
+     * novas cartas de seu próprio baralho.
      */
     public void newTurn() {
         newTurn(buyPile, discardPile);

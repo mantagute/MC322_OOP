@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
  * no terminal, incluindo formatação com cores ANSI, exibição de status de
  * entidades, cartas e mensagens de sistema.
  *
- *
  * <p>Princípios de POO aplicados:
  * <ul>
  *   <li><b>Responsabilidade única (SRP):</b> a classe cuida exclusivamente da
@@ -322,6 +321,19 @@ public final class UserInterface {
     }
 
     /**
+     * Imprime a opção de sair e salvar o jogo, numerada pelo índice fornecido.
+     * Ao escolher esta opção, o combate é interrompido, o progresso é salvo
+     * e a aplicação encerra sem perda de dados.
+     *
+     * @param index número que o jogador deve digitar para sair e salvar
+     */
+    public static void printQuitOption(int index) {
+        System.out.printf("  %s%d%s. %s💾  Sair e salvar%s%n%n",
+            BOLD + WHITE, index, RESET,
+            BOLD + BWHITE, RESET);
+    }
+
+    /**
      * Imprime o prompt solicitando ao jogador que escolha uma ação.
      */
     public static void printChoicePrompt() {
@@ -348,14 +360,12 @@ public final class UserInterface {
         System.out.println("  " + BWHITE + "▶ " + RESET + message);
     }
 
-    public static void printSaveFound(){
+    /**
+     * Informa ao jogador que um save anterior foi encontrado e está sendo
+     * carregado automaticamente ao iniciar o jogo.
+     */
+    public static void printSaveFound() {
         System.out.println("  " + BWHITE + "▶ " + RESET + "Save encontrado! Carregando progresso anterior...");
-    }
-
-    public static void printQuitOption(int index) {
-        System.out.printf("  %s%d%s. %s💾  Sair e salvar%s%n%n",
-            BOLD + WHITE, index, RESET,
-            BOLD + BWHITE, RESET);
     }
 
     /**
@@ -382,9 +392,9 @@ public final class UserInterface {
      * <p>Em caso de vitória, exibe o nome do herói e uma mensagem de encerramento.
      * Em caso de derrota, exibe os nomes dos inimigos vencedores.
      *
-     * @param heroWon    {@code true} se o herói venceu o combate; {@code false} caso contrário
+     * @param heroWon    {@code true} se o herói venceu todos os combates; {@code false} caso contrário
      * @param heroName   nome do herói
-     * @param enemyNames lista com os nomes dos inimigos presentes no combate;
+     * @param enemyNames lista com os nomes dos inimigos presentes no último combate;
      *                   deve conter pelo menos dois elementos
      */
     public static void printGameOver(boolean heroWon, String heroName, List<String> enemyNames) {
@@ -463,13 +473,14 @@ public final class UserInterface {
      * Exibe a tela de conclusão de fase, mostrando os caminhos disponíveis
      * para o próximo nó da árvore de progressão.
      *
-     * <p>Lista os inimigos de cada caminho e solicita ao jogador que escolha
-     * entre o caminho da esquerda (1) e o da direita (2).
+     * <p>Lista os inimigos de cada caminho disponível e, se ambos os filhos
+     * existirem, solicita ao jogador que escolha entre esquerda (1) e direita (2).
+     * Só é chamado quando o nó atual possui ao menos um filho — nós folha
+     * são tratados antes desta chamada em {@link App#main(String[])}.
      *
      * @param currentNode nó atual da árvore, cujos filhos representam
      *                    as opções de progressão; não deve ser {@code null}
      */
-
     public static void printFaseClear(Node currentNode) {
         System.out.println();
         printDivider(60, BGREEN);
@@ -477,8 +488,7 @@ public final class UserInterface {
         printDivider(60, BGREEN);
         System.out.println();
 
-        // --- OPÇÃO ESQUERDA ---
-        if(currentNode.getLeftNode() != null) {
+        if (currentNode.getLeftNode() != null) {
             System.out.println("  " + BCYAN + "1.  O Caminho da Esquerda" + RESET);
             System.out.print("     " + DIM + "Inimigos à espera: " + RESET);
             printEnemyPreview(currentNode.getLeftNode().getEnemiesDefinitions());
@@ -486,8 +496,7 @@ public final class UserInterface {
 
         System.out.println("\n");
 
-        // --- OPÇÃO DIREITA ---
-        if(currentNode.getRightNode() != null) {
+        if (currentNode.getRightNode() != null) {
             System.out.println("  " + BRED + "2.  O Caminho da Direita" + RESET);
             System.out.print("     " + DIM + "Inimigos à espera: " + RESET);
             printEnemyPreview(currentNode.getRightNode().getEnemiesDefinitions());
@@ -498,7 +507,10 @@ public final class UserInterface {
     }
 
     /**
-     * Método auxiliar para listar os nomes dos inimigos de forma compacta.
+     * Exibe os nomes dos inimigos de um nó de forma compacta, separados por vírgula.
+     * Utilizado como prévia dos inimigos de cada caminho em {@link #printFaseClear(Node)}.
+     *
+     * @param enemies lista de definições de inimigos do nó a ser exibido
      */
     private static void printEnemyPreview(List<EnemyDefinition> enemies) {
         for (int i = 0; i < enemies.size(); i++) {
@@ -508,7 +520,6 @@ public final class UserInterface {
             }
         }
     }
-
 
     // =========================================================================
     // Renderização do estado de combate
@@ -541,6 +552,4 @@ public final class UserInterface {
         UserInterface.printDivider();
         System.out.println();
     }
-
-
 }

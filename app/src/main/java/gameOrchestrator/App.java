@@ -66,24 +66,27 @@ public class App {
     /** Herói controlado pelo jogador. */
     private Hero hero;
 
-    /** Lista de inimigos presentes no combate. */
+    /** Lista de inimigos presentes no combate atual. */
     private List<Enemy> enemies = new ArrayList<>();
 
-    /** Árvore que representa o caminho do jogo. */
+    /** Árvore que representa o mapa de progressão do jogo. */
     private TreePath treePath;
 
-    /** Nó atual na árvore do jogo. */
+    /** Nó atual na árvore de progressão — define os inimigos da fase em curso. */
     private Node currentNode;
 
     /**
      * Pilha de compra do herói. Reabastecida automaticamente pelo descarte quando
-     * vazia.
+     * vazia. Persiste entre batalhas para manter o estado do baralho ao longo do jogo.
      */
     private BuyPile heroBuyPile;
 
-    /** Pilha de descarte do herói. Recebe as cartas jogadas durante o turno. */
+    /**
+     * Pilha de descarte do herói. Recebe as cartas jogadas durante o turno.
+     * Persiste entre batalhas junto com {@link #heroBuyPile}.
+     */
     private DiscardPile heroDiscardPile;
-    
+
     /**
      * Publisher central do padrão Observer.
      *
@@ -93,7 +96,14 @@ public class App {
      */
     private Publisher publisher = new Publisher();
 
+    /**
+     * Histórico de direções percorridas na árvore de progressão durante a sessão atual.
+     * Cada entrada é {@code "left"} ou {@code "right"}, na ordem em que foram escolhidas.
+     * Usado por {@link #buildSaveState()} para serializar o caminho percorrido
+     * e por {@link TreePath#getNodeBeforeSave(List)} para reposicionar o jogador ao carregar.
+     */
     private List<String> pathTaken = new ArrayList<>();
+
     // =========================================================================
     // Utilitários de terminal
     // =========================================================================
@@ -148,7 +158,6 @@ public class App {
      * <p>Este método deve ser chamado exatamente uma vez antes do início
      * do loop principal em {@link #main(String[])}.
      */
-
     public void start() {
         hero = Data.heroes.get(0);
 
@@ -174,7 +183,6 @@ public class App {
      * @param isGoingLeft  {@code true} para avançar pelo filho esquerdo;
      *                     {@code false} para o filho direito
      */
-
     private void startNewFase(Node currentNode, boolean isGoingLeft) {
         enemies.clear();
         publisher.resetPublisher();
@@ -198,7 +206,6 @@ public class App {
      *
      * @param node nó cujos inimigos serão carregados; não deve ser {@code null}
      */
-
     private void loadEnemiesFromNode(Node node) {
         for (EnemyDefinition enemyDef : node.getEnemiesDefinitions()) {
             Enemy enemy;
@@ -212,14 +219,36 @@ public class App {
         }
     }
 
+    /**
+     * Constrói um {@link SaveState} representando o estado atual do jogo,
+     * capturando a vida do herói, todas as cartas do baralho (buy pile + discard pile)
+     * e o caminho percorrido na árvore de progressão.
+     *
+     * <p>Deve ser chamado <b>após a vitória e após {@link #startNewFase}</b>,
+     * de forma que {@code pathTaken} já inclua a direção recém-escolhida
+     * e as pilhas reflitam o estado pós-batalha.
+     *
+     * @return {@link SaveState} pronto para ser persistido por {@link SaveManager}
+     */
     public SaveState buildSaveState() {
         List<String> allCardNames = new ArrayList<>();
         allCardNames.addAll(heroBuyPile.getCardNames());
         allCardNames.addAll(heroDiscardPile.getCardNames());
-        return new SaveState(hero.getHealth(),allCardNames, pathTaken);
+        return new SaveState(hero.getHealth(), allCardNames, pathTaken);
     }
 
-    public void loadGame(){
+    /**
+     * Carrega um jogo salvo anteriormente, restaurando a vida do herói,
+     * reconstruindo o baralho a partir dos nomes salvos e reposicionando
+     * o jogador no nó correto da árvore de progressão.
+     *
+     * <p>As pilhas de compra e descarte são limpas antes de serem repovoadas
+     * para evitar duplicação de cartas em relação ao baralho criado por {@link #start()}.
+     *
+     * <p>O nó de destino é determinado por {@link TreePath#getNodeBeforeSave(List)},
+     * que navega a árvore seguindo o caminho salvo e retorna o nó da próxima batalha.
+     */
+    public void loadGame() {
         SaveState saveState = SaveManager.loadGame();
         hero.setHealth(saveState.getHeroHealth());
         enemies.clear();
@@ -250,7 +279,7 @@ public class App {
     }
 
     /**
-     * Retorna a lista completa de inimigos (vivos e derrotados).
+     * Retorna uma cópia imutável da lista completa de inimigos da fase atual.
      *
      * @return lista imutável de {@link Enemy}; nunca {@code null}
      */
@@ -265,13 +294,16 @@ public class App {
      * <ol>
      *   <li>Exibe a tela de introdução e aguarda {@code 3000 ms};</li>
      *   <li>Inicializa o estado do jogo via {@link #start()};</li>
+     *   <li>Se houver save em disco, exibe aviso e carrega via {@link #loadGame()};</li>
      *   <li>Executa o loop de progressão enquanto o herói estiver vivo
      *       e houver nós no mapa:
      *     <ol>
      *       <li>Cria uma nova {@link Battle} com o estado atual;</li>
      *       <li>Executa o combate via {@link Battle#runBattle()};</li>
-     *       <li>Em vitória, navega para o próximo nó do mapa;</li>
-     *       <li>Em derrota, encerra o loop.</li>
+     *       <li>Em vitória, verifica se o nó atual é folha (fim do jogo);
+     *           caso contrário, navega para o próximo nó e salva;</li>
+     *       <li>Em derrota, apaga o save e encerra o loop;</li>
+     *       <li>Em {@code QUIT}, salva e encerra o loop sem apagar o progresso.</li>
      *     </ol>
      *   </li>
      *   <li>Exibe a tela de fim de jogo e aguarda {@code 10000 ms}.</li>
@@ -324,26 +356,25 @@ public class App {
             else if (battleResult.equals(BattleResult.DEFEAT)) {
                 SaveManager.resetSave();
                 break;
-            }  
+            }
             else {
                 UserInterface.printAction("Progresso salvo! Até a próxima...");
                 GameUtils.Wait(1500);
                 break;
             }
-    }
+        }
 
-        // Coleta os nomes dos inimigos para a tela de fim de jogo
         List<String> enemyNames = app.enemies.stream()
                 .map(Enemy::getName)
                 .collect(Collectors.toList());
 
         boolean gameWon = app.currentNode == null && app.hero.isAlive();
         boolean showEndScreen = !app.hero.isAlive() || app.currentNode == null;
-            if (showEndScreen) {
-                UserInterface.clearScreen();
-                UserInterface.printGameOver(gameWon, app.hero.getName(), enemyNames);
-                GameUtils.Wait(10000);
-            }
+        if (showEndScreen) {
+            UserInterface.clearScreen();
+            UserInterface.printGameOver(gameWon, app.hero.getName(), enemyNames);
+            GameUtils.Wait(10000);
+        }
         scanner.close();
     }
 }

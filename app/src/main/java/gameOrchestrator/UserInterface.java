@@ -352,6 +352,12 @@ public final class UserInterface {
         System.out.println("  " + BWHITE + "▶ " + RESET + "Save encontrado! Carregando progresso anterior...");
     }
 
+    public static void printQuitOption(int index) {
+        System.out.printf("  %s%d%s. %s💾  Sair e salvar%s%n%n",
+            BOLD + WHITE, index, RESET,
+            BOLD + BWHITE, RESET);
+    }
+
     /**
      * Imprime uma mensagem de aviso com ícone de alerta amarelo.
      *

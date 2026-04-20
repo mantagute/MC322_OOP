@@ -11,6 +11,7 @@ import deck.BuyPile;
 import deck.DiscardPile;
 import entities.Enemy;
 import entities.Hero;
+import gameOrchestrator.Battle.BattleResult;
 import gameOrchestrator.Data.EnemyDefinition;
 import observer.Publisher;
 
@@ -221,6 +222,7 @@ public class App {
     public void loadGame(){
         SaveState saveState = SaveManager.loadGame();
         hero.setHealth(saveState.getHeroHealth());
+        enemies.clear();
         for (String cardName : saveState.getDeckCardNames()) {
             heroBuyPile.push(Data.getCardbyName(cardName, publisher));
         }
@@ -292,9 +294,9 @@ public class App {
 
         while (app.hero.isAlive() && app.currentNode != null) {
             Battle battle = new Battle(app.hero, app.enemies, app.publisher, scanner, app.heroBuyPile, app.heroDiscardPile);
-            boolean victory = battle.runBattle();
+            BattleResult battleResult = battle.runBattle();
 
-            if (victory) {
+            if (battleResult.equals(BattleResult.VICTORY)) {
                 UserInterface.printFaseClear(app.currentNode);
                 GameUtils.Wait(2000);
     
@@ -317,10 +319,15 @@ public class App {
                     SaveManager.saveGame(saveState);
                 }
             }
-            else {
+            else if (battleResult.equals(BattleResult.DEFEAT)) {
                 SaveManager.resetSave();
                 break;
             }  
+            else {
+                UserInterface.printAction("Progresso salvo! Até a próxima...");
+                GameUtils.Wait(1500);
+                break;
+            }
     }
 
         // Coleta os nomes dos inimigos para a tela de fim de jogo
@@ -328,10 +335,13 @@ public class App {
                 .map(Enemy::getName)
                 .collect(Collectors.toList());
 
-        UserInterface.clearScreen();
-        UserInterface.printGameOver(app.hero.isAlive(), app.hero.getName(), enemyNames);
-
-        GameUtils.Wait(10000);
+        boolean gameWon = app.currentNode == null && app.hero.isAlive();
+        boolean showEndScreen = !app.hero.isAlive() || app.currentNode == null;
+            if (showEndScreen) {
+                UserInterface.clearScreen();
+                UserInterface.printGameOver(gameWon, app.hero.getName(), enemyNames);
+                GameUtils.Wait(10000);
+            }
         scanner.close();
     }
 }

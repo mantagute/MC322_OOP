@@ -1,11 +1,15 @@
 package entities;
 
+import java.util.Random;
+
 /**
  * Representa o herói controlado pelo jogador.
  * Herda todos os comportamentos de combate de {@link Entity},
  * sendo controlado diretamente pelas escolhas do usuário durante o turno.
  */
 public class Hero extends Entity {
+
+    private int gold = 0;
 
     /**
      * Constrói um herói com os atributos base especificados.
@@ -16,5 +20,13 @@ public class Hero extends Entity {
      */
     public Hero(String name, int health, int energy) {
         super(name, health, energy);
+    }
+
+    public void addGold(int amount) {
+        gold = gold + amount;
+    }
+
+    public int getGold() {
+        return gold;
     }
 }

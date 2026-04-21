@@ -368,6 +368,10 @@ public final class UserInterface {
         System.out.println("  " + BWHITE + "▶ " + RESET + "Save encontrado! Carregando progresso anterior...");
     }
 
+    public static void printReward(String heroName, int gold) {
+        System.out.println("  " + BYELLOW + "★ " + RESET + BWHITE + heroName + " recebeu " + BYELLOW + gold + " de ouro!" + RESET);
+    }
+
     /**
      * Imprime uma mensagem de aviso com ícone de alerta amarelo.
      *

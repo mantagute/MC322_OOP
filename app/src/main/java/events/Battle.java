@@ -1,6 +1,7 @@
-package gameOrchestrator;
+package events;
 
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -8,9 +9,12 @@ import cards.Card;
 import deck.BuyPile;
 import deck.DiscardPile;
 import entities.Hero;
+import gameOrchestrator.App;
+import gameOrchestrator.UserInterface;
 import observer.Publisher;
 import entities.Enemy;
 import entities.Entity;
+import gameOrchestrator.GameUtils;
 
 /**
  * Encapsula a lógica de um combate individual entre o herói e os inimigos.
@@ -19,7 +23,7 @@ import entities.Entity;
  *
  * <p>Ao final do combate, retorna um {@link BattleResult} indicando se o herói
  * venceu ({@code VICTORY}), foi derrotado ({@code DEFEAT}) ou escolheu sair
- * e salvar ({@code QUIT}), permitindo que {@link App} tome a decisão adequada.
+ * e salvar ({@code     }), permitindo que {@link App} tome a decisão adequada.
  *
  * <p>Princípios de POO aplicados:
  * <ul>
@@ -34,7 +38,7 @@ import entities.Entity;
  * @see UserInterface
  * @see observer.Publisher
  */
-public class Battle {
+public class Battle extends Event {
     private Hero hero;
     private List<Enemy> enemies;
     private Publisher publisher;
@@ -59,25 +63,43 @@ public class Battle {
      * @param heroBuyPile     pilha de compra do herói; persiste entre batalhas
      * @param heroDiscardPile pilha de descarte do herói; persiste entre batalhas
      */
-    public Battle(Hero hero, List<Enemy> enemies, Publisher publisher, Scanner scanner, BuyPile heroBuyPile, DiscardPile heroDiscardPile) {
-        this.hero = hero;
+    public Battle(List<Enemy> enemies, Publisher publisher) {
         this.enemies = enemies;
         this.publisher = publisher;
-        this.scanner = scanner;
-        this.heroBuyPile = heroBuyPile;
-        this.heroDiscardPile = heroDiscardPile;
+
     }
 
     /**
      * Possíveis resultados de um combate.
      */
-    public enum BattleResult {
+    private enum BattleResult {
         /** O herói derrotou todos os inimigos. */
         VICTORY,
         /** O herói foi derrotado. */
         DEFEAT,
         /** O jogador escolheu sair e salvar durante seu turno. */
         QUIT
+    }
+
+    public EventResult initializeEvent(Hero hero, BuyPile buyPile, DiscardPile discardPile, Scanner scanner) {
+        this.hero = hero;
+        this.scanner = scanner;
+        this.heroBuyPile = buyPile;
+        this.heroDiscardPile = discardPile;
+
+        BattleResult battleResult = runBattle();
+
+        switch (battleResult) {
+            case VICTORY:
+                    rewardGold(hero);
+                    return EventResult.CONTINUE;
+            case DEFEAT:
+                    return EventResult.DEFEAT;
+            case QUIT:
+                    return EventResult.QUIT;   
+            default:
+                    throw new IllegalStateException("Unexpected BattleResult: " + battleResult);
+        }
     }
 
     /**
@@ -99,7 +121,7 @@ public class Battle {
      *         {@link BattleResult#DEFEAT} se o herói morrer,
      *         {@link BattleResult#QUIT} se o jogador escolher sair e salvar
      */
-    public BattleResult runBattle() {
+    private BattleResult runBattle() {
         while (hero.isAlive() && enemies.stream().anyMatch(Enemy::isAlive)) {
             enemyTurn();
             heroTurn(scanner);
@@ -124,6 +146,13 @@ public class Battle {
             }
         }
         return hero.isAlive() ? BattleResult.VICTORY : BattleResult.DEFEAT;
+    }
+
+        private void rewardGold(Hero hero) {
+        int gold = 30 + new Random().nextInt(16);
+        hero.addGold(gold);
+        UserInterface.printReward(hero.getName(), gold);
+        GameUtils.Wait(2500);
     }
 
     // =========================================================================

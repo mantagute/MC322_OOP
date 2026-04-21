@@ -11,7 +11,8 @@ import deck.BuyPile;
 import deck.DiscardPile;
 import entities.Enemy;
 import entities.Hero;
-import gameOrchestrator.Battle.BattleResult;
+import events.Battle;
+import events.Battle.BattleResult;
 import gameOrchestrator.Data.EnemyDefinition;
 import observer.Publisher;
 

@@ -41,7 +41,6 @@ public class DamageCard extends Card {
      *
      * @return dano base da carta
      */
-    @Override
     public double getEffectValue() {
         return damage;
     }
@@ -51,8 +50,11 @@ public class DamageCard extends Card {
      *
      * @return string no formato {@code " (Dano: X)"}
      */
-    @Override
     public String getDetails() {
         return " (Dano: " + this.getEffectValue() + ")";
+    }
+
+    public void upgrade() {
+        damage = damage + damage * 0.35;
     }
 }

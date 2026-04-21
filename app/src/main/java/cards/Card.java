@@ -99,4 +99,6 @@ public abstract class Card {
      * @return valor base do efeito da carta
      */
     public abstract double getEffectValue();
+
+    public abstract void upgrade();
 }

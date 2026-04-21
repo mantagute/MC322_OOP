@@ -1,7 +1,5 @@
 package entities;
 
-import java.util.Random;
-
 /**
  * Representa o herói controlado pelo jogador.
  * Herda todos os comportamentos de combate de {@link Entity},

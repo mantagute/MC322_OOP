@@ -22,6 +22,7 @@ public abstract class Entity {
 
     private String name;
     private double health;
+    private double maxHealth;
     private double currentShield;
     private int currentEnergy;
     private int maxEnergy;
@@ -38,6 +39,7 @@ public abstract class Entity {
     public Entity(String name, double health, int energy) {
         this.name = name;
         this.health = health;
+        this.maxHealth = health;
         this.currentEnergy = energy;
         this.maxEnergy = energy;
         this.currentShield = 0;
@@ -297,6 +299,10 @@ public abstract class Entity {
         return currentEnergy;
     }
 
+    public double getMaxHealth() {
+        return maxHealth;
+    }
+
     /**
      * Define diretamente os pontos de vida da entidade, sobrescrevendo o valor atual.
      * Usado exclusivamente para restaurar o estado do herói ao carregar um save
@@ -306,5 +312,12 @@ public abstract class Entity {
      */
     public void setHealth(double health) {
         this.health = health;
+    }
+
+    public void heal(double amount) {
+        health = health + amount;
+        if (health > maxHealth) {
+            health = maxHealth;
+        }
     }
 }

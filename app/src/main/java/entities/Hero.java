@@ -7,6 +7,8 @@ package entities;
  */
 public class Hero extends Entity {
 
+    private int gold = 0;
+
     /**
      * Constrói um herói com os atributos base especificados.
      *
@@ -16,5 +18,13 @@ public class Hero extends Entity {
      */
     public Hero(String name, int health, int energy) {
         super(name, health, energy);
+    }
+
+    public void addGold(int amount) {
+        gold = gold + amount;
+    }
+
+    public int getGold() {
+        return gold;
     }
 }

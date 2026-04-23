@@ -43,7 +43,6 @@ public class EffectCard extends Card {
      *
      * @return quantidade de acúmulos do efeito
      */
-    @Override
     public double getEffectValue() {
         return balance;
     }
@@ -54,7 +53,6 @@ public class EffectCard extends Card {
      * @param user   entidade que joga a carta
      * @param target entidade alvo da carta
      */
-    @Override
     public void useCard(Entity user, Entity target) {
         Entity character = selfTarget ? user : target;
         character.applyEffect(effectType, balance, publisher);
@@ -65,7 +63,6 @@ public class EffectCard extends Card {
      *
      * @return {@code true} se o efeito é aplicado no usuário; {@code false} se é no alvo
      */
-    @Override
     public boolean isSelfTarget() {
         return selfTarget;
     }
@@ -75,7 +72,6 @@ public class EffectCard extends Card {
      *
      * @return descrição do comportamento do efeito, conforme seu tipo
      */
-    @Override
     public String getDetails() {
         if (effectType == EffectType.POISON) {
             return " (Reduz o HP do inimigo na quantidade de acúmulos atuais associados ao efeito.)";
@@ -83,5 +79,9 @@ public class EffectCard extends Card {
             return " (Multiplica dano e escudo pela quantidade de acúmulos atuais associados ao efeito.)";
         }
         return "";
+    }
+
+    public void upgrade() {
+        balance = balance + balance * 0.35;
     }
 }

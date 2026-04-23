@@ -32,7 +32,6 @@ public class ShieldCard extends Card {
      * @param user   entidade que joga a carta e recebe o escudo
      * @param target não utilizado nesta implementação (carta é sempre self-target)
      */
-    @Override
     public void useCard(Entity user, Entity target) {
         user.receiveShield(user.applyEffectMultiplier(this.shield));
     }
@@ -42,7 +41,6 @@ public class ShieldCard extends Card {
      *
      * @return {@code true}
      */
-    @Override
     public boolean isSelfTarget() {
         return true;
     }
@@ -52,7 +50,6 @@ public class ShieldCard extends Card {
      *
      * @return valor base de escudo
      */
-    @Override
     public double getEffectValue() {
         return shield;
     }
@@ -62,8 +59,11 @@ public class ShieldCard extends Card {
      *
      * @return string no formato {@code " (Escudo: X)"}
      */
-    @Override
     public String getDetails() {
         return " (Escudo: " + this.getEffectValue() + ")";
+    }
+
+    public void upgrade() {
+        shield = shield + shield * 0.35;
     }
 }

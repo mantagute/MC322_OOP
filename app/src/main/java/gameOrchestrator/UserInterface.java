@@ -8,6 +8,7 @@ import entities.Entity;
 import gameOrchestrator.Data.EnemyDefinition;
 import gamePath.Node;
 import entities.Hero;
+import events.campfire.CampFireAction;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -255,14 +256,19 @@ public final class UserInterface {
      * @param card carta cujo estilo visual será determinado; não deve ser {@code null}
      * @return array de dois elementos: {@code [emoji, codigoAnsiCor]}
      */
-    private static String[] cardStyle(Card card) {
-        if (card instanceof DamageCard) {
-            return new String[]{"⚔️ ", BRED};
-        } else if (card instanceof ShieldCard) {
-            return new String[]{"🛡️ ", BBLUE};
-        } else {
-            return new String[]{"✨ ", BMAGENTA};
+        public static String[] getCardStyle(Card card) {
+            if (card instanceof DamageCard) {
+                return new String[]{"⚔️ ", BRED};
+            } else if (card instanceof ShieldCard) {
+                return new String[]{"🛡️ ", BBLUE};
+            } else {
+                return new String[]{"✨ ", BMAGENTA};
+            }
         }
+
+    // Mantém o privado delegando pro público — retrocompatibilidade
+    private static String[] cardStyle(Card card) {
+        return getCardStyle(card);
     }
 
     /**
@@ -554,6 +560,44 @@ public final class UserInterface {
 
         System.out.println();
         UserInterface.printDivider();
+        System.out.println();
+    }
+
+    public static void printCampFireOptions(List<CampFireAction> actions) {
+        System.out.println();
+        printDivider(60, BYELLOW);
+        System.out.println(BOLD + BYELLOW + "  🔥 FOGUEIRA — O QUE DESEJA FAZER?" + RESET);
+        printDivider(60, BYELLOW);
+        System.out.println();
+        for (int i = 0; i < actions.size(); i++) {
+            String emoji = actions.get(i).getEmoji();
+            System.out.printf("  %s%d%s. %s%s %s%s%n",
+                BOLD + BWHITE, i + 1, RESET,
+                BYELLOW, emoji,
+                actions.get(i).getDescription(),
+                RESET);
+        }
+        System.out.println();
+    }
+    
+    public static void printCardsToUpdate(List<Card> cardsAvailable) {
+        System.out.println();
+        printDivider(60, BMAGENTA);
+        System.out.println(BOLD + BMAGENTA + "  ✨ ESCOLHA UMA CARTA PARA MELHORAR" + RESET);
+        printDivider(60, BMAGENTA);
+        System.out.println();
+        for (int i = 0; i < cardsAvailable.size(); i++) {
+            Card card = cardsAvailable.get(i);
+            String[] style = getCardStyle(card);
+            String emoji = style[0].replace(" ", "");
+            String color = style[1];
+            String indexStr = String.format("%2d", i + 1);
+            System.out.printf("  %s%s%s. %s%s%s  %s%s%n",
+                BOLD + BWHITE, indexStr, RESET,
+                color, emoji, RESET,
+                card.getName() + card.getDetails(),
+                RESET);
+        }
         System.out.println();
     }
 }

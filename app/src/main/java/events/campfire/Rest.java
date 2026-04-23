@@ -15,4 +15,8 @@ public class Rest implements CampFireAction  {
         double healAmount = hero.getMaxHealth() * 0.35;
         hero.heal(healAmount);
     }
+
+    public String getEmoji(){
+        return "🛌";
+    }
 }

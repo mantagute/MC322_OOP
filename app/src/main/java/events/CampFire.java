@@ -8,16 +8,22 @@ import deck.DiscardPile;
 import entities.Hero;
 import events.campfire.CampFireAction;
 import events.campfire.Rest;
+import events.campfire.UpgradeCard;
+import gameOrchestrator.UserInterface;
 
 
 public class CampFire extends Event{
         public EventResult initializeEvent(Hero hero, BuyPile buyPile, DiscardPile discardPile, Scanner scanner) {
             List<CampFireAction> actions = new ArrayList<>();
             actions.add(new Rest());
+            actions.add(new UpgradeCard());
 
-            //TODO escolha 
+            UserInterface.printCampFireOptions(actions);
+            UserInterface.printChoicePrompt();
 
-            if (choice <= actions.size()) {
+            int choice = scanner.nextInt();
+
+            if (choice >=1 && choice <= actions.size()) {
                 CampFireAction campFireActionChosen = actions.get(choice - 1);
                 campFireActionChosen.execute(hero, buyPile, discardPile, scanner);
             }

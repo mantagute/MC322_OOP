@@ -11,4 +11,6 @@ public interface CampFireAction {
     String getDescription();
 
     void execute(Hero hero, BuyPile buyPile, DiscardPile discardPile, Scanner scanner);
+
+    String getEmoji();
 }

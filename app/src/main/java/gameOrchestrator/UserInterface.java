@@ -9,6 +9,7 @@ import gameOrchestrator.Data.EnemyDefinition;
 import gamePath.Node;
 import entities.Hero;
 import events.campfire.CampFireAction;
+import events.choice.ChoiceOption;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -600,4 +601,34 @@ public final class UserInterface {
         }
         System.out.println();
     }
+
+    public static void printChoiceLore(String lore) {
+        System.out.println();
+        printDivider(60, BCYAN);
+        System.out.println();
+        System.out.println("  " + DIM + BWHITE + lore + RESET);
+        System.out.println();
+    }
+
+    public static void printChoiceOptions(List<ChoiceOption> options) {
+        System.out.println(BOLD + BCYAN + "  ❓ UMA ESCOLHA..." + RESET);
+        System.out.println();
+        for (int i = 0; i < options.size(); i++) {
+            System.out.printf("  %s%d%s. %s%s%s  %s%n",
+                BOLD + BWHITE, i + 1, RESET,
+                BCYAN, options.get(i).getEmoji(), RESET,
+                options.get(i).getAction());
+        }
+        System.out.println();
+    }
+
+    public static void printChoiceFeedback(ChoiceOption option) {
+        System.out.println();
+        printDivider(60, BCYAN);
+        System.out.println("  " + option.getEmoji() + "  " + BOLD + BWHITE + option.getFeedback() + RESET);
+        printDivider(60, BCYAN);
+        System.out.println();
+    }
+
+
 }

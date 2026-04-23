@@ -9,6 +9,9 @@ import cards.ShieldCard;
 import deck.BuyPile;
 import effects.Effect.EffectType;
 import entities.Hero;
+import events.Choice;
+import events.choice.DamageOption;
+import events.choice.HealOption;
 import observer.Publisher;
 
 /**
@@ -239,7 +242,31 @@ public class Data {
         /** Inimigo do tipo Bzoide. */
         BZOIDE 
     }
-}
+    }
+
+    public static final List<Choice> choices = List.of(
+        new Choice(
+            "Você encontra uma barraca de açaí na beira do caminho. O vendedor te oferece um copo extra grande com leite condensado e morango. Parece irrecusável...",
+            List.of(
+                new HealOption("Recusar educadamente.", "Aquilo era terra SABOOR açaí, fugiu de uma dor de barriga."),
+                new DamageOption("Deliciar-se com a iguaria paraense.", "Não aceite açaí duvidoso no rolê, cuidado fella.")
+            )
+        ),
+        new Choice(
+            "Um bixo te pede ajuda com uma questão de MecG.",
+            List.of(
+                new HealOption("Tentar resolver.", "Computeiro que é computeiro não treme na base. A questão era fácil, você farmou aquela AURA."),
+                new DamageOption("Ignorar e seguir em frente.", "O bixão virou teu chefe e você ficou na saudade...")
+            )
+        ),
+        new Choice(
+            "Você encontra o Cabo Arruda dormindo em uma rede. Ele murmura algo sobre experimentos. Você pode acordá-lo ou deixá-lo dormir.",
+            List.of(
+                new HealOption("Deixar dormir.", "Cada kchorro... a tal da sesta é o motor maior do alto desempenho."),
+                new DamageOption("Acordar.", "Não se mexe com viking paraense e suas erudições, Cabo Arruda te PUNIU.")
+            )
+        )
+    );
 
     // =========================================================================
     // Heróis e fábrica de inimigos

@@ -39,4 +39,7 @@ public class Choice extends Event{
         return EventResult.CONTINUE;
     }
     
+    public String getPreview() {
+        return "❓ ESCOLHA ❓";
+    }
 }

@@ -366,4 +366,16 @@ public class Battle extends Event {
     public void setPublisher(Publisher publisher) {
         this.publisher = publisher;
     }
+
+    public List<EnemyDefinition> getEnemyDefinitions() {
+        return enemyDefinitions;
+    }
+
+    public String getPreview() {
+        List<String> enemiesNames = new ArrayList<>();
+        for (EnemyDefinition def : enemyDefinitions) {
+            enemiesNames.add(def.name());
+        }
+        return "⚔️  Batalha: " + String.join(", ", enemiesNames);
+    }
 } 

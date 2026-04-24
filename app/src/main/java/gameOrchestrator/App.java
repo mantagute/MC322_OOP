@@ -3,7 +3,6 @@ package gameOrchestrator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 import gamePath.Node;
 import gamePath.TreePath;
@@ -337,7 +336,7 @@ public class App {
         boolean showEndScreen = !app.hero.isAlive() || app.currentNode == null;
         if (showEndScreen) {
             UserInterface.clearScreen();
-            UserInterface.printGameOver(gameWon, app.hero.getName());
+            UserInterface.printGameOver(gameWon, app.hero.getName(), app.currentNode);
             GameUtils.Wait(10000);
         }
         scanner.close();

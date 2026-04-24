@@ -3,6 +3,8 @@ package gamePath;
 import java.util.ArrayList;
 import java.util.List;
 
+import events.Event;
+
 import gameOrchestrator.Data.EnemyDefinition;
 
 /**
@@ -16,7 +18,7 @@ import gameOrchestrator.Data.EnemyDefinition;
  */
 
 public class Node {
-    private List<EnemyDefinition> enemies;
+    private List<Event> events;
     private Node left, right;
 
     /**
@@ -26,8 +28,8 @@ public class Node {
     * @param enemies lista de definições de inimigos presentes neste nó
     */
 
-    public Node(List<EnemyDefinition> enemies) {
-        this.enemies = new ArrayList<EnemyDefinition>(enemies);
+    public Node(List<Event> events) {
+        this.events = new ArrayList<Event>(events);
         left = right = null;
     }
 
@@ -37,8 +39,8 @@ public class Node {
      * @return lista imutável de {@link EnemyDefinition}
      */
 
-    public List<EnemyDefinition> getEnemiesDefinitions() {
-        return enemies;
+    public List<Event> getEvents() {
+        return events;
     }
 
     /**

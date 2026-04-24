@@ -8,9 +8,12 @@ import entities.Entity;
 import gameOrchestrator.Data.EnemyDefinition;
 import gamePath.Node;
 import entities.Hero;
+import events.Battle;
+import events.Event;
 import events.campfire.CampFireAction;
 import events.choice.ChoiceOption;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -408,19 +411,26 @@ public final class UserInterface {
      * @param enemyNames lista com os nomes dos inimigos presentes no último combate;
      *                   deve conter pelo menos dois elementos
      */
-    public static void printGameOver(boolean heroWon, String heroName, List<String> enemyNames) {
+    public static void printGameOver(boolean heroWon, String heroName, Node lastNode) {
         System.out.println();
         if (heroWon) {
             printDivider(60, BGREEN);
             System.out.println(BOLD + BGREEN + "  🏆 VITÓRIA!" + RESET);
-            System.out.println(BWHITE + "  " + heroName + " venceu o combate!" + RESET);
-            System.out.println(DIM + "  " + enemyNames.get(0) + ", " + heroName
-                + " ainda não terminou o experimento. F carona..." + RESET);
+            System.out.println(BWHITE + "  " + heroName + " venceu o jogo!" + RESET);
+            System.out.println(DIM + "  Didi Marco provou é o tal do 01." + RESET);
             printDivider(60, BGREEN);
         } else {
+            List<String> enemyNames = new ArrayList<>();
+            for (Event event : lastNode.getEvents()) {
+                if (event instanceof Battle) {
+                    for (EnemyDefinition def : ((Battle) event).getEnemyDefinitions()) {
+                        enemyNames.add(def.name());
+                    }
+                }
+            }
             printDivider(60, BRED);
             System.out.println(BOLD + BRED + "  💀 DERROTA!" + RESET);
-            System.out.println(BWHITE + "  " + enemyNames.get(0) + " e " + enemyNames.get(1) + " venceram!" + RESET);
+            System.out.println(BWHITE + "  " + String.join(" e ", enemyNames) + " venceram!" + RESET);
             System.out.println(DIM + "  Não sobrou nada..." + RESET);
             printDivider(60, BRED);
         }
@@ -480,56 +490,31 @@ public final class UserInterface {
         System.out.println();
     }
 
-    /**
-     * Exibe a tela de conclusão de fase, mostrando os caminhos disponíveis
-     * para o próximo nó da árvore de progressão.
-     *
-     * <p>Lista os inimigos de cada caminho disponível e, se ambos os filhos
-     * existirem, solicita ao jogador que escolha entre esquerda (1) e direita (2).
-     * Só é chamado quando o nó atual possui ao menos um filho — nós folha
-     * são tratados antes desta chamada em {@link App#main(String[])}.
-     *
-     * @param currentNode nó atual da árvore, cujos filhos representam
-     *                    as opções de progressão; não deve ser {@code null}
-     */
     public static void printFaseClear(Node currentNode) {
         System.out.println();
         printDivider(60, BGREEN);
         System.out.println(BOLD + BGREEN + "  ✨ NÍVEL CONCLUÍDO! O CAMINHO DIVIDE-SE... ✨" + RESET);
         printDivider(60, BGREEN);
         System.out.println();
-
+    
         if (currentNode.getLeftNode() != null) {
             System.out.println("  " + BCYAN + "1.  O Caminho da Esquerda" + RESET);
-            System.out.print("     " + DIM + "Inimigos à espera: " + RESET);
-            printEnemyPreview(currentNode.getLeftNode().getEnemiesDefinitions());
-        }
-
-        System.out.println("\n");
-
-        if (currentNode.getRightNode() != null) {
-            System.out.println("  " + BRED + "2.  O Caminho da Direita" + RESET);
-            System.out.print("     " + DIM + "Inimigos à espera: " + RESET);
-            printEnemyPreview(currentNode.getRightNode().getEnemiesDefinitions());
-        }
-
-        System.out.println("\n");
-        printChoicePrompt();
-    }
-
-    /**
-     * Exibe os nomes dos inimigos de um nó de forma compacta, separados por vírgula.
-     * Utilizado como prévia dos inimigos de cada caminho em {@link #printFaseClear(Node)}.
-     *
-     * @param enemies lista de definições de inimigos do nó a ser exibido
-     */
-    private static void printEnemyPreview(List<EnemyDefinition> enemies) {
-        for (int i = 0; i < enemies.size(); i++) {
-            System.out.print(BOLD + enemies.get(i).name() + RESET);
-            if (i < enemies.size() - 1) {
-                System.out.print(DIM + ", " + RESET);
+            for (Event event : currentNode.getLeftNode().getEvents()) {
+                System.out.println("     " + DIM + event.getPreview() + RESET);
             }
         }
+
+        System.out.println("\n");
+        
+        if (currentNode.getRightNode() != null) {
+            System.out.println("  " + BRED + "2.  O Caminho da Direita" + RESET);
+            for (Event event : currentNode.getRightNode().getEvents()) {
+                System.out.println("     " + DIM + event.getPreview() + RESET);
+            }
+        }
+    
+        System.out.println("\n");
+        printChoicePrompt();
     }
 
     // =========================================================================

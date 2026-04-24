@@ -1,5 +1,6 @@
 package events;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -11,6 +12,7 @@ import deck.DiscardPile;
 import entities.Hero;
 import gameOrchestrator.App;
 import gameOrchestrator.UserInterface;
+import gameOrchestrator.Data.EnemyDefinition;
 import observer.Publisher;
 import entities.Enemy;
 import entities.Entity;
@@ -40,7 +42,8 @@ import gameOrchestrator.GameUtils;
  */
 public class Battle extends Event {
     private Hero hero;
-    private List<Enemy> enemies;
+    private List<EnemyDefinition> enemyDefinitions;
+    private List<Enemy> enemies = new ArrayList<>();
     private Publisher publisher;
     private Scanner scanner;
     private BuyPile heroBuyPile;
@@ -63,9 +66,8 @@ public class Battle extends Event {
      * @param heroBuyPile     pilha de compra do herói; persiste entre batalhas
      * @param heroDiscardPile pilha de descarte do herói; persiste entre batalhas
      */
-    public Battle(List<Enemy> enemies, Publisher publisher) {
-        this.enemies = enemies;
-        this.publisher = publisher;
+    public Battle(List<EnemyDefinition> enemyDefinitions) {
+        this.enemyDefinitions = enemyDefinitions;
 
     }
 
@@ -86,6 +88,17 @@ public class Battle extends Event {
         this.scanner = scanner;
         this.heroBuyPile = buyPile;
         this.heroDiscardPile = discardPile;
+
+        for (EnemyDefinition enemyDefinition : enemyDefinitions) {
+            Enemy enemy;
+            if (enemyDefinition.type() == EnemyDefinition.EnemyType.AZOIDE) {
+                enemy = new entities.enemies.Azoide(enemyDefinition.name(), enemyDefinition.health(), enemyDefinition.energy());
+            } else {
+                enemy = new entities.enemies.Bzoide(enemyDefinition.name(), enemyDefinition.health(), enemyDefinition.energy());
+            }
+            enemy.initializePublisher(publisher);
+            enemies.add(enemy);
+        }
 
         BattleResult battleResult = runBattle();
 
@@ -349,4 +362,20 @@ public class Battle extends Event {
         publisher.notify(event, user, target);
         user.manageEffects();
     }
-}
+
+    public void setPublisher(Publisher publisher) {
+        this.publisher = publisher;
+    }
+
+    public List<EnemyDefinition> getEnemyDefinitions() {
+        return enemyDefinitions;
+    }
+
+    public String getPreview() {
+        List<String> enemiesNames = new ArrayList<>();
+        for (EnemyDefinition def : enemyDefinitions) {
+            enemiesNames.add(def.name());
+        }
+        return "⚔️  Batalha: " + String.join(", ", enemiesNames);
+    }
+} 

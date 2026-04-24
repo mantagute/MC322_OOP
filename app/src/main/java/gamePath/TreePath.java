@@ -1,7 +1,7 @@
 package gamePath;
 
 import java.util.List;
-import gameOrchestrator.Data.EnemyDefinition;
+import events.Event;
 
 /**
  * Representa o mapa de progressão do jogo como uma árvore binária.
@@ -23,8 +23,8 @@ public class TreePath {
      * @param enemies lista de grupos de inimigos, onde cada grupo representa
      *                os inimigos de um nó do mapa
      */
-    public TreePath(List<List<EnemyDefinition>> enemies) {
-        this.root = listToTree(enemies, 0, enemies.size() - 1);
+    public TreePath(List<List<Event>> events) {
+        this.root = listToTree(events, 0, events.size() - 1);
     }
 
     /**
@@ -37,16 +37,16 @@ public class TreePath {
      * @param end     índice final do intervalo atual
      * @return raiz da subárvore construída, ou {@code null} se {@code start > end}
      */
-    private Node listToTree(List<List<EnemyDefinition>> enemies, int start, int end) {
+    private Node listToTree(List<List<Event>> events, int start, int end) {
         if (start > end) {
             return null;
         }
 
         int mid = (start + end) / 2;
-        Node node = new Node(enemies.get(mid));
+        Node node = new Node(events.get(mid));
 
-        node.setLeftNode(listToTree(enemies, start, mid - 1));
-        node.setRightNode(listToTree(enemies, mid + 1, end));
+        node.setLeftNode(listToTree(events, start, mid - 1));
+        node.setRightNode(listToTree(events, mid + 1, end));
 
         return node;
     }

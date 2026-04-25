@@ -16,6 +16,7 @@ import events.choice.DamageOption;
 import events.choice.HealOption;
 import observer.Publisher;
 import events.Event;
+import events.Shop;
 
 
 /**
@@ -41,6 +42,16 @@ public class Data {
      * Classe utilitária de dados — não deve ser instanciada.
      */
     private Data() {}
+
+    public static final List<DamageCard> shopDamageCards = List.of(
+        new DamageCard("IFGW", 10, 50, "O Filho chora e a mae nao ve", false),
+        new DamageCard("JIU JITSU UNICAMP", 8, 40, "OSS", true)
+    );
+
+    public static final List<ShieldCard> shopShieldCards = List.of(
+        new ShieldCard("IC FAPESP", 10, 50, "Aquele milao para viver como playboy", false),
+        new ShieldCard("RS", 8, 40, "Sem fila, com vento e dignidade!", true)
+    );
 
     // =========================================================================
     // Cartas do Azoide

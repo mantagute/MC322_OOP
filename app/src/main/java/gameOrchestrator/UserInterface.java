@@ -12,6 +12,7 @@ import events.Battle;
 import events.Event;
 import events.campfire.CampFireAction;
 import events.choice.ChoiceOption;
+import events.shop.ShopItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -613,6 +614,31 @@ public final class UserInterface {
         System.out.println("  " + option.getEmoji() + "  " + BOLD + BWHITE + option.getFeedback() + RESET);
         printDivider(60, BCYAN);
         System.out.println();
+    }
+
+    public static void printShop(Hero hero, List<ShopItem> items) {
+        System.out.println();
+        printDivider(60, BYELLOW);
+        System.out.println(BOLD + BYELLOW + "  🛒 LOJA" + RESET);
+        printDivider(60, BYELLOW);
+        System.out.println();
+        System.out.println("  " + BYELLOW + "💰 Ouro: " + BOLD + hero.getGold() + RESET);
+        System.out.println();
+
+        for (int i = 0; i < items.size(); i++) {
+            ShopItem item = items.get(i);
+            String strike = item.isSold() ? STRIKE : "";
+            System.out.printf("  %s%d%s. %s%s %s — %s%s  %s%d de ouro%s%n",
+                BOLD + BWHITE, i + 1, RESET,
+                strike, item.getEmoji(), item.getName(),
+                item.getDetails(), RESET,
+                BYELLOW, item.getPrice(), RESET);
+        }
+
+        System.out.println();
+        System.out.printf("  %s%d%s. %s🚪 Sair da loja%s%n%n",
+            BOLD + BWHITE, items.size() + 1, RESET,
+            BOLD + BWHITE, RESET);
     }
 
 

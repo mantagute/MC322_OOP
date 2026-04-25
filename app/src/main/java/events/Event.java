@@ -15,4 +15,6 @@ public abstract class Event {
     }
     
     public abstract EventResult initializeEvent(Hero hero, BuyPile buyPile, DiscardPile discardPile, Scanner scanner);
+
+    public abstract String getPreview();
 }

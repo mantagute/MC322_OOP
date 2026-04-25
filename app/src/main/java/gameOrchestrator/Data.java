@@ -9,10 +9,15 @@ import cards.ShieldCard;
 import deck.BuyPile;
 import effects.Effect.EffectType;
 import entities.Hero;
+import events.Battle;
+import events.CampFire;
 import events.Choice;
 import events.choice.DamageOption;
 import events.choice.HealOption;
 import observer.Publisher;
+import events.Event;
+import events.Shop;
+
 
 /**
  * Repositório central de dados estáticos do jogo.
@@ -37,6 +42,16 @@ public class Data {
      * Classe utilitária de dados — não deve ser instanciada.
      */
     private Data() {}
+
+    public static final List<DamageCard> shopDamageCards = List.of(
+        new DamageCard("IFGW", 10, 50, "O Filho chora e a mae nao ve", false),
+        new DamageCard("JIU JITSU UNICAMP", 8, 40, "OSS", true)
+    );
+
+    public static final List<ShieldCard> shopShieldCards = List.of(
+        new ShieldCard("IC FAPESP", 10, 50, "Aquele milao para viver como playboy", false),
+        new ShieldCard("RS", 8, 40, "Sem fila, com vento e dignidade!", true)
+    );
 
     // =========================================================================
     // Cartas do Azoide
@@ -216,12 +231,9 @@ public class Data {
     public static final List<List<EnemyDefinition>> enemies = List.of(
         List.of(new EnemyDefinition("Sr. Doutor Cabo Arruda", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("3L", 100, 10, EnemyDefinition.EnemyType.BZOIDE)),
         List.of(new EnemyDefinition("Sinhô Jelado", 50, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Lucas, o Ético", 50, 10, EnemyDefinition.EnemyType.BZOIDE)),
-        List.of(new EnemyDefinition("Cambuí, o Caído", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Cabotian, o Trancado", 100, 10, EnemyDefinition.EnemyType.BZOIDE)),
         List.of(new EnemyDefinition("Kojak, o que promete", 25, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Yugo, o Furtivo", 25, 10, EnemyDefinition.EnemyType.BZOIDE)),
         List.of(new EnemyDefinition("Marquinhos, o Loiro", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Cairê, o Belo", 100, 10, EnemyDefinition.EnemyType.BZOIDE)),
-        List.of(new EnemyDefinition("Adobe, o Insociável", 50, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("O Inominável", 50, 10, EnemyDefinition.EnemyType.BZOIDE)),
-        List.of(new EnemyDefinition("GS, o Doutrinador", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Zé, O sapo", 100, 10, EnemyDefinition.EnemyType.BZOIDE))
-
+        List.of(new EnemyDefinition("Adobe, o Insociável", 50, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("O Inominável", 50, 10, EnemyDefinition.EnemyType.BZOIDE))
     );
     
     /**
@@ -268,6 +280,32 @@ public class Data {
         )
     );
 
+    public static final List<List<Event>> nodes = List.of(
+        List.<Event>of(
+            choices.get(0),
+            new Battle(List.of(new EnemyDefinition("Sr. Doutor Cabo Arruda", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("3L", 100, 10, EnemyDefinition.EnemyType.BZOIDE)))
+        ),
+        List.<Event>of(
+            new Shop()
+        ),
+        List.<Event>of(
+            new Battle(List.of(new EnemyDefinition("Sinhô Jelado", 50, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Lucas, o Ético", 50, 10, EnemyDefinition.EnemyType.BZOIDE)))
+        ),
+        List.<Event>of(
+            choices.get(1),
+            new Battle(List.of(new EnemyDefinition("Kojak, o que promete", 25, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Yugo, o Furtivo", 25, 10, EnemyDefinition.EnemyType.BZOIDE)))
+        ),
+        List.<Event>of(
+            choices.get(2),
+            new Battle(List.of(new EnemyDefinition("Marquinhos, o Loiro", 100, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("Cairê, o Belo", 100, 10, EnemyDefinition.EnemyType.BZOIDE)))
+        ),
+        List.<Event>of(
+            new CampFire()
+        ),
+        List.<Event>of(
+            new Battle(List.of(new EnemyDefinition("Adobe, o Insociável", 50, 10, EnemyDefinition.EnemyType.AZOIDE), new EnemyDefinition("O Inominável", 50, 10, EnemyDefinition.EnemyType.BZOIDE)))
+        )
+    );
     // =========================================================================
     // Heróis e fábrica de inimigos
     // =========================================================================

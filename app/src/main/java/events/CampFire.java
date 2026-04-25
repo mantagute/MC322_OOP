@@ -30,4 +30,8 @@ public class CampFire extends Event{
             
             return EventResult.CONTINUE;
         }
+
+        public String getPreview() {
+            return "🔥 Fogueira";
+        }
 }

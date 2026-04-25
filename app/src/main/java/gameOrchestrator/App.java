@@ -3,18 +3,16 @@ package gameOrchestrator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 import gamePath.Node;
 import gamePath.TreePath;
 import deck.BuyPile;
 import deck.DiscardPile;
-import entities.Enemy;
 import entities.Hero;
 import events.Battle;
-import events.Battle.BattleResult;
-import gameOrchestrator.Data.EnemyDefinition;
 import observer.Publisher;
+import events.Event;
+import events.Event.EventResult;
 
 /**
  * Classe principal do jogo — orquestra o loop de batalha entre o herói e os
@@ -66,9 +64,6 @@ public class App {
 
     /** Herói controlado pelo jogador. */
     private Hero hero;
-
-    /** Lista de inimigos presentes no combate atual. */
-    private List<Enemy> enemies = new ArrayList<>();
 
     /** Árvore que representa o mapa de progressão do jogo. */
     private TreePath treePath;
@@ -162,7 +157,7 @@ public class App {
     public void start() {
         hero = Data.heroes.get(0);
 
-        treePath = new TreePath(Data.enemies);
+        treePath = new TreePath(Data.nodes);
         currentNode = treePath.getRoot();
 
         heroBuyPile = new BuyPile();
@@ -171,8 +166,6 @@ public class App {
         Data.fillPile(heroBuyPile, Data.heroEffectCards(publisher));
         heroBuyPile.shuffle();
         heroDiscardPile = new DiscardPile();
-
-        loadEnemiesFromNode(currentNode);
     }
 
     /**
@@ -185,7 +178,6 @@ public class App {
      *                     {@code false} para o filho direito
      */
     private void startNewFase(Node currentNode, boolean isGoingLeft) {
-        enemies.clear();
         publisher.resetPublisher();
         hero.clearEffects();
         if (isGoingLeft) {
@@ -194,29 +186,6 @@ public class App {
         } else {
             this.currentNode = currentNode.getRightNode();
             pathTaken.add("right");
-        }
-
-        if (this.currentNode != null) {
-            loadEnemiesFromNode(this.currentNode);
-        }
-    }
-
-    /**
-     * Carrega os inimigos do nó especificado na lista de inimigos ativa,
-     * instanciando e inicializando cada um conforme seu tipo.
-     *
-     * @param node nó cujos inimigos serão carregados; não deve ser {@code null}
-     */
-    private void loadEnemiesFromNode(Node node) {
-        for (EnemyDefinition enemyDef : node.getEnemiesDefinitions()) {
-            Enemy enemy;
-            if (enemyDef.type() == EnemyDefinition.EnemyType.AZOIDE) {
-                enemy = new entities.enemies.Azoide(enemyDef.name(), enemyDef.health(), enemyDef.energy());
-            } else {
-                enemy = new entities.enemies.Bzoide(enemyDef.name(), enemyDef.health(), enemyDef.energy());
-            }
-            enemy.initializePublisher(publisher);
-            enemies.add(enemy);
         }
     }
 
@@ -252,7 +221,6 @@ public class App {
     public void loadGame() {
         SaveState saveState = SaveManager.loadGame();
         hero.setHealth(saveState.getHeroHealth());
-        enemies.clear();
         while (heroBuyPile.getSize() > 0) heroBuyPile.extractCard(0);
         while (heroDiscardPile.getSize() > 0) heroDiscardPile.extractCard(0);
         for (String cardName : saveState.getDeckCardNames()) {
@@ -262,7 +230,6 @@ public class App {
         pathTaken.clear();
         saveState.getPathTaken().forEach(direction -> pathTaken.add(direction));
         currentNode = nodeBeforeSave;
-        loadEnemiesFromNode(currentNode);
     }
 
     // =========================================================================
@@ -277,15 +244,6 @@ public class App {
      */
     public Hero getHero() {
         return hero;
-    }
-
-    /**
-     * Retorna uma cópia imutável da lista completa de inimigos da fase atual.
-     *
-     * @return lista imutável de {@link Enemy}; nunca {@code null}
-     */
-    public List<Enemy> getEnemies() {
-        return List.copyOf(enemies);
     }
 
     /**
@@ -327,53 +285,58 @@ public class App {
             app.loadGame();
         }
 
-        while (app.hero.isAlive() && app.currentNode != null) {
-            Battle battle = new Battle(app.hero, app.enemies, app.publisher, scanner, app.heroBuyPile, app.heroDiscardPile);
-            BattleResult battleResult = battle.runBattle();
+        boolean nodeAborted = false;
 
-            if (battleResult.equals(BattleResult.VICTORY)) {
-                if (app.currentNode.getLeftNode() == null && app.currentNode.getRightNode() == null) {
-                    app.currentNode = null;
+        while (app.hero.isAlive() && app.currentNode != null) {
+            EventResult eventResult = EventResult.CONTINUE;
+            for (Event event : app.currentNode.getEvents()) {
+                if (event instanceof Battle) {
+                    ((Battle)event).setPublisher(app.publisher);
+                }
+                eventResult = event.initializeEvent(app.hero, app.heroBuyPile, app.heroDiscardPile, scanner);
+                
+                if (eventResult.equals(EventResult.CONTINUE)) {
+                    
                     continue;
                 }
-                UserInterface.printFaseClear(app.currentNode);
-                GameUtils.Wait(2000);
-                if (app.currentNode.getLeftNode() == null) {
-                    app.startNewFase(app.currentNode, false);
-                    SaveState saveState = app.buildSaveState();
-                    SaveManager.saveGame(saveState);
-                } else if (app.currentNode.getRightNode() == null) {
-                    app.startNewFase(app.currentNode, true);
-                    SaveState saveState = app.buildSaveState();
-                    SaveManager.saveGame(saveState);
+                else if (eventResult.equals(EventResult.DEFEAT)) {
+                    SaveManager.resetSave();
+                    nodeAborted = true;
+                    break;
+                }
+                else {
+                    UserInterface.printAction("Progresso salvo! Até a próxima...");
+                    GameUtils.Wait(1500);
+                    nodeAborted = true;
+                    break;
+                }
+            }
+            if (!nodeAborted) {
+                if (app.currentNode.getLeftNode() == null && app.currentNode.getRightNode() == null) {
+                    app.currentNode = null;
                 } else {
-                    int choice = scanner.nextInt();
-                    boolean isGoingLeft = (choice == 1) ? true : false;
-                    app.startNewFase(app.currentNode, isGoingLeft);
+                    UserInterface.printFaseClear(app.currentNode);
+                    GameUtils.Wait(2000);
+                    if (app.currentNode.getLeftNode() == null) {
+                        app.startNewFase(app.currentNode, false);
+                    } else if (app.currentNode.getRightNode() == null) {
+                        app.startNewFase(app.currentNode, true);
+                    } else {
+                        int choice = scanner.nextInt();
+                        app.startNewFase(app.currentNode, choice == 1);
+                    }
                     SaveState saveState = app.buildSaveState();
                     SaveManager.saveGame(saveState);
                 }
             }
-            else if (battleResult.equals(BattleResult.DEFEAT)) {
-                SaveManager.resetSave();
-                break;
-            }
-            else {
-                UserInterface.printAction("Progresso salvo! Até a próxima...");
-                GameUtils.Wait(1500);
-                break;
-            }
-        }
 
-        List<String> enemyNames = app.enemies.stream()
-                .map(Enemy::getName)
-                .collect(Collectors.toList());
+        }
 
         boolean gameWon = app.currentNode == null && app.hero.isAlive();
         boolean showEndScreen = !app.hero.isAlive() || app.currentNode == null;
         if (showEndScreen) {
             UserInterface.clearScreen();
-            UserInterface.printGameOver(gameWon, app.hero.getName(), enemyNames);
+            UserInterface.printGameOver(gameWon, app.hero.getName(), app.currentNode);
             GameUtils.Wait(10000);
         }
         scanner.close();

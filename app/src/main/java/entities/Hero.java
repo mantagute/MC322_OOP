@@ -27,4 +27,8 @@ public class Hero extends Entity {
     public int getGold() {
         return gold;
     }
+
+    public void spendGold(int amount) {
+        gold = gold - amount;
+    }
 }

@@ -45,4 +45,23 @@ public class GameFactory {
         buyPile.shuffle();
         return buyPile;
     }
+
+    public static Card getCardbyName(String name, Publisher publisher) {
+        for (CardDefinition card : Data.heroDamageCardsDefinitions) {
+            if (card.name().equals(name)) {
+                return createCardFromDefinition(card, publisher);
+            }
+        }
+        for (CardDefinition card : Data.heroShieldCardsDefinitions) {
+            if (card.name().equals(name)) {
+                return createCardFromDefinition(card, publisher);
+            }
+        }
+        for (CardDefinition card : Data.heroEffectCardsDefinitions) {
+            if (card.name().equals(name)) {
+                return createCardFromDefinition(card, publisher);
+            }
+        }
+        return null;
+    }
 }

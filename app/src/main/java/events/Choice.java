@@ -35,6 +35,17 @@ public class Choice extends Event{
         this.choiceOptions = choiceOptions;
     }
 
+    /**
+     * Embaralha as opções, exibe o lore e aguarda a escolha do jogador,
+     * executando o efeito da opção selecionada sobre o herói.
+     *
+     * @param hero        herói que sofrerá o efeito da opção escolhida
+     * @param buyPile     pilha de compra do herói
+     * @param discardPile pilha de descarte do herói
+     * @param scanner     leitor de entrada do terminal
+     * @return {@link EventResult#CONTINUE} sempre
+     */
+
     public EventResult initializeEvent(Hero hero, BuyPile buyPile, DiscardPile discardPile, Scanner scanner ) {
         
         Collections.shuffle(choiceOptions);
@@ -52,6 +63,12 @@ public class Choice extends Event{
         return EventResult.CONTINUE;
     }
     
+
+    /**
+     * Retorna a prévia textual deste evento para exibição no mapa de progressão.
+     *
+     * @return string {@code "❓ ESCOLHA ❓"}
+     */
     public String getPreview() {
         return "❓ ESCOLHA ❓";
     }

@@ -30,10 +30,26 @@ public class Shop extends Event {
 
     List<ShopItem> shopItems;
     
+    /**
+     * Retorna a prévia textual deste evento para exibição no mapa de progressão.
+     *
+     * @return string {@code "🛒 Loja"}
+     */
     public String getPreview() {
         return "🛒 Loja";
     }
 
+
+    /**
+     * Inicializa a loja, sorteando cartas do pool disponível e permitindo
+     * ao jogador comprar itens enquanto tiver ouro ou até sair voluntariamente.
+     *
+     * @param hero        herói que pode comprar itens com seu ouro
+     * @param buyPile     pilha de compra do herói; recebe cartas compradas
+     * @param discardPile pilha de descarte do herói (não utilizada neste evento)
+     * @param scanner     leitor de entrada do terminal
+     * @return {@link EventResult#CONTINUE} sempre
+     */
     public EventResult initializeEvent(Hero hero, BuyPile buyPile, DiscardPile discardPile, Scanner scanner) {
 
         List<DamageCard> damagePool = new ArrayList<>(GameFactory.createShopDamageCards());

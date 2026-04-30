@@ -96,6 +96,12 @@ public class Battle extends Event {
 
         switch (battleResult) {
             case VICTORY:
+                    /**
+                     * Concede uma recompensa aleatória de ouro ao herói após a vitória,
+                     * no intervalo de 30 a 45 moedas.
+                     *
+                     * @param hero herói que receberá o ouro
+                     */
                     rewardGold(hero);
                     return EventResult.CONTINUE;
             case DEFEAT:

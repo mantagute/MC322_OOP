@@ -11,6 +11,7 @@ import deck.BuyPile;
 import deck.DiscardPile;
 import entities.Hero;
 import gameOrchestrator.App;
+import gameOrchestrator.GameFactory;
 import gameOrchestrator.UserInterface;
 import gameOrchestrator.Data.EnemyDefinition;
 import observer.Publisher;
@@ -89,14 +90,8 @@ public class Battle extends Event {
         this.heroBuyPile = buyPile;
         this.heroDiscardPile = discardPile;
 
-        for (EnemyDefinition enemyDefinition : enemyDefinitions) {
-            Enemy enemy;
-            if (enemyDefinition.type() == EnemyDefinition.EnemyType.AZOIDE) {
-                enemy = new entities.enemies.Azoide(enemyDefinition.name(), enemyDefinition.health(), enemyDefinition.energy());
-            } else {
-                enemy = new entities.enemies.Bzoide(enemyDefinition.name(), enemyDefinition.health(), enemyDefinition.energy());
-            }
-            enemy.initializePublisher(publisher);
+        for (EnemyDefinition enemyDefinition : enemyDefinitions) {  
+            Enemy enemy = GameFactory.createEnemyFromDefinition(enemyDefinition, publisher);
             enemies.add(enemy);
         }
 

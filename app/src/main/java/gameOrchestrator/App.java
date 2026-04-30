@@ -13,6 +13,7 @@ import events.Battle;
 import observer.Publisher;
 import events.Event;
 import events.Event.EventResult;
+import gameOrchestrator.Data.CardDefinition;
 
 /**
  * Classe principal do jogo — orquestra o loop de batalha entre o herói e os
@@ -155,16 +156,18 @@ public class App {
      * do loop principal em {@link #main(String[])}.
      */
     public void start() {
-        hero = Data.heroes.get(0);
+        hero = GameFactory.createHero();
 
-        treePath = new TreePath(Data.nodes);
+        treePath = GameFactory.createTreePath(publisher);
         currentNode = treePath.getRoot();
 
-        heroBuyPile = new BuyPile();
-        Data.fillPile(heroBuyPile, Data.heroDamageCards);
-        Data.fillPile(heroBuyPile, Data.heroShieldCards);
-        Data.fillPile(heroBuyPile, Data.heroEffectCards(publisher));
-        heroBuyPile.shuffle();
+        List<CardDefinition> heroCards = new ArrayList<>();
+        heroCards.addAll(Data.heroDamageCardsDefinitions);
+        heroCards.addAll(Data.heroShieldCardsDefinitions);
+        heroCards.addAll(Data.heroEffectCardsDefinitions);
+
+        heroBuyPile = GameFactory.createBuyPile(publisher, heroCards);
+        
         heroDiscardPile = new DiscardPile();
     }
 
@@ -224,7 +227,7 @@ public class App {
         while (heroBuyPile.getSize() > 0) heroBuyPile.extractCard(0);
         while (heroDiscardPile.getSize() > 0) heroDiscardPile.extractCard(0);
         for (String cardName : saveState.getDeckCardNames()) {
-            heroBuyPile.push(Data.getCardbyName(cardName, publisher));
+            heroBuyPile.push(GameFactory.createCardbyName(cardName, publisher));
         }
         Node nodeBeforeSave = treePath.getNodeBeforeSave(saveState.getPathTaken());
         pathTaken.clear();

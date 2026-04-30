@@ -1,9 +1,15 @@
 package entities.enemies;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cards.Card;
 import cards.ShieldCard;
+import deck.BuyPile;
 import entities.Enemy;
 import gameOrchestrator.Data;
+import gameOrchestrator.Data.CardDefinition;
+import gameOrchestrator.GameFactory;
 
 /**
  * Inimigo do tipo Bzoide — focado em cartas de defesa.
@@ -45,10 +51,14 @@ public class Bzoide extends Enemy {
      * conforme definido em {@link Data}.
      */
     public void initializeDeck() {
-        for (Card card : Data.bzoideDamageCards) addCardToBuypile(card);
-        for (Card card : Data.bzoideShieldCards) addCardToBuypile(card);
-        for (Card card : Data.bzoideEffectCards(publisher)) addCardToBuypile(card);
-        shuffleBuyPile();
+        List<CardDefinition> bzoideCards = new ArrayList<>();
+        bzoideCards.addAll(Data.bzoideDamageCardsDefinitions);
+        bzoideCards.addAll(Data.bzoideShieldCardsDefinitions);
+        bzoideCards.addAll(Data.bzoideEffectCardsDefinitions);
+        BuyPile pile = GameFactory.createBuyPile(publisher, bzoideCards);
+        for (int i = 0 ; i < pile.getSize() ; i++) {
+            addCardToBuypile(pile.getCard(i));
+        }
     }
 }
 

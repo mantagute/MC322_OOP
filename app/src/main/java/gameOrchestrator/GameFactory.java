@@ -39,16 +39,32 @@ public class GameFactory {
     }
 
     public static Card createCardFromDefinition(CardDefinition def, Publisher publisher) {
-    switch (def.type()) {
-        case DAMAGE:
-            return new DamageCard(def.name(), def.energyCost(), def.effectValue(), def.description(), def.multiTarget());
-        case SHIELD:
-            return new ShieldCard(def.name(), def.energyCost(), def.effectValue(), def.description(), def.multiTarget());
-        case EFFECT:
-            return new EffectCard(def.name(), def.energyCost(), def.description(), def.effectType(), def.effectValue(), def.selfTarget(), publisher, def.multiTarget());
-        default:
-            throw new IllegalArgumentException("Unknown card type: " + def.type());
+        switch (def.type()) {
+            case DAMAGE:
+                return new DamageCard(def.name(), def.energyCost(), def.effectValue(), def.description(), def.multiTarget());
+            case SHIELD:
+                return new ShieldCard(def.name(), def.energyCost(), def.effectValue(), def.description(), def.multiTarget());
+            case EFFECT:
+                return new EffectCard(def.name(), def.energyCost(), def.description(), def.effectType(), def.effectValue(), def.selfTarget(), publisher, def.multiTarget());
+            default:
+                throw new IllegalArgumentException("Unknown card type: " + def.type());
+        }
     }
+
+    public static List<DamageCard> createShopDamageCards() {
+        List<DamageCard> damageCards = new ArrayList<>();
+        for (CardDefinition shopDamageCardDefinition : Data.shopDamageCardsDefinitions) {
+            damageCards.add(new DamageCard(shopDamageCardDefinition.name(), shopDamageCardDefinition.energyCost(), shopDamageCardDefinition.effectValue(), shopDamageCardDefinition.description(), shopDamageCardDefinition.multiTarget()));
+        }
+        return damageCards;
+    }
+
+    public static List<ShieldCard> createShopShieldCards() {
+        List<ShieldCard> shieldCards = new ArrayList<>();
+        for (CardDefinition shopShieldCardDefinition : Data.shopShieldCardsDefinitions) {
+            shieldCards.add(new ShieldCard(shopShieldCardDefinition.name(), shopShieldCardDefinition.energyCost(), shopShieldCardDefinition.effectValue(), shopShieldCardDefinition.description(), shopShieldCardDefinition.multiTarget()));
+        }
+        return shieldCards;
     }
 
     public static BuyPile createBuyPile(Publisher publisher, List<CardDefinition> cardDefinitions) {

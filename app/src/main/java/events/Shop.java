@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
-import gameOrchestrator.Data;
+import gameOrchestrator.GameFactory;
 import cards.DamageCard;
 import cards.ShieldCard;
 import deck.BuyPile;
@@ -27,8 +27,8 @@ public class Shop extends Event {
 
     public EventResult initializeEvent(Hero hero, BuyPile buyPile, DiscardPile discardPile, Scanner scanner) {
 
-        List<DamageCard> damagePool = new ArrayList<>(Data.shopDamageCards);
-        List<ShieldCard> shieldPool = new ArrayList<>(Data.shopShieldCards);
+        List<DamageCard> damagePool = new ArrayList<>(GameFactory.createShopDamageCards());
+        List<ShieldCard> shieldPool = new ArrayList<>(GameFactory.createShopShieldCards());
         Collections.shuffle(damagePool);
         Collections.shuffle(shieldPool);
 

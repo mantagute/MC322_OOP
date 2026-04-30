@@ -1,9 +1,15 @@
 package entities.enemies;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cards.Card;
 import cards.DamageCard;
+import deck.BuyPile;
 import entities.Enemy;
 import gameOrchestrator.Data;
+import gameOrchestrator.GameFactory;
+import gameOrchestrator.Data.CardDefinition;
 
 /**
  * Inimigo do tipo Azoide — focado em cartas de ataque.
@@ -45,9 +51,13 @@ public class Azoide extends Enemy {
      * conforme definido em {@link Data}.
      */
     public void initializeDeck() {
-        for (Card card : Data.azoideDamageCards) addCardToBuypile(card);
-        for (Card card : Data.azoideShieldCards) addCardToBuypile(card);
-        for (Card card : Data.azoideEffectCards(publisher)) addCardToBuypile(card);
-        shuffleBuyPile();
+        List<CardDefinition> azoideCards = new ArrayList<>();
+        azoideCards.addAll(Data.azoideDamageCardsDefinitions);
+        azoideCards.addAll(Data.azoideShieldCardsDefinitions);
+        azoideCards.addAll(Data.azoideEffectCardsDefinitions);
+        BuyPile pile = GameFactory.createBuyPile(publisher, azoideCards);
+        for (int i = 0 ; i < pile.getSize() ; i++) {
+            addCardToBuypile(pile.getCard(i));
+        }
     }
 }

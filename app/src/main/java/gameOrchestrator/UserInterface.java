@@ -419,7 +419,7 @@ public final class UserInterface {
             printDivider(60, BGREEN);
             System.out.println(BOLD + BGREEN + "  🏆 VITÓRIA!" + RESET);
             System.out.println(BWHITE + "  " + heroName + " venceu o jogo!" + RESET);
-            System.out.println(DIM + "  Didi Marco provou é o tal do 01." + RESET);
+            System.out.println(DIM + "  Didi Marco provou que é o tal do 01." + RESET);
             printDivider(60, BGREEN);
         } else {
             List<String> enemyNames = new ArrayList<>();
@@ -601,9 +601,8 @@ public final class UserInterface {
         System.out.println(BOLD + BCYAN + "  ❓ UMA ESCOLHA..." + RESET);
         System.out.println();
         for (int i = 0; i < options.size(); i++) {
-            System.out.printf("  %s%d%s. %s%s%s  %s%n",
+            System.out.printf("  %s%d%s.  %s%n",
                 BOLD + BWHITE, i + 1, RESET,
-                BCYAN, options.get(i).getEmoji(), RESET,
                 options.get(i).getAction());
         }
         System.out.println();

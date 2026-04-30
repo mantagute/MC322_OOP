@@ -17,6 +17,15 @@ import events.shop.ShieldCardItem;
 import events.shop.ShopItem;
 import gameOrchestrator.UserInterface;
 
+/**
+ * Evento de loja — permite ao herói gastar ouro em cartas e poções entre batalhas.
+ *
+ * <p>A cada visita, sorteia aleatoriamente uma {@link cards.DamageCard} e uma
+ * {@link cards.ShieldCard} do pool disponível, sempre oferecendo também uma
+ * {@link events.shop.PotionItem}. O jogador pode comprar itens enquanto tiver
+ * ouro suficiente ou sair a qualquer momento.
+ */
+
 public class Shop extends Event {
 
     List<ShopItem> shopItems;

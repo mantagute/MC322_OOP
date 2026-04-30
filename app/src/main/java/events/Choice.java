@@ -12,11 +12,24 @@ import events.choice.ChoiceOption;
 import gameOrchestrator.GameUtils;
 import gameOrchestrator.UserInterface;
 
+/**
+ * Evento de escolha narrativa — apresenta ao jogador uma situação com múltiplas opções,
+ * cada uma com consequências distintas sobre o estado do herói.
+ *
+ * <p>As opções são embaralhadas a cada execução para variar a apresentação.
+ */
+
 public class Choice extends Event{
 
     private String Lore;
     private List<ChoiceOption> choiceOptions;
 
+    /**
+     * Constrói um evento de escolha com o lore e as opções especificadas.
+     *
+     * @param Lore          texto narrativo que descreve a situação ao jogador
+     * @param choiceOptions lista de opções disponíveis para o jogador escolher
+     */
     public Choice(String Lore, List<ChoiceOption> choiceOptions) {
         this.Lore = Lore;
         this.choiceOptions = choiceOptions;

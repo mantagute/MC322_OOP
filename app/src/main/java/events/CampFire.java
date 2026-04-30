@@ -12,6 +12,17 @@ import events.campfire.UpgradeCard;
 import gameOrchestrator.UserInterface;
 
 
+/**
+ * Evento de fogueira — permite ao herói descansar ou melhorar uma carta entre batalhas.
+ *
+ * <p>Ao ser iniciado, apresenta ao jogador duas opções via {@link events.campfire.CampFireAction}:
+ * descansar ({@link events.campfire.Rest}) ou forjar ({@link events.campfire.UpgradeCard}).
+ *
+ * <p>Implementa o padrão <b>Strategy</b>: cada ação da fogueira é encapsulada
+ * em uma implementação distinta de {@link events.campfire.CampFireAction},
+ * permitindo adicionar novas ações sem modificar esta classe.
+ */
+
 public class CampFire extends Event{
         public EventResult initializeEvent(Hero hero, BuyPile buyPile, DiscardPile discardPile, Scanner scanner) {
             List<CampFireAction> actions = new ArrayList<>();

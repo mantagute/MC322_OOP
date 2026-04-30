@@ -9,12 +9,14 @@ import deck.BuyPile;
 import deck.DiscardPile;
 import entities.Hero;
 import gameOrchestrator.UserInterface;
+import gameOrchestrator.GameUtils;
 import cards.Card;
 
 /**
  * Ação de fogueira que permite ao herói melhorar uma carta do seu baralho.
  * Apresenta 3 cartas aleatórias do baralho (buy pile + discard pile) e
  * aplica {@link cards.Card#upgrade()} na carta escolhida pelo jogador.
+ * Ao final, exibe o novo valor da carta para confirmar a melhoria.
  */
 
 public class UpgradeCard implements CampFireAction {
@@ -28,7 +30,7 @@ public class UpgradeCard implements CampFireAction {
     }
 
     public void execute(Hero hero, BuyPile buyPile, DiscardPile discardPile, Scanner scanner) {
-        
+
         List<Card> allCards = new ArrayList<>();
 
         for (int i = 0 ; i < buyPile.getSize() ; i ++) {
@@ -51,7 +53,7 @@ public class UpgradeCard implements CampFireAction {
             int index = random.nextInt(allCards.size());
             if (indexAlreadySorted.contains(index)) {
                 continue;
-            }
+            } 
             else {
                 indexAlreadySorted.add(index);
                 cardsAvailable.add(allCards.get(index));
@@ -63,10 +65,12 @@ public class UpgradeCard implements CampFireAction {
         UserInterface.printChoicePrompt();
 
         int choice = scanner.nextInt();
-        
+
         if (choice >=1 && choice <= cardsAvailable.size()) {
-            Card CardChosen = cardsAvailable.get(choice - 1);
-            CardChosen.upgrade(); 
+            Card cardChosen = cardsAvailable.get(choice - 1);
+            cardChosen.upgrade();
+            UserInterface.printUpgradeFeedback(cardChosen);
+            GameUtils.Wait(2500);
         }
     }
 }

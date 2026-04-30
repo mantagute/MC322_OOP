@@ -261,17 +261,23 @@ public final class UserInterface {
      * @param card carta cujo estilo visual será determinado; não deve ser {@code null}
      * @return array de dois elementos: {@code [emoji, codigoAnsiCor]}
      */
-        public static String[] getCardStyle(Card card) {
-            if (card instanceof DamageCard) {
-                return new String[]{"⚔️ ", BRED};
-            } else if (card instanceof ShieldCard) {
-                return new String[]{"🛡️ ", BBLUE};
-            } else {
-                return new String[]{"✨ ", BMAGENTA};
-            }
+    public static String[] getCardStyle(Card card) {
+        if (card instanceof DamageCard) {
+            return new String[]{"⚔️ ", BRED};
+        } else if (card instanceof ShieldCard) {
+            return new String[]{"🛡️ ", BBLUE};
+        } else {
+            return new String[]{"✨ ", BMAGENTA};
         }
+    }
 
-    // Mantém o privado delegando pro público — retrocompatibilidade
+    /**
+     * Delegado privado de {@link #getCardStyle(Card)} mantido para retrocompatibilidade
+     * com chamadas internas anteriores à exposição pública do método.
+     *
+     * @param card carta cujo estilo visual será determinado; não deve ser {@code null}
+     * @return array de dois elementos: {@code [emoji, codigoAnsiCor]}
+     */
     private static String[] cardStyle(Card card) {
         return getCardStyle(card);
     }
@@ -379,6 +385,12 @@ public final class UserInterface {
         System.out.println("  " + BWHITE + "▶ " + RESET + "Save encontrado! Carregando progresso anterior...");
     }
 
+    /**
+     * Exibe a recompensa de ouro recebida pelo herói ao final de um combate.
+     *
+     * @param heroName nome do herói que recebeu a recompensa
+     * @param gold     quantidade de ouro obtida
+     */
     public static void printReward(String heroName, int gold) {
         System.out.println("  " + BYELLOW + "★ " + RESET + BWHITE + heroName + " recebeu " + BYELLOW + gold + " de ouro!" + RESET);
     }
@@ -492,6 +504,17 @@ public final class UserInterface {
         System.out.println();
     }
 
+    /**
+     * Exibe a tela de conclusão de nível, informando que o caminho se divide e
+     * listando os eventos disponíveis nos ramos esquerdo e direito do grafo de
+     * progressão.
+     *
+     * <p>Ao final, imprime o prompt de escolha para que o jogador selecione qual
+     * caminho seguir (1 para o caminho da esquerda, 2 para o da direita).
+     *
+     * @param currentNode nó atual da árvore de progressão, cujos filhos representam
+     *                    os dois caminhos disponíveis; não deve ser {@code null}
+     */
     public static void printFaseClear(Node currentNode) {
         System.out.println();
         printDivider(60, BGREEN);
@@ -551,6 +574,13 @@ public final class UserInterface {
         System.out.println();
     }
 
+    /**
+     * Renderiza o menu da fogueira, exibindo todas as ações disponíveis com seus
+     * respectivos emojis, descrições e índices de seleção.
+     *
+     * @param actions lista de ações disponíveis na fogueira; não deve ser {@code null}
+     *                nem vazia
+     */
     public static void printCampFireOptions(List<CampFireAction> actions) {
         System.out.println();
         printDivider(60, BYELLOW);
@@ -567,7 +597,16 @@ public final class UserInterface {
         }
         System.out.println();
     }
-    
+
+    /**
+     * Renderiza o menu de seleção de cartas para melhoria na fogueira.
+     *
+     * <p>Cada carta é exibida com seu índice, emoji de tipo, nome e detalhes.
+     * O jogador deve escolher uma das cartas listadas para forjar.
+     *
+     * @param cardsAvailable lista de cartas elegíveis para melhoria;
+     *                       não deve ser {@code null} nem vazia
+     */
     public static void printCardsToUpdate(List<Card> cardsAvailable) {
         System.out.println();
         printDivider(60, BMAGENTA);
@@ -589,6 +628,33 @@ public final class UserInterface {
         System.out.println();
     }
 
+    /**
+     * Exibe a confirmação de melhoria de carta após a ação de forjar na fogueira,
+     * mostrando o nome da carta e seus novos atributos.
+     *
+     * @param card carta que foi melhorada
+     */
+    public static void printUpgradeFeedback(Card card) {
+        System.out.println();
+        printDivider(60, BMAGENTA);
+        System.out.println(BOLD + BMAGENTA + "  ⚒️  CARTA FORJADA COM SUCESSO!" + RESET);
+        printDivider(60, BMAGENTA);
+        System.out.println();
+        String[] style = getCardStyle(card);
+        String emoji = style[0].replace(" ", "");
+        String color = style[1];
+        System.out.printf("  %s%s%s  %s%s%s%n",
+            color, emoji, RESET,
+            BOLD + BWHITE, card.getName() + card.getDetails(), RESET);
+        System.out.println();
+    }
+
+    /**
+     * Exibe o texto narrativo (lore) associado a um evento de escolha,
+     * formatado entre separadores ciano para destacá-lo visualmente.
+     *
+     * @param lore texto de ambientação a ser exibido; não deve ser {@code null}
+     */
     public static void printChoiceLore(String lore) {
         System.out.println();
         printDivider(60, BCYAN);
@@ -597,6 +663,16 @@ public final class UserInterface {
         System.out.println();
     }
 
+    /**
+     * Renderiza as opções disponíveis em um evento de escolha, numeradas
+     * sequencialmente a partir de {@code 1}.
+     *
+     * <p>Deve ser chamado após {@link #printChoiceLore(String)} para manter
+     * a consistência visual do evento.
+     *
+     * @param options lista de opções de escolha disponíveis ao jogador;
+     *                não deve ser {@code null} nem vazia
+     */
     public static void printChoiceOptions(List<ChoiceOption> options) {
         System.out.println(BOLD + BCYAN + "  ❓ UMA ESCOLHA..." + RESET);
         System.out.println();
@@ -608,6 +684,12 @@ public final class UserInterface {
         System.out.println();
     }
 
+    /**
+     * Exibe o resultado de uma escolha feita pelo jogador em um evento de escolha,
+     * mostrando o emoji e o texto de feedback associados à opção selecionada.
+     *
+     * @param option opção escolhida pelo jogador; não deve ser {@code null}
+     */
     public static void printChoiceFeedback(ChoiceOption option) {
         System.out.println();
         printDivider(60, BCYAN);
@@ -616,6 +698,17 @@ public final class UserInterface {
         System.out.println();
     }
 
+    /**
+     * Renderiza a interface da loja, exibindo o saldo de ouro do herói e todos
+     * os itens disponíveis para compra com seus preços, emojis e detalhes.
+     *
+     * <p>Itens já vendidos são exibidos com efeito tachado ({@link #STRIKE}).
+     * Ao final da lista, é exibida a opção de sair da loja.
+     *
+     * @param hero  herói que está visitando a loja, usado para exibir o saldo de
+     *              ouro atual; não deve ser {@code null}
+     * @param items lista de itens disponíveis na loja; não deve ser {@code null}
+     */
     public static void printShop(Hero hero, List<ShopItem> items) {
         System.out.println();
         printDivider(60, BYELLOW);
@@ -640,6 +733,4 @@ public final class UserInterface {
             BOLD + BWHITE, items.size() + 1, RESET,
             BOLD + BWHITE, RESET);
     }
-
-
 }

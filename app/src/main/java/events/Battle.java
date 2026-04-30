@@ -162,6 +162,7 @@ public class Battle extends Event {
         private void rewardGold(Hero hero) {
         int gold = 30 + new Random().nextInt(16);
         hero.addGold(gold);
+        UserInterface.clearScreen();
         UserInterface.printReward(hero.getName(), gold);
         GameUtils.Wait(2500);
     }

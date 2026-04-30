@@ -127,15 +127,18 @@ public class GameFactory {
     }
 
     /**
-     * Busca uma carta do baralho do herói pelo nome e a instancia a partir
-     * das definições em {@link Data}. Utilizado ao reconstruir o baralho
-     * durante o carregamento de um save.
+     * Busca uma carta pelo nome e a instancia a partir das definições em {@link Data}.
+     * A busca percorre todas as fontes de cartas disponíveis para o herói: cartas
+     * iniciais (dano, escudo e efeito) e cartas compráveis na loja (dano e escudo).
+     * Utilizado ao reconstruir o baralho durante o carregamento de um save.
      *
      * @param name      nome exato da carta a ser buscada
      * @param publisher Publisher para inscrição de cartas de efeito no Observer
      * @return carta correspondente ao nome, ou {@code null} se não encontrada
+     *         em nenhuma das fontes conhecidas
      */
     public static Card createCardbyName(String name, Publisher publisher) {
+        // Cartas iniciais do herói
         for (CardDefinition card : Data.heroDamageCardsDefinitions) {
             if (card.name().equals(name)) {
                 return createCardFromDefinition(card, publisher);
@@ -147,6 +150,16 @@ public class GameFactory {
             }
         }
         for (CardDefinition card : Data.heroEffectCardsDefinitions) {
+            if (card.name().equals(name)) {
+                return createCardFromDefinition(card, publisher);
+            }
+        }
+        for (CardDefinition card : Data.shopDamageCardsDefinitions) {
+            if (card.name().equals(name)) {
+                return createCardFromDefinition(card, publisher);
+            }
+        }
+        for (CardDefinition card : Data.shopShieldCardsDefinitions) {
             if (card.name().equals(name)) {
                 return createCardFromDefinition(card, publisher);
             }

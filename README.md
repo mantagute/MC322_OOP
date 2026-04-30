@@ -137,7 +137,7 @@ Cada nó do mapa contém uma lista de eventos executados em sequência ao ser vi
 
 ![Diagrama UML — Choice](assets/ChoiceUML.drawio.png)
 
-O padrão **Strategy** é aplicado em `CampFire` (via `CampFireAction`), em `Choice` (via `ChoiceOption`) e em `Shop` (via `ShopItem`), permitindo adicionar novos comportamentos sem modificar as classes de evento.
+O padrão **Strategy** (fonte: [refactoring.guru/design-patterns/strategy](https://refactoring.guru/design-patterns/strategy)) é aplicado em `CampFire` (via `CampFireAction`), em `Choice` (via `ChoiceOption`) e em `Shop` (via `ShopItem`), permitindo adicionar novos comportamentos sem modificar as classes de evento.
 
 ### Classe Battle
 
@@ -208,7 +208,7 @@ O sistema de efeitos é implementado via padrão **Observer**:
 
 ## Padrão de Design Factory Method
 
-A criação de todas as entidades e estruturas do jogo é centralizada em `GameFactory`, seguindo o padrão **Factory Method**. `Data` contém exclusivamente definições declarativas — records como `CardDefinition`, `EnemyDefinition` e `NodeDefinition` — sem nenhuma lógica de instanciação. Essa responsabilidade pertence inteiramente a `GameFactory`:
+A criação de todas as entidades e estruturas do jogo é centralizada em `GameFactory`, seguindo o padrão **Factory Method** (fonte: [refactoring.guru/design-patterns/factory-method](https://refactoring.guru/design-patterns/factory-method)). `Data` contém exclusivamente definições declarativas — records como `CardDefinition`, `EnemyDefinition` e `NodeDefinition` — sem nenhuma lógica de instanciação. Essa responsabilidade pertence inteiramente a `GameFactory`:
 
 - **`createHero()`** — instancia o herói a partir de `Data.heroDefinition`.
 - **`createCardFromDefinition()`** — determina o tipo concreto da carta (`DamageCard`, `ShieldCard` ou `EffectCard`) a partir de uma `CardDefinition`.
